@@ -2,6 +2,7 @@ module AtmosphericModels
 
 using KiteUtils
 using HypergeometricFunctions:_₂F₁
+using NPZ, Printf
 
 export AtmosphericModel, ProfileLaw, EXP, LOG, EXPLOG, FAST_EXP, FAST_LOG, FAST_EXPLOG
 export clear, calc_rho, calc_wind_factor

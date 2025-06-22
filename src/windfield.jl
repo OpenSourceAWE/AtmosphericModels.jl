@@ -33,22 +33,37 @@ function nextpow2(i)
     n
 end
 
-# def calcFullName(v_wind_gnd, basename='windfield_4050_500', rel_sigma = 1.0):
-#     path = HOME+'/00PythonSoftware/KiteSim/Environment/'
-#     name = basename + "_"+"{:1.1f}".format(rel_sigma)
-#     name = name + "_"+"{:2.1f}".format(v_wind_gnd)
-#     return path + name
+using NPZ
 
-# def save(x, y, z, u, v, w, param, basename='windfield_4050_500', v_wind_gnd = V_WIND_GND):
-#     # size uncompressed: 50 MB; size compressed: 24 MB
-#     fullname = calcFullName(v_wind_gnd, basename = basename )
-#     np.savez_compressed(fullname, x=x, y=y, z=z, u=u, v=v, w=w, param=param)
+const HOME = ENV["HOME"]  # Or set this manually
+const V_WIND_GND = 8.0    # Default value, change as needed
 
-# def load(basename='windfield_4050_500', v_wind_gnd = 8.0):
-#     fullname = calcFullName(v_wind_gnd, basename = basename )
-#     # print "fullname: ", fullname
-#     npzfile = np.load(fullname+".npz")
-#     return npzfile['x'], npzfile['y'], npzfile['z'], npzfile['u'], npzfile['v'], npzfile['w'], npzfile['param']
+function calcFullName(v_wind_gnd, basename="windfield_4050_500", rel_sigma=1.0)
+    path = HOME * "/00PythonSoftware/KiteSim/Environment/"
+    name = basename * "_" * @sprintf("%.1f", rel_sigma)
+    name *= "_" * @sprintf("%.1f", v_wind_gnd)
+    return path * name
+end
+
+function save(x, y, z, u, v, w, param; basename="windfield_4050_500", v_wind_gnd=V_WIND_GND)
+    fullname = calcFullName(v_wind_gnd, basename=basename)
+    # Save as compressed .npz
+    NPZ.npzwrite(fullname * ".npz", Dict(
+        "x" => x,
+        "y" => y,
+        "z" => z,
+        "u" => u,
+        "v" => v,
+        "w" => w,
+        "param" => param
+    ))
+end
+
+function load(; basename="windfield_4050_500", v_wind_gnd=8.0)
+    fullname = calcFullName(v_wind_gnd, basename=basename)
+    npzfile = NPZ.npzread(fullname * ".npz")
+    return npzfile["x"], npzfile["y"], npzfile["z"], npzfile["u"], npzfile["v"], npzfile["w"], npzfile["param"]
+end
 
 # def loadWindField(speed):
 #     """
