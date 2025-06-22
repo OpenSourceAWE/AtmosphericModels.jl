@@ -6,10 +6,14 @@ version = "0.2.5"
 [deps]
 HypergeometricFunctions = "34004b35-14d8-5ef3-9330-4cdb6864b03a"
 KiteUtils = "90980105-b163-44e5-ba9f-8b1c83bb0533"
+NPZ = "15e1cf62-19b3-5cfa-8e77-841668bca605"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
 [compat]
 HypergeometricFunctions = "0.3"
 KiteUtils = "0.6, 0.7, 0.8, 0.9, 0.10"
+NPZ = "0.4.3"
+Printf = "1.11.0"
 julia = "1.10, 1.11"
 
 [extras]
