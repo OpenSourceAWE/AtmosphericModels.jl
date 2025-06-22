@@ -39,9 +39,5 @@ end
     clear(am)
 end
 
-@testset "windfield" begin
-    @test AtmosphericModels.pfq(0.1) ≈ 1.079576584249971
-    @test AtmosphericModels.calc_sigma1(am, 10.0) ≈ 2.181983002542761
-    @test AtmosphericModels.nextpow2(10) == 16
-end
+include("test_windfield.jl")
 

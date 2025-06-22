@@ -39,7 +39,7 @@ const HOME = ENV["HOME"]  # Or set this manually
 const V_WIND_GND = 8.0    # Default value, change as needed
 
 function calcFullName(v_wind_gnd, basename="windfield_4050_500", rel_sigma=1.0)
-    path = HOME * "/00PythonSoftware/KiteSim/Environment/"
+    path = get_data_path() * "/"
     name = basename * "_" * @sprintf("%.1f", rel_sigma)
     name *= "_" * @sprintf("%.1f", v_wind_gnd)
     return path * name
