@@ -13,6 +13,11 @@ The code is based on the following papers:
    Engineering Mechanics 13(4), pp. 269-282.
 """
 
+# TODO: the following values are hardcoded, but should be set in the settings
+const V_WIND_GND  = 8.0    # Default value, change as needed
+const GRID_STEP   = 2.0    # Resolution of the grid in x and y direction in meters
+const HEIGHT_STEP = 2.0    # Resolution in z direction in meters
+
 function pfq(z)
     _₂F₁(1. /3 , 17. /6, 4. /3, z)
 end
@@ -32,8 +37,6 @@ function nextpow2(i)
     end
     n
 end
-
-const V_WIND_GND = 8.0    # Default value, change as needed
 
 function calcFullName(v_wind_gnd; basename="windfield_4050_500", rel_sigma=1.0)
     path = get_data_path() * "/"
@@ -70,20 +73,35 @@ function loadWindField(speed)
     return load(v_wind_gnd = V_WIND_GNDS[idx])
 end
 
-# def createGrid(ny=50, nx=100, nz=50, z_min=25, res=GRID_STEP):
-#     """
-#     res: resolution of the grid in x and y direction in meters
-#     ny:  number of meters in y direction
-#     nx:  number of meters in x direction (downwind)
-#     nz:  number of meters in z direction (up)
-#     z_min: minimal height in m
-#     """
-#     y_range=np.linspace(-ny/2, ny/2,      num=ny/res+1)
-#     x_range=np.linspace(0, nx,            num=nx/res+1)
-#     z_range=np.linspace(z_min, z_min+nz,  num=nz/HEIGHT_STEP+1)
-#     # returns three 3-dimensional arrays with the components of the position of the grid points
-#     y, x, z = np.meshgrid(y_range, x_range, z_range)
-#     return y, x, z
+function ndgrid(xs, ys, zs)
+    X = reshape(xs, :, 1, 1)
+    Y = reshape(ys, 1, :, 1)
+    Z = reshape(zs, 1, 1, :)
+    X = repeat(X, 1, length(ys), length(zs))
+    Y = repeat(Y, length(xs), 1, length(zs))
+    Z = repeat(Z, length(xs), length(ys), 1)
+    return X, Y, Z
+end
+
+function createGrid(; ny=50, nx=100, nz=50, z_min=25, res=GRID_STEP, height_step=HEIGHT_STEP)
+    """
+    res: resolution of the grid in x and y direction in meters
+    ny:  number of meters in y direction
+    nx:  number of meters in x direction (downwind)
+    nz:  number of meters in z direction (up)
+    z_min: minimal height in m
+    height_step: resolution in z direction in meters
+    """
+    y_range = range(-ny/2, ny/2, length=Int(ny/res)+1)
+    x_range = range(0, nx, length=Int(nx/res)+1)
+    z_range = range(z_min, z_min+nz, length=Int(nz/height_step)+1)
+
+    # Create meshgrid (Julia's meshgrid returns in order (x, y, z))
+    X, Y, Z = ndgrid(x_range, y_range, z_range)
+
+    return Y, X, Z  # To match the Python (y, x, z) order
+end
+
 
 # def showGrid(x, y, z):
 #     """

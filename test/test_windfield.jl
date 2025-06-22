@@ -49,6 +49,9 @@ end
     windfield = AtmosphericModels.loadWindField(v_wind_gnd+0.2)
     @test typeof(windfield) == Tuple{Vector{Int64}, Vector{Int64}, Vector{Int64}, Array{Float64, 3}, Array{Float64, 3}, Array{Float64, 3}, Vector{Int64}}
 
+    grid = AtmosphericModels.createGrid()
+    @test typeof(grid) == Tuple{Array{Float64, 3}, Array{Float64, 3}, Array{Float64, 3}}
+
     set_data_path(olddir)
     cd(olddir)
 end
