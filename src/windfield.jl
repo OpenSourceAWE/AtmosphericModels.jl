@@ -62,18 +62,13 @@ function load(; basename="windfield_4050_500", v_wind_gnd=8.0)
     return npzfile["x"], npzfile["y"], npzfile["z"], npzfile["u"], npzfile["v"], npzfile["w"], npzfile["param"]
 end
 
-# def loadWindField(speed):
-#     """
-#     1. determine the nearest wind speed from the list V_WIND_GNDS
-#     2. load the wind field for this wind speed
-#     """
-#     if abs(speed - V_WIND_GNDS[1]) < abs(speed - V_WIND_GNDS[2]) and abs(speed - V_WIND_GNDS[1]) < abs(speed - V_WIND_GNDS[0]):
-#     # if abs(speed - 5.2) < abs(speed - 8.0) and abs(speed - 5.2) < abs(speed - 3.8):
-#         return load(v_wind_gnd = V_WIND_GNDS[1])
-#     elif abs(speed - V_WIND_GNDS[2]) < abs(speed - V_WIND_GNDS[1]) and abs(speed - V_WIND_GNDS[2]) < abs(speed - V_WIND_GNDS[0]):
-#         return load(v_wind_gnd = V_WIND_GNDS[2])
-#     else:
-#         return load(v_wind_gnd = V_WIND_GNDS[0])
+V_WIND_GNDS = [3.483, 5.324, 8.163]
+
+function loadWindField(speed)
+    # Find the index of the closest wind speed
+    idx = findmin(abs.(V_WIND_GNDS .- speed))[2]
+    return load(v_wind_gnd = V_WIND_GNDS[idx])
+end
 
 # def createGrid(ny=50, nx=100, nz=50, z_min=25, res=GRID_STEP):
 #     """

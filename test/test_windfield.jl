@@ -20,15 +20,15 @@ end
 
 @testset "3d_windfield" begin
     datapath = get_data_path()
-    tmpdir = joinpath(mktempdir(cleanup=false), "data")
+    tmpdir = joinpath(mktempdir(cleanup=true), "data")
     mkpath(tmpdir)
     olddir = pwd()
     cd(dirname(tmpdir))
     set_data_path(tmpdir)
 
-    v_wind_gnd = 6.0
+    v_wind_gnd = 5.324
     fullname = AtmosphericModels.calcFullName(v_wind_gnd)
-    @test basename(fullname) == "windfield_4050_500_1.0_6.0"
+    @test basename(fullname) == "windfield_4050_500_1.0_5.3"
     x, y, z = create_xyz()
     u, v, w = create_uvw()
     param = [1, 2]
@@ -45,6 +45,9 @@ end
     @test v ≈ v2
     @test w ≈ w2
     @test param == param2
+
+    windfield = AtmosphericModels.loadWindField(v_wind_gnd+0.2)
+    @test typeof(windfield) == Tuple{Vector{Int64}, Vector{Int64}, Vector{Int64}, Array{Float64, 3}, Array{Float64, 3}, Array{Float64, 3}, Vector{Int64}}
 
     set_data_path(olddir)
     cd(olddir)
