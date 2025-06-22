@@ -11,7 +11,7 @@ const ABS_ZERO = -273.15
 """
     mutable struct AtmosphericModel
 
-Stuct that is storing the settings and the state of the atmosphere. 
+Struct that is storing the settings and the state of the atmosphere. 
 """
 Base.@kwdef mutable struct AtmosphericModel
     set::Settings = se()
