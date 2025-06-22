@@ -59,7 +59,7 @@ end
     u, v, w = AtmosphericModels.createWindField(x, y, z; sigma1=1.2)
     am = AtmosphericModel(set)
     am.set.v_wind = v_wind_gnd
-    AtmosphericModels.addWindSpeed(am, z, u; v_wind_ground=v_wind_gnd)
+    AtmosphericModels.addWindSpeed(am, z, u)
 
     set_data_path(olddir)
     cd(olddir)
