@@ -4,22 +4,30 @@ authors = ["Uwe Fechner <fechner@aenarete.eu> and contributors"]
 version = "0.2.5"
 
 [deps]
+FFTW = "7a1cc6ca-52ef-59f5-83cd-3a7055c09341"
 HypergeometricFunctions = "34004b35-14d8-5ef3-9330-4cdb6864b03a"
 KiteUtils = "90980105-b163-44e5-ba9f-8b1c83bb0533"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 NPZ = "15e1cf62-19b3-5cfa-8e77-841668bca605"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [compat]
 ControlPlots = "0.2.7"
+FFTW = "1.9.0"
 HypergeometricFunctions = "0.3"
 KiteUtils = "0.6, 0.7, 0.8, 0.9, 0.10"
+LinearAlgebra = "1.11.0"
 NPZ = "0.4.3"
 Printf = "1.10, 1.11"
+Random = "1.11.0"
+Statistics = "1.11.1"
 julia = "1.10, 1.11"
 
 [extras]
-ControlPlots = "23c2ee80-7a9e-4350-b264-8e670f12517c"
 BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
+ControlPlots = "23c2ee80-7a9e-4350-b264-8e670f12517c"
 Remez = "2e7db186-766a-50e7-8928-5c30181fb135"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
