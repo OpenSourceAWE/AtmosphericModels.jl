@@ -36,6 +36,16 @@ end
     println("Saved windfield data to: ", fullname*".npz")
     @test isfile(fullname * ".npz")
 
+    # Load the data back
+    x2, y2, z2, u2, v2, w2, param2 = AtmosphericModels.load(;v_wind_gnd)
+    @test x == x2
+    @test y == y2
+    @test z == z2
+    @test u ≈ u2
+    @test v ≈ v2
+    @test w ≈ w2
+    @test param == param2
+
     set_data_path(olddir)
     cd(olddir)
 end
