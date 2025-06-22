@@ -3,7 +3,8 @@ using Test
 
 cd("..")
 KiteUtils.set_data_path("data") 
-am = AtmosphericModel()
+set = load_settings("system.yaml")
+am = AtmosphericModel(set)
 
 @testset "calc_wind_factor" begin
     @test calc_wind_factor(am, 6.0, Val{Int(EXP)}) ≈ 1.0

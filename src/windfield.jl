@@ -387,6 +387,30 @@ end
 #         # print i, v_wind
 #         u[:,:,i] += v_wind
 
+# using AtmosphericModels
+# am = AtmosphericModel()
+
+# const profile_law = Int(EXPLOG)
+# height = 100.0
+# wf = calc_wind_factor(am, height, profile_law)
+
+function addWindSpeed(z, u, v_wind_ground=V_WIND_GND)
+    """
+    Modify the velocity component u such that the average wind speed, calculated according
+    to the given wind profile, is added.
+    """
+    min_height = minimum(z)
+    max_height = maximum(z)
+    println("Minimal height: ", min_height)
+    println("Maximal height: ", max_height)
+    for i in axes(z, 3)
+        height = z[1, 1, i]
+        v_wind = calcWindHeight(v_wind_ground, height)
+        u[:, :, i] .+= v_wind
+    end
+end
+
+
 # class WindField(object):
 #     def __init__(self, speed = V_WIND_GND):
 #         try:

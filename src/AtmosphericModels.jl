@@ -15,10 +15,12 @@ const ABS_ZERO = -273.15
 Struct that is storing the settings and the state of the atmosphere. 
 """
 Base.@kwdef mutable struct AtmosphericModel
-    set::Settings = se()
+    set::Settings
     turbulence::Float64 = 0.0
-    rho_zero_temp::Float64 = (15.0 - ABS_ZERO) / (se().temp_ref - ABS_ZERO) * se().rho_0
+    rho_zero_temp::Float64 = (15.0 - ABS_ZERO) / (set.temp_ref - ABS_ZERO) * set.rho_0
 end
+
+AtmosphericModel(set::Settings) = AtmosphericModel(set=set)
 
 const AM = AtmosphericModel
 
