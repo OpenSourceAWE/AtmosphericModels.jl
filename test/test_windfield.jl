@@ -19,10 +19,23 @@ function create_uvw()
 end
 
 @testset "3d_windfield" begin
-    fullname = AtmosphericModels.calcFullName(6.0)
+    datapath = get_data_path()
+    tmpdir = joinpath(mktempdir(cleanup=false), "data")
+    mkpath(tmpdir)
+    olddir = pwd()
+    cd(dirname(tmpdir))
+    set_data_path(tmpdir)
+
+    v_wind_gnd = 6.0
+    fullname = AtmosphericModels.calcFullName(v_wind_gnd)
     @test basename(fullname) == "windfield_4050_500_1.0_6.0"
     x, y, z = create_xyz()
     u, v, w = create_uvw()
     param = [1, 2]
-    AtmosphericModels.save(x, y, z, u, v, w, param)
+    AtmosphericModels.save(x, y, z, u, v, w, param; v_wind_gnd)
+    println("Saved windfield data to: ", fullname*".npz")
+    @test isfile(fullname * ".npz")
+
+    set_data_path(olddir)
+    cd(olddir)
 end

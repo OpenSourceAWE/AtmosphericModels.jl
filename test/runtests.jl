@@ -2,7 +2,7 @@ using AtmosphericModels, KiteUtils, BenchmarkTools
 using Test
 
 cd("..")
-KiteUtils.set_data_path("") 
+KiteUtils.set_data_path("data") 
 am = AtmosphericModel()
 
 @testset "calc_wind_factor" begin
