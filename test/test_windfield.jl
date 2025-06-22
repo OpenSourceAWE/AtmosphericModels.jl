@@ -52,6 +52,12 @@ end
     grid = AtmosphericModels.createGrid()
     @test typeof(grid) == Tuple{Array{Float64, 3}, Array{Float64, 3}, Array{Float64, 3}}
 
+    x = range(0, 50, length=25)
+    y = range(0, 800, length=400)
+    z = range(0, 200, length=100)
+
+    u, v, w = AtmosphericModels.createWindField(x, y, z; sigma1=1.2)
+
     set_data_path(olddir)
     cd(olddir)
 end

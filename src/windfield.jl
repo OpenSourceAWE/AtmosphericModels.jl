@@ -259,6 +259,119 @@ end
 #         w = sigma3/sw * w
 #     return u, v, w
 
+function createWindField(x::AbstractVector, y::AbstractVector, z::AbstractVector;
+                        sigma1::Union{Nothing, Real, AbstractVector}=nothing,
+                        gamma::Real=3.9, ae::Real=0.1, length_scale::Real=33.6)
+    # Validate inputs
+    if sigma1 !== nothing
+        if !(sigma1 isa Real) && length(sigma1) ≠ 3
+            throw(ArgumentError("sigma1 must be scalar or 3-element vector"))
+        end
+    end
+    
+    # Check monotonicity
+    !issorted(x) && throw(ArgumentError("x must be monotonically increasing"))
+    !issorted(y) && throw(ArgumentError("y must be monotonically increasing"))
+    !issorted(z) && throw(ArgumentError("z must be monotonically increasing"))
+    
+    # Standard deviations
+    sigma_iso = 0.55 * sigma1
+    sigma2 = 0.7 * sigma1
+    sigma3 = 0.5 * sigma1
+    
+    # Domain dimensions
+    nx, ny, nz = length(x), length(y), length(z)
+    Lx, Ly, Lz = x[end] - x[1], y[end] - y[1], z[end] - z[1]
+    
+    # Wave number grid
+    x_range = range(-nx/2, nx/2-1, length=nx)
+    y_range = range(-ny/2, ny/2-1, length=ny)
+    z_range = range(-nz/2, nz/2-1, length=nz)
+    
+    m1 = ifftshift(x_range) .+ 1e-6
+    m2 = ifftshift(y_range) .+ 1e-6
+    m3 = ifftshift(z_range) .+ 1e-6
+
+    # Create 3D grids using broadcasting
+    k1 = @. 2π * m1' * (length_scale / Lx)
+    k2 = @. 2π * m2 * (length_scale / Ly)
+    k3 = @. 2π * m3' * (length_scale / Lz)
+
+    nx = length(x)
+    ny = length(y)
+    nz = length(z)
+
+    k1 = reshape(k1, nx, 1, 1)  # shape (nx, 1, 1)
+    k2 = reshape(k2, 1, ny, 1)  # shape (1, ny, 1)
+    k3 = reshape(k3, 1, 1, nz)  # shape (1, 1, nz)
+
+    k = sqrt.(k1.^2 .+ k2.^2 .+ k3.^2)  # shape (nx, ny, nz)
+        
+    # Wave number magnitude
+    # TODO: Fix this line
+    k = @. sqrt(k1^2 + k2^2 + k3^2)
+    
+    # Non-dimensional distortion time
+    pfq_term = pfq.(-k.^-2)  # Assumes pfq is defined elsewhere
+    β = @. gamma / (k^(2/3) * sqrt(pfq_term))
+    
+    # Initial wave vectors
+    k30 = @. k3 + β * k1
+    k0 = @. sqrt(k1^2 + k2^2 + k30^2)
+    
+    # Energy spectrum
+    E0 = @. ae * length_scale^(5/3) * k0^4 / (1 + k0^2)^(17/6)
+    
+    # Correlation matrix components
+    C1 = @. (β * k1^2 * (k1^2 + k2^2 - k3 * (k3 + β * k1))) / (k^2 * (k1^2 + k2^2))
+    C2 = @. (k2 * k0^2) / (k1^2 + k2^2)^(3/2) * atan((β * k1 * sqrt(k1^2 + k2^2)), (k0^2 - (k3 + β * k1) * k1 * β))
+    
+    ζ1 = @. C1 - (k2 / k1) * C2
+    ζ2 = @. C2 + (k2 / k1) * C1
+    
+    # Amplitude factor
+    B = @. sigma_iso * sqrt(2π^2 * length_scale^3 * E0 / (Lx * Ly * Lz * k0^4))
+    
+    # Correlation tensor
+    C = Array{ComplexF64}(undef, 3, 3, nx, ny, nz)
+    C[1,1,:,:,:] = @. B * k2 * ζ1
+    C[1,2,:,:,:] = @. B * (k30 - k1 * ζ1)
+    C[1,3,:,:,:] = @. -B * k2
+    C[2,1,:,:,:] = @. B * (k2 * ζ2 - k30)
+    C[2,2,:,:,:] = @. -B * k1 * ζ2
+    C[2,3,:,:,:] = @. B * k1
+    C[3,1,:,:,:] = @. B * k2 * k0^2 / k^2
+    C[3,2,:,:,:] = @. -B * k1 * k0^2 / k^2
+    
+    # White noise field
+    n_real = randn(ComplexF64, 3, 1, nx, ny, nz)
+    n_imag = randn(ComplexF64, 3, 1, nx, ny, nz)
+    n = n_real + im * n_imag
+    
+    # Stochastic field (vectorized)
+    dZ = similar(n, (3, nx, ny, nz))
+    @inbounds for i in 1:nx, j in 1:ny, k in 1:nz
+        C_slice = @view C[:, :, i, j, k]
+        n_slice = @view n[:, :, i, j, k]
+        dZ[:, i, j, k] = C_slice * n_slice
+    end
+    
+    # Inverse FFT and scaling
+    u = real(ifft(dZ[1,:,:,:])) * nx * ny * nz
+    v = real(ifft(dZ[2,:,:,:])) * nx * ny * nz
+    w = real(ifft(dZ[3,:,:,:])) * nx * ny * nz
+    
+    # Normalize variances if requested
+    if sigma1 !== nothing
+        u .*= sigma1 / std(u)
+        v .*= sigma2 / std(v)
+        w .*= sigma3 / std(w)
+    end
+    
+    return u, v, w
+end
+
+
 # def addWindSpeed(z, u, v_wind_ground=V_WIND_GND):
 #     """
 #     Modify the velocity component u such that the average wind speed, calculated according
