@@ -33,9 +33,6 @@ function nextpow2(i)
     n
 end
 
-using NPZ
-
-const HOME = ENV["HOME"]  # Or set this manually
 const V_WIND_GND = 8.0    # Default value, change as needed
 
 function calcFullName(v_wind_gnd, basename="windfield_4050_500", rel_sigma=1.0)
