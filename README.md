@@ -1,7 +1,7 @@
 # AtmosphericModels
 
-[![Build Status](https://github.com/aenarete/AtmosphericModels.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/aenarete/AtmosphericModels.jl/actions/workflows/CI.yml?query=branch%3Amain)
-[![Coverage](https://codecov.io/gh/aenarete/AtmosphericModels.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/aenarete/AtmosphericModels.jl)
+[![Build Status](https://github.com/OpenSourceAWE/AtmosphericModels.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/OpenSourceAWE/AtmosphericModels.jl/actions/workflows/CI.yml?query=branch%3Amain)
+[![Coverage](https://codecov.io/gh/OpenSourceAWE/AtmosphericModels.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/OpenSourceAWE/AtmosphericModels.jl)
 
 ## Installation
 Install [Julia 1.10](http://www.julialang.org) or later, if you haven't already. You can add AtmosphericModels from  Julia's package manager, by typing 
