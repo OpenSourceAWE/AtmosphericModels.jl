@@ -83,6 +83,23 @@ function ndgrid(xs, ys, zs)
     return X, Y, Z
 end
 
+"""
+    createGrid(; ny=50, nx=100, nz=50, z_min=25, res=GRID_STEP, height_step=HEIGHT_STEP)
+
+Creates a 3D grid for the wind field model.
+
+# Keyword Arguments
+- `ny::Int=50`: Number of grid points in the y-direction.
+- `nx::Int=100`: Number of grid points in the x-direction.
+- `nz::Int=50`: Number of grid points in the z-direction (vertical).
+- `z_min::Number=25`: Minimum height (starting z value) of the grid.
+- `res=GRID_STEP`: Horizontal grid resolution (distance between points in x and y).
+- `height_step=HEIGHT_STEP`: Vertical grid resolution (distance between points in z).
+
+# Returns
+A data structure representing the generated 3D grid (details depend on implementation).
+
+"""
 function createGrid(; ny=50, nx=100, nz=50, z_min=25, res=GRID_STEP, height_step=HEIGHT_STEP)
     """
     res: resolution of the grid in x and y direction in meters
@@ -101,21 +118,6 @@ function createGrid(; ny=50, nx=100, nz=50, z_min=25, res=GRID_STEP, height_step
 
     return Y, X, Z  # To match the Python (y, x, z) order
 end
-
-
-# def showGrid(x, y, z):
-#     """
-#     x: downwind direction
-#     z: up
-#     y: orthogonal to x and z
-#     """
-#     fig = plt.figure()
-#     ax = fig.add_subplot(111, projection='3d')
-#     ax.scatter(x, y, z)
-
-#     ax.set_xlabel('X Label')
-#     ax.set_ylabel('Y Label')
-#     ax.set_zlabel('Height [m]')
 
 # def show2Dfield(X, Y, U, V, scale=1.0, width=0.07):
 #     """
