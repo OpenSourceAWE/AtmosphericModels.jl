@@ -35,7 +35,7 @@ end
 
 const V_WIND_GND = 8.0    # Default value, change as needed
 
-function calcFullName(v_wind_gnd, basename="windfield_4050_500", rel_sigma=1.0)
+function calcFullName(v_wind_gnd; basename="windfield_4050_500", rel_sigma=1.0)
     path = get_data_path() * "/"
     name = basename * "_" * @sprintf("%.1f", rel_sigma)
     name *= "_" * @sprintf("%.1f", v_wind_gnd)
@@ -43,7 +43,7 @@ function calcFullName(v_wind_gnd, basename="windfield_4050_500", rel_sigma=1.0)
 end
 
 function save(x, y, z, u, v, w, param; basename="windfield_4050_500", v_wind_gnd=V_WIND_GND)
-    fullname = calcFullName(v_wind_gnd, basename=basename)
+    fullname = calcFullName(v_wind_gnd; basename)
     # Save as compressed .npz
     NPZ.npzwrite(fullname * ".npz", Dict(
         "x" => x,
