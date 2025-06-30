@@ -14,6 +14,7 @@ The code is based on the following papers:
 """
 
 # TODO: the following values are hardcoded, but should be set in the settings
+const REL_SIGMA  =  1.0    # turbulence relative to the IEC model
 const V_WIND_GND  = 8.0    # Default value, change as needed
 const GRID_STEP   = 2.0    # Resolution of the grid in x and y direction in meters
 const HEIGHT_STEP = 2.0    # Resolution in z direction in meters
@@ -477,9 +478,11 @@ Create a new wind field object using the given ground wind velocity vector `v_wi
 # Returns
 nothing
 """
-function new_windfield(v_wind_gnd)
+function new_windfield(am::AtmosphericModel, v_wind_gnd)
     @info "Creating wind field. This might take 10 minutes or more..."
     y, x, z = create_grid(100, 4050, 500, 70)
+    sigma1 = REL_SIGMA * calc_sigma1(am, v_wind_gnd)
+    u, v, w = create_windfield(x, y, z, sigma1=sigma1)
 end
 
 # def new_windfields():
