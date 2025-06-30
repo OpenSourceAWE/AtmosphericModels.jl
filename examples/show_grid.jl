@@ -19,6 +19,6 @@ function showGrid(x, y, z)
     plt.show()
 end
 
-grid = AtmosphericModels.createGrid()
+grid = AtmosphericModels.create_grid()
 x, y, z = grid
 showGrid(x, y, z)

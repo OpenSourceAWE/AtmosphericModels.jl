@@ -84,7 +84,7 @@ function ndgrid(xs, ys, zs)
 end
 
 """
-    createGrid(ny=50, nx=100, nz=50, z_min=25; res=GRID_STEP, height_step=HEIGHT_STEP)
+    create_grid(ny=50, nx=100, nz=50, z_min=25; res=GRID_STEP, height_step=HEIGHT_STEP)
 
 Creates a 3D grid for the wind field model.
 
@@ -101,7 +101,7 @@ Creates a 3D grid for the wind field model.
 # Returns
 A data structure representing the generated 3D grid.
 """
-function createGrid(ny=50, nx=100, nz=50, z_min=25; res=GRID_STEP, height_step=HEIGHT_STEP)
+function create_grid(ny=50, nx=100, nz=50, z_min=25; res=GRID_STEP, height_step=HEIGHT_STEP)
     y_range = range(-ny/2, ny/2, length=Int(ny/res)+1)
     x_range = range(0, nx, length=Int(nx/res)+1)
     z_range = range(z_min, z_min+nz, length=Int(nz/height_step)+1)
@@ -453,9 +453,9 @@ end
 #     Create and save a new wind field for the given ground wind speed.
 #     """
 #     print "Creating wind field. This might take 10 minutes or more..."
-#     y, x, z = createGrid(100, 4050, 500, 70)
-#     # y, x, z = createGrid(50, 16200, 200, 100) # 600s at 27 m/s
-#     # y, x, z = createGrid(10, 20, 10, 5)
+#     y, x, z = create_grid(100, 4050, 500, 70)
+#     # y, x, z = create_grid(50, 16200, 200, 100) # 600s at 27 m/s
+#     # y, x, z = create_grid(10, 20, 10, 5)
 #     if True:
 #         sigma1 = REL_SIGMA * calcSigma1(v_wind_gnd)
 #         u, v, w = create_windfield(x, y, z, sigma1=sigma1)
@@ -479,7 +479,7 @@ nothing
 """
 function new_windfield(v_wind_gnd)
     @info "Creating wind field. This might take 10 minutes or more..."
-    y, x, z = createGrid(100, 4050, 500, 70)
+    y, x, z = create_grid(100, 4050, 500, 70)
 end
 
 # def new_windfields():
@@ -489,9 +489,9 @@ end
 
 #     for v_wind_gnd in V_WIND_GNDS:
 #         print "Creating wind field. This might take 10 minutes or more..."
-#         y, x, z = createGrid(100, 4050, 500, 70)
-#         # y, x, z = createGrid(50, 16200, 200, 100) # 600s at 27 m/s
-#         # y, x, z = createGrid(10, 20, 10, 5)
+#         y, x, z = create_grid(100, 4050, 500, 70)
+#         # y, x, z = create_grid(50, 16200, 200, 100) # 600s at 27 m/s
+#         # y, x, z = create_grid(10, 20, 10, 5)
 #         if True:
 #             sigma1 = REL_SIGMA * calcSigma1(v_wind_gnd)
 #             u, v, w = create_windfield(x, y, z, sigma1=sigma1)

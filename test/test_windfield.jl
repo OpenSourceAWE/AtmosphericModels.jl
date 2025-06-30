@@ -49,7 +49,7 @@ end
     windfield = AtmosphericModels.loadWindField(v_wind_gnd+0.2)
     @test typeof(windfield) == Tuple{Vector{Int64}, Vector{Int64}, Vector{Int64}, Array{Float64, 3}, Array{Float64, 3}, Array{Float64, 3}, Vector{Int64}}
 
-    grid = AtmosphericModels.createGrid()
+    grid = AtmosphericModels.create_grid()
     @test typeof(grid) == Tuple{Array{Float64, 3}, Array{Float64, 3}, Array{Float64, 3}}
 
     x = range(0, 50, length=25)
