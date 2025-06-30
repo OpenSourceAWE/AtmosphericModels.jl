@@ -8,6 +8,9 @@ using FFTW, LinearAlgebra, Random, Statistics
 export AtmosphericModel, ProfileLaw, EXP, LOG, EXPLOG, FAST_EXP, FAST_LOG, FAST_EXPLOG
 export clear, calc_rho, calc_wind_factor
 
+export WindField
+export create_windfield
+
 const ABS_ZERO = -273.15
 """
     mutable struct AtmosphericModel
