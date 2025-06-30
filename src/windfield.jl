@@ -84,31 +84,24 @@ function ndgrid(xs, ys, zs)
 end
 
 """
-    createGrid(; ny=50, nx=100, nz=50, z_min=25, res=GRID_STEP, height_step=HEIGHT_STEP)
+    createGrid(ny=50, nx=100, nz=50, z_min=25; res=GRID_STEP, height_step=HEIGHT_STEP)
 
 Creates a 3D grid for the wind field model.
 
+# Arguments
+- `ny=50`:    Number of grid points in the y-direction.
+- `nx=100`:   Number of grid points in the x-direction.
+- `nz=50`:    Number of grid points in the z-direction (vertical).
+- `z_min=25`: Minimum height (starting z value) of the grid.
+
 # Keyword Arguments
-- `ny::Int=50`: Number of grid points in the y-direction.
-- `nx::Int=100`: Number of grid points in the x-direction.
-- `nz::Int=50`: Number of grid points in the z-direction (vertical).
-- `z_min::Number=25`: Minimum height (starting z value) of the grid.
-- `res=GRID_STEP`: Horizontal grid resolution (distance between points in x and y).
-- `height_step=HEIGHT_STEP`: Vertical grid resolution (distance between points in z).
+- `res=GRID_STEP`:           Horizontal grid resolution (distance between points in x and y)   [m]
+- `height_step=HEIGHT_STEP`: Vertical grid resolution (distance between points in z) [m]
 
 # Returns
-A data structure representing the generated 3D grid (details depend on implementation).
-
+A data structure representing the generated 3D grid.
 """
-function createGrid(; ny=50, nx=100, nz=50, z_min=25, res=GRID_STEP, height_step=HEIGHT_STEP)
-    """
-    res: resolution of the grid in x and y direction in meters
-    ny:  number of meters in y direction
-    nx:  number of meters in x direction (downwind)
-    nz:  number of meters in z direction (up)
-    z_min: minimal height in m
-    height_step: resolution in z direction in meters
-    """
+function createGrid(ny=50, nx=100, nz=50, z_min=25; res=GRID_STEP, height_step=HEIGHT_STEP)
     y_range = range(-ny/2, ny/2, length=Int(ny/res)+1)
     x_range = range(0, nx, length=Int(nx/res)+1)
     z_range = range(z_min, z_min+nz, length=Int(nz/height_step)+1)
@@ -455,7 +448,7 @@ end
 #     plt.legend(loc='upper right')
 #     plt.gca().set_xlabel('Y position [m]')
 
-# def newWindField(v_wind_gnd):
+# def new_windfield(v_wind_gnd):
 #     """
 #     Create and save a new wind field for the given ground wind speed.
 #     """
@@ -471,9 +464,25 @@ end
 #     param = np.array((ALPHA, v_wind_gnd))
 #     # addWindSpeed(z, u)
 #     save(x, y, z, u, v, w, param, v_wind_gnd=v_wind_gnd)
-#     print "Finshed creating and saving wind field!"
+#     print "Finished creating and saving wind field!"
 
-# def newWindFields():
+"""
+    new_windfield(v_wind_gnd)
+
+Create a new wind field object using the given ground wind velocity vector `v_wind_gnd`.
+
+# Arguments
+- `v_wind_gnd`: A scalar representing the wind velocity at ground level.
+
+# Returns
+nothing
+"""
+function new_windfield(v_wind_gnd)
+    @info "Creating wind field. This might take 10 minutes or more..."
+    y, x, z = createGrid(100, 4050, 500, 70)
+end
+
+# def new_windfields():
 #     """
 #     Create and save new wind fields for all ground wind speeds, defined in V_WIND_GNDS.
 #     """
@@ -504,7 +513,7 @@ end
 #             SAVE = True
 #     v_wind = calcWindHeight(V_WIND_GND, 200)
 #     if SAVE:
-#         newWindField(V_WIND_GND)
+#         new_windfield(V_WIND_GND)
 #         WIND_FIELD = WindField()
 
 #     if False:
