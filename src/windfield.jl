@@ -277,13 +277,6 @@ function create_windfield(x::AbstractVector, y::AbstractVector, z::AbstractVecto
     return u, v, w
 end
 
-# using AtmosphericModels
-# am = AtmosphericModel()
-
-# const profile_law = Int(EXPLOG)
-# height = 100.0
-# wf = calc_wind_factor(am, height, profile_law)
-
 function addWindSpeed(am::AtmosphericModel, z, u)
     """
     Modify the velocity component u such that the average wind speed, calculated according
