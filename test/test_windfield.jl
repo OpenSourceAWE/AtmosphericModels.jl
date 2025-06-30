@@ -56,7 +56,7 @@ end
     y = range(0, 800, length=400)
     z = range(0, 200, length=100)
 
-    u, v, w = AtmosphericModels.createWindField(x, y, z; sigma1=1.2)
+    u, v, w = AtmosphericModels.create_windfield(x, y, z; sigma1=1.2)
     am = AtmosphericModel(set)
     am.set.v_wind = v_wind_gnd
     AtmosphericModels.addWindSpeed(am, z, u)

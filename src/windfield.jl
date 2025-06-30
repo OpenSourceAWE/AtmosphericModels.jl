@@ -149,7 +149,7 @@ end
 #     plt.gca().set_xlabel('Height [m]')
 
 """
-    createWindField(x::AbstractVector, y::AbstractVector, z::AbstractVector;
+    create_windfield(x::AbstractVector, y::AbstractVector, z::AbstractVector;
                         sigma1::Union{Nothing, Real, AbstractVector}=nothing,
                         gamma::Real=3.9, ae::Real=0.1, length_scale::Real=33.6)
 
@@ -165,7 +165,7 @@ end
 Performance: Python:  17 seconds for a field of 50x800x200 m with 2 m resolution
              Matlab:  17 seconds
 """
-function createWindField(x::AbstractVector, y::AbstractVector, z::AbstractVector;
+function create_windfield(x::AbstractVector, y::AbstractVector, z::AbstractVector;
                         sigma1::Union{Nothing, Real, AbstractVector}=nothing,
                         gamma::Real=3.9, ae::Real=0.1, length_scale::Real=33.6)
     # Validate inputs
@@ -297,6 +297,32 @@ function addWindSpeed(am::AtmosphericModel, z, u)
         height = z[1, 1, i]
         v_wind = am.set.v_wind * calc_wind_factor(am, height, am.set.profile_law)
         u[:, :, i] .+= v_wind
+    end
+end
+
+const SRL = StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}, Int64}
+
+Base.@kwdef struct WindField
+    last_speed::Float64 = 0.0
+    valid::Bool = false
+    x::SRL
+    y::SRL
+    z::SRL
+    u::Array{Float64, 3}
+    v::Array{Float64, 3}
+    w::Array{Float64, 3}
+    param::Vector{Float64} = [0, 0] # [alpha, v_wind_gnd]
+end
+function WindField(speed)
+    try
+        last_speed = 0.0
+        println("Loading wind field... $speed m/s")
+        x, y, z, u, v, w, param = loadWindField(speed)
+        valid = true
+        return WindField(last_speed, valid, x, y, z, u, v, w, param)
+    catch
+        @error "Error reading wind field!"
+        return nothing
     end
 end
 
@@ -446,9 +472,9 @@ end
 #     # y, x, z = createGrid(10, 20, 10, 5)
 #     if True:
 #         sigma1 = REL_SIGMA * calcSigma1(v_wind_gnd)
-#         u, v, w = createWindField(x, y, z, sigma1=sigma1)
+#         u, v, w = create_windfield(x, y, z, sigma1=sigma1)
 #     else:
-#         u, v, w = createWindField(x, y, z)
+#         u, v, w = create_windfield(x, y, z)
 #     param = np.array((ALPHA, v_wind_gnd))
 #     # addWindSpeed(z, u)
 #     save(x, y, z, u, v, w, param, v_wind_gnd=v_wind_gnd)
@@ -466,9 +492,9 @@ end
 #         # y, x, z = createGrid(10, 20, 10, 5)
 #         if True:
 #             sigma1 = REL_SIGMA * calcSigma1(v_wind_gnd)
-#             u, v, w = createWindField(x, y, z, sigma1=sigma1)
+#             u, v, w = create_windfield(x, y, z, sigma1=sigma1)
 #         else:
-#             u, v, w = createWindField(x, y, z)
+#             u, v, w = create_windfield(x, y, z)
 #         param = np.array((ALPHA, v_wind_gnd))
 #         # addWindSpeed(z, u)
 #         save(x, y, z, u, v, w, param, v_wind_gnd=v_wind_gnd)
