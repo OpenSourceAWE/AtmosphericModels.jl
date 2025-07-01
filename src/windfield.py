@@ -448,7 +448,7 @@ def newWindField(v_wind_gnd):
     """
     Create and save a new wind field for the given ground wind speed.
     """
-    print("Creating wind field. This might take 10 minutes or more...")
+    print("Creating wind field. This might take 70s or more...")
     y, x, z = createGrid(100, 4050, 500, 70)
     # y, x, z = createGrid(50, 16200, 200, 100) # 600s at 27 m/s
     # y, x, z = createGrid(10, 20, 10, 5)
