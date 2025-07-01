@@ -22,19 +22,17 @@ function create_grid(ny=50, nx=100, nz=50, z_min=25; res=GRID_STEP, height_step=
     return Y, X, Z  # To match the Python (y, x, z) order
 end
 
-function create_windfield(x::AbstractArray, y::AbstractArray, z::AbstractArray)      
-    # Domain dimensions
-    nx, ny, nz = length(x), length(y), length(z)
-    
-    # Wave number grid
-    x_range = range(-nx/2, nx/2-1, length=nx)
-    y_range = range(-ny/2, ny/2-1, length=ny)
-    z_range = range(-nz/2, nz/2-1, length=nz)
-
-    # m2, m1, m3 = meshgrid(y_range, x_range, z_range)
-    # println("--> $(size(m1)), $(size(m2)), $(size(m3))")
-end
-
 y, x, z = create_grid(100, 4050, 500, 70)
-u, v, w = create_windfield(x, y, z)
+
+# Domain dimensions
+nx, ny, nz = length(x), length(y), length(z)
+
+# Wave number grid
+x_range = range(-nx/2, nx/2-1, length=nx)
+y_range = range(-ny/2, ny/2-1, length=ny)
+z_range = range(-nz/2, nz/2-1, length=nz)
+
+# m2, m1, m3 = meshgrid(y_range, x_range, z_range)
+# println("--> $(size(m1)), $(size(m2)), $(size(m3))")
+
 
