@@ -198,28 +198,18 @@ function create_windfield(x::AbstractArray, y::AbstractArray, z::AbstractArray;
     m3 = ifftshift(m3 .+ 1e-6)
     println("--> $(size(m1)), $(size(m2)), $(size(m3))")
 
-    # Create 3D grids using broadcasting
+     # Wave number vectors
     k1 = 2π * m1 * (length_scale / Lx)
     k2 = 2π * m2 * (length_scale / Ly)
     k3 = 2π * m3 * (length_scale / Lz)
     println("--> $(size(k1)), $(size(k2)), $(size(k3))")
 
-    # nx = length(x)
-    # ny = length(y)
-    # nz = length(z)
-
-    # k1 = reshape(k1, nx, 1, 1)  # shape (nx, 1, 1)
-    # k2 = reshape(k2, 1, ny, 1)  # shape (1, ny, 1)
-    # k3 = reshape(k3, 1, 1, nz)  # shape (1, 1, nz)
-
-    # k = sqrt.(k1.^2 .+ k2.^2 .+ k3.^2)  # shape (nx, ny, nz)
-        
-    # # Wave number magnitude
-    # # TODO: Fix this line
-    # k = @. sqrt(k1^2 + k2^2 + k3^2)
-    
-    # # Non-dimensional distortion time
-    # pfq_term = pfq.(-k.^-2)  # Assumes pfq is defined elsewhere
+    # Wave number magnitude
+    k = sqrt.(k1.^2 .+ k2.^2 .+ k3.^2)
+    println("--> $(size(k))")
+            
+    # Non-dimensional distortion time
+    pfq_term = pfq.(-k.^-2)  # Assumes pfq is defined elsewhere
     # β = @. gamma / (k^(2/3) * sqrt(pfq_term))
     
     # # Initial wave vectors

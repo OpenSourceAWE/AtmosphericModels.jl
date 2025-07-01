@@ -232,14 +232,16 @@ def createWindField(x, y, z,  sigma1 = None, gamma= 3.9, ae= 0.1, length_scale=3
     m1 = np.fft.ifftshift(m1 + 1e-6)
     m2 = np.fft.ifftshift(m2 + 1e-6)
     m3 = np.fft.ifftshift(m3 + 1e-6)
+    print(m2.shape, " ", m1.shape, " ", m3.shape)
 
     # Wave number vectors
     k1 = 2 * pi * m1 * (length_scale / Lx)
     k2 = 2 * pi * m2 * (length_scale / Ly)
     k3 = 2 * pi * m3 * (length_scale / Lz)
+    print("-->", k1.shape, " ", k2.shape, " ", k3.shape)
+
     k = np.sqrt(k1**2 + k2**2 + k3**2)
-    print(k1.shape)
-    1/0
+    return None, None, None
 
     # Non-dimensional distortion time
     pfq_term = pfq(-k**-2)
