@@ -227,6 +227,7 @@ def createWindField(x, y, z,  sigma1 = None, gamma= 3.9, ae= 0.1, length_scale=3
     x_range=np.linspace(-nx/2., nx/2. - 1,  num=nx)
     z_range=np.linspace(-nz/2., nz/2. - 1,  num=nz)
     m2, m1, m3 = np.meshgrid(y_range, x_range, z_range)
+    print(m2.shape, " ", m1.shape, " ", m3.shape)
 
     m1 = np.fft.ifftshift(m1 + 1e-6)
     m2 = np.fft.ifftshift(m2 + 1e-6)
@@ -237,6 +238,8 @@ def createWindField(x, y, z,  sigma1 = None, gamma= 3.9, ae= 0.1, length_scale=3
     k2 = 2 * pi * m2 * (length_scale / Ly)
     k3 = 2 * pi * m3 * (length_scale / Lz)
     k = np.sqrt(k1**2 + k2**2 + k3**2)
+    print(k1.shape)
+    1/0
 
     # Non-dimensional distortion time
     pfq_term = pfq(-k**-2)
@@ -484,7 +487,7 @@ def newWindFields():
         del y, x, z, u, v, w
 
 if __name__ == "__main__":
-    SAVE = False # True: calculate and save new wind field; False: use saved wind field
+    SAVE = True # True: calculate and save new wind field; False: use saved wind field
     if not SAVE:
         if WIND_FIELD.valid:
             x, y, z = WIND_FIELD.x, WIND_FIELD.y, WIND_FIELD.z
