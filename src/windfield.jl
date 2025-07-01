@@ -183,8 +183,8 @@ function create_windfield(x::AbstractArray, y::AbstractArray, z::AbstractArray;
     y_range = range(-ny/2, ny/2-1, length=ny)
     z_range = range(-nz/2, nz/2-1, length=nz)
 
-    m2, m1, m3 = meshgrid(y_range, x_range, z_range)
-    println("--> $(size(m1)), $(size(m2)), $(size(m3))")
+    # m2, m1, m3 = meshgrid(y_range, x_range, z_range)
+    # println("--> $(size(m1)), $(size(m2)), $(size(m3))")
     
     # m1 = ifftshift(x_range) .+ 1e-6
     # m2 = ifftshift(y_range) .+ 1e-6
