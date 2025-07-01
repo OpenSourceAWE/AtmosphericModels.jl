@@ -301,6 +301,10 @@ function Base.getproperty(wf::WindField, sym::Symbol)
         maximum(getproperty(wf, :y))
     elseif sym == :y_min
         minimum(getproperty(wf, :y))
+    elseif sym == :z_max
+        maximum(getproperty(wf, :z))
+    elseif sym == :z_min
+        minimum(getproperty(wf, :z))
     elseif sym == :y_range
         getproperty(wf, :y_max) - getproperty(wf, :y_min) 
     elseif sym == :x_range
