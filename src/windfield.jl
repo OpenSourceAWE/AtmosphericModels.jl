@@ -190,83 +190,78 @@ function create_windfield(x::AbstractArray, y::AbstractArray, z::AbstractArray;
     m2_range = range(-ny/2, ny/2 - 1, length=ny)
     m3_range = range(-nz/2, nz/2 - 1, length=nz)
     m1, m2, m3 = meshgrid(m1_range, m2_range, m3_range)
-    println("--> $(size(m1)), $(size(m2)), $(size(m3))")
     
     # Apply ifftshift with epsilon offset
     m1 = ifftshift(m1 .+ 1e-6)
     m2 = ifftshift(m2 .+ 1e-6)
     m3 = ifftshift(m3 .+ 1e-6)
-    println("--> $(size(m1)), $(size(m2)), $(size(m3))")
 
      # Wave number vectors
     k1 = 2π * m1 * (length_scale / Lx)
     k2 = 2π * m2 * (length_scale / Ly)
     k3 = 2π * m3 * (length_scale / Lz)
-    println("--> $(size(k1)), $(size(k2)), $(size(k3))")
 
     # Wave number magnitude
     k = sqrt.(k1.^2 .+ k2.^2 .+ k3.^2)
-    println("--> $(size(k))")
             
     # Non-dimensional distortion time
     pfq_term = pfq.(-k.^-2)  # Assumes pfq is defined elsewhere
-    # β = @. gamma / (k^(2/3) * sqrt(pfq_term))
+    β = @. gamma / (k^(2/3) * sqrt(pfq_term))
     
-    # # Initial wave vectors
-    # k30 = @. k3 + β * k1
-    # k0 = @. sqrt(k1^2 + k2^2 + k30^2)
+    # Initial wave vectors
+    k30 = @. k3 + β * k1
+    k0 = @. sqrt(k1^2 + k2^2 + k30^2)
     
-    # # Energy spectrum
-    # E0 = @. ae * length_scale^(5/3) * k0^4 / (1 + k0^2)^(17/6)
+    # Energy spectrum
+    E0 = @. ae * length_scale^(5/3) * k0^4 / (1 + k0^2)^(17/6)
     
-    # # Correlation matrix components
-    # C1 = @. (β * k1^2 * (k1^2 + k2^2 - k3 * (k3 + β * k1))) / (k^2 * (k1^2 + k2^2))
-    # C2 = @. (k2 * k0^2) / (k1^2 + k2^2)^(3/2) * atan((β * k1 * sqrt(k1^2 + k2^2)), (k0^2 - (k3 + β * k1) * k1 * β))
+    # Correlation matrix components
+    C1 = @. (β * k1^2 * (k1^2 + k2^2 - k3 * (k3 + β * k1))) / (k^2 * (k1^2 + k2^2))
+    C2 = @. (k2 * k0^2) / (k1^2 + k2^2)^(3/2) * atan((β * k1 * sqrt(k1^2 + k2^2)), (k0^2 - (k3 + β * k1) * k1 * β))
     
-    # ζ1 = @. C1 - (k2 / k1) * C2
-    # ζ2 = @. C2 + (k2 / k1) * C1
+    ζ1 = @. C1 - (k2 / k1) * C2
+    ζ2 = @. C2 + (k2 / k1) * C1
     
-    # # Amplitude factor
-    # B = @. sigma_iso * sqrt(2π^2 * length_scale^3 * E0 / (Lx * Ly * Lz * k0^4))
+    # Amplitude factor
+    B = @. sigma_iso * sqrt(2π^2 * length_scale^3 * E0 / (Lx * Ly * Lz * k0^4))
     
-    # # Correlation tensor
-    # C = Array{ComplexF64}(undef, 3, 3, nx, ny, nz)
-    # C[1,1,:,:,:] = @. B * k2 * ζ1
-    # C[1,2,:,:,:] = @. B * (k30 - k1 * ζ1)
-    # C[1,3,:,:,:] = @. -B * k2
-    # C[2,1,:,:,:] = @. B * (k2 * ζ2 - k30)
-    # C[2,2,:,:,:] = @. -B * k1 * ζ2
-    # C[2,3,:,:,:] = @. B * k1
-    # C[3,1,:,:,:] = @. B * k2 * k0^2 / k^2
-    # C[3,2,:,:,:] = @. -B * k1 * k0^2 / k^2
+    # Correlation tensor
+    C = Array{ComplexF64}(undef, 3, 3, nx, ny, nz)
+    C[1,1,:,:,:] = @. B * k2 * ζ1
+    C[1,2,:,:,:] = @. B * (k30 - k1 * ζ1)
+    C[1,3,:,:,:] = @. -B * k2
+    C[2,1,:,:,:] = @. B * (k2 * ζ2 - k30)
+    C[2,2,:,:,:] = @. -B * k1 * ζ2
+    C[2,3,:,:,:] = @. B * k1
+    C[3,1,:,:,:] = @. B * k2 * k0^2 / k^2
+    C[3,2,:,:,:] = @. -B * k1 * k0^2 / k^2
     
-    # # White noise field
-    # n_real = randn(ComplexF64, 3, 1, nx, ny, nz)
-    # n_imag = randn(ComplexF64, 3, 1, nx, ny, nz)
-    # n = n_real + im * n_imag
+    # White noise field
+    n_real = randn(ComplexF64, 3, 1, nx, ny, nz)
+    n_imag = randn(ComplexF64, 3, 1, nx, ny, nz)
+    n = n_real + im * n_imag
     
-    # # Stochastic field (vectorized)
-    # dZ = similar(n, (3, nx, ny, nz))
-    # @inbounds for i in 1:nx, j in 1:ny, k in 1:nz
-    #     C_slice = @view C[:, :, i, j, k]
-    #     n_slice = @view n[:, :, i, j, k]
-    #     dZ[:, i, j, k] = C_slice * n_slice
-    # end
+    # Stochastic field (vectorized)
+    dZ = similar(n, (3, nx, ny, nz))
+    @inbounds for i in 1:nx, j in 1:ny, k in 1:nz
+        C_slice = @view C[:, :, i, j, k]
+        n_slice = @view n[:, :, i, j, k]
+        dZ[:, i, j, k] = C_slice * n_slice
+    end
     
-    # # Inverse FFT and scaling
-    # u = real(ifft(dZ[1,:,:,:])) * nx * ny * nz
-    # v = real(ifft(dZ[2,:,:,:])) * nx * ny * nz
-    # w = real(ifft(dZ[3,:,:,:])) * nx * ny * nz
+    # Inverse FFT and scaling
+    u = real(ifft(dZ[1,:,:,:])) * nx * ny * nz
+    v = real(ifft(dZ[2,:,:,:])) * nx * ny * nz
+    w = real(ifft(dZ[3,:,:,:])) * nx * ny * nz
     
-    # # Normalize variances if requested
-    # if sigma1 !== nothing
-    #     u .*= sigma1 / std(u)
-    #     v .*= sigma2 / std(v)
-    #     w .*= sigma3 / std(w)
-    # end
+    # Normalize variances if requested
+    if sigma1 !== nothing
+        u .*= sigma1 / std(u)
+        v .*= sigma2 / std(v)
+        w .*= sigma3 / std(w)
+    end
     
-    # return u, v, w
-    return nothing, nothing, nothing
+    return u, v, w
 end
 
 function addWindSpeed(am::AtmosphericModel, z, u)
@@ -477,7 +472,7 @@ Create a new wind field object using the given ground wind velocity vector `v_wi
 nothing
 """
 function new_windfield(am::AtmosphericModel, v_wind_gnd)
-    @info "Creating wind field. This might take 10 minutes or more..."
+    @info "Creating wind field. This might take 30s or more..."
     y, x, z = create_grid(100, 4050, 500, 70)
     sigma1 = REL_SIGMA * calc_sigma1(am, v_wind_gnd)
     u, v, w = create_windfield(x, y, z, sigma1=sigma1)
