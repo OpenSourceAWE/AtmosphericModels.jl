@@ -285,9 +285,9 @@ const SRL = StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecis
 Base.@kwdef struct WindField
     last_speed::Float64 = 0.0
     valid::Bool = false
-    x::SRL
-    y::SRL
-    z::SRL
+    x::Union{SRL, Array{Float64, 3}}
+    y::Union{SRL, Array{Float64, 3}}
+    z::Union{SRL, Array{Float64, 3}}
     u::Array{Float64, 3}
     v::Array{Float64, 3}
     w::Array{Float64, 3}
