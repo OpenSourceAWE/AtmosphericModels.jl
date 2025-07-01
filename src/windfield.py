@@ -489,7 +489,7 @@ def newWindFields():
         del y, x, z, u, v, w
 
 if __name__ == "__main__":
-    SAVE = True # True: calculate and save new wind field; False: use saved wind field
+    SAVE = False # True: calculate and save new wind field; False: use saved wind field
     if not SAVE:
         if WIND_FIELD.valid:
             x, y, z = WIND_FIELD.x, WIND_FIELD.y, WIND_FIELD.z
