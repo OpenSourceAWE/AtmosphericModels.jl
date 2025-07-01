@@ -24,7 +24,7 @@ function pfq(z)
 end
 
 function calc_sigma1(am, v_wind_gnd)
-    v_height = v_wind_gnd * calc_wind_factor(am, am.set.avg_height, Val{Int(EXP)})
+    v_height = v_wind_gnd * calc_wind_factor(am, am.set.avg_height, Val{Int(EXP)}) 
     am.set.i_ref * (0.75 * v_height + 5.6)
 end
 
@@ -308,6 +308,57 @@ function Base.getproperty(wf::WindField, sym::Symbol)
     else
         getfield(wf, sym)
     end
+end
+
+function get_wind(wf::WindField, am::AtmosphericModel, x, y, z, t; interpolate=true, rel_turb=0.351)
+    """ 
+    Return the wind vector for a given position and time. Linear interpolation in x, y and z.
+    """
+    @assert z >= 5.0 "Height must be at least 5 m"
+    if z < 10.0
+        z = 10.0
+    end
+    @assert t >= 0.0 "Time must be non-negative"
+    
+    # duplicate the wind field in x and y direction
+    while x < wf.x_min
+        x += wf.x_range
+    end
+    while y > wf.y_max
+        y -= wf.y_range
+    end
+    while y < wf.y_min
+        y += wf.y_range
+    end
+    
+    y1 = ((y + wf.y_range / 2) / GRID_STEP)
+    v_wind_height = am.set.v_wind * calc_wind_factor(am, z, am.set.profile_law)
+    
+    x1 = (x + t * v_wind_height) / GRID_STEP
+    while x1 > size(wf.u, 1) - 1
+        x1 -= size(wf.u, 1) - 1
+    end
+    
+    z1 = z / HEIGHT_STEP
+    if z1 > size(wf.u, 3) - 1
+        z1 = size(wf.u, 3) - 1
+    elseif z1 < 0
+        z1 = 0
+    end
+    
+    if interpolate
+        x_wind = ndimage.map_coordinates(wf.u, [[x1], [y1], [z1]], order=3, prefilter=false)
+        y_wind = ndimage.map_coordinates(wf.v, [[x1], [y1], [z1]], order=3, prefilter=false)
+        z_wind = ndimage.map_coordinates(wf.w, [[x1], [y1], [z1]], order=3, prefilter=false)
+        v_x = x_wind[0] * rel_turb + v_wind_height
+        v_y = y_wind[0] * rel_turb
+        v_z = z_wind[0] * rel_turb  
+    else
+        v_x = wf.u[x1, y1, z1] + v_wind_height
+        v_y = wf.v[x1, y1, z1]
+        v_z = wf.w[x1, y1, z1]
+    end
+    return vx, vy, vz
 end
 
 #     def getWind(self, x, y, z, t, interpolate=True, rel_turb = 0.351):
