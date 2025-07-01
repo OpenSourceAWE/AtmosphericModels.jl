@@ -22,23 +22,9 @@ function create_grid(ny=50, nx=100, nz=50, z_min=25; res=GRID_STEP, height_step=
     return Y, X, Z  # To match the Python (y, x, z) order
 end
 
-function create_windfield(x::AbstractArray, y::AbstractArray, z::AbstractArray;
-                        sigma1::Union{Nothing, Real, AbstractVector}=1.0)
-    # Validate inputs
-    if sigma1 !== nothing
-        if !(sigma1 isa Real) && length(sigma1) ≠ 3
-            throw(ArgumentError("sigma1 must be scalar or 3-element vector"))
-        end
-    end
-       
-    # Standard deviations
-    sigma_iso = 0.55 * sigma1
-    sigma2 = 0.7 * sigma1
-    sigma3 = 0.5 * sigma1
-    
+function create_windfield(x::AbstractArray, y::AbstractArray, z::AbstractArray)      
     # Domain dimensions
     nx, ny, nz = length(x), length(y), length(z)
-    Lx, Ly, Lz = x[end] - x[1], y[end] - y[1], z[end] - z[1]
     
     # Wave number grid
     x_range = range(-nx/2, nx/2-1, length=nx)
