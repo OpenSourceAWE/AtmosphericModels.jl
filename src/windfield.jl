@@ -68,7 +68,7 @@ end
 
 V_WIND_GNDS = [3.483, 5.324, 8.163]
 
-function loadWindField(speed)
+function load_windfield(speed)
     # Find the index of the closest wind speed
     idx = findmin(abs.(V_WIND_GNDS .- speed))[2]
     return load(v_wind_gnd = V_WIND_GNDS[idx])
@@ -297,7 +297,7 @@ function WindField(speed)
     try
         last_speed = 0.0
         println("Loading wind field... $speed m/s")
-        x, y, z, u, v, w, param = loadWindField(speed)
+        x, y, z, u, v, w, param = load_windfield(speed)
         valid = true
         return WindField(last_speed, valid, x, y, z, u, v, w, param)
     catch
@@ -317,13 +317,22 @@ end
 #            self.valid = False
 #            print "Error reading wind field!"
 
+function load(wf::WindField, speed)
+    if speed == wf.last_speed
+        return
+    end
+    println("Loading wind field ... $speed m/s")
+    wf.last_speed = speed
+    wf.x, wf.y, wf.z, wf.u, wf.v, wf.w, wf.param = load_windfield(speed)
+end
+
 #     def load(self, speed):
 #         global ALPHA, V_WIND_GND
 #         if speed == self.last_speed:
 #             return
 #         print "Loading wind field ...", form(speed)
 #         self.last_speed = speed
-#         self.x, self.y, self.z, self.u, self.v, self.w, param = loadWindField(speed)
+#         self.x, self.y, self.z, self.u, self.v, self.w, param = load_windfield(speed)
 #         self.x_max = np.max(self.x)
 #         self.y_max = np.max(self.y)
 #         self.x_min = np.min(self.x)

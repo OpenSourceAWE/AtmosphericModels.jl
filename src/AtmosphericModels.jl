@@ -9,7 +9,7 @@ export AtmosphericModel, ProfileLaw, EXP, LOG, EXPLOG, FAST_EXP, FAST_LOG, FAST_
 export clear, calc_rho, calc_wind_factor
 
 export WindField
-export create_windfield, new_windfield
+export create_windfield, new_windfield, load_windfield
 
 const ABS_ZERO = -273.15
 """
