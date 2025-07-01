@@ -318,13 +318,37 @@ end
 #            print "Error reading wind field!"
 
 function load(wf::WindField, speed)
+    global ALPHA, V_WIND_GND
     if speed == wf.last_speed
         return
     end
     println("Loading wind field ... $speed m/s")
     wf.last_speed = speed
     wf.x, wf.y, wf.z, wf.u, wf.v, wf.w, wf.param = load_windfield(speed)
+    wf.valid = true
+    ALPHA = wf.param[0]
+    V_WIND_GND = wf.param[1]
+    nothing
 end
+
+function Base.getproperty(wf::WindField, sym::Symbol)
+    if sym == :x_max
+        maximum(getproperty(wf, :x))
+    elseif sym == :x_min
+        minimum(getproperty(wf, :x))
+    elseif sym == :y_max
+        maximum(getproperty(wf, :y))
+    elseif sym == :y_min
+        minimum(getproperty(wf, :y))
+    elseif sym == :y_range
+        getproperty(wf, :y_max) - getproperty(wf, :y_min) 
+    elseif sym == :x_range
+        getproperty(wf, :x_max) - getproperty(wf, :x_min)
+    else
+        getfield(wf, sym)
+    end
+end
+
 
 #     def load(self, speed):
 #         global ALPHA, V_WIND_GND
