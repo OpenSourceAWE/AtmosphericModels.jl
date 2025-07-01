@@ -478,19 +478,13 @@ end
 #     """
 
 #     for v_wind_gnd in V_WIND_GNDS:
-#         print "Creating wind field. This might take 10 minutes or more..."
+#         print "Creating wind field. This might take 30s or more..."
 #         y, x, z = create_grid(100, 4050, 500, 70)
-#         # y, x, z = create_grid(50, 16200, 200, 100) # 600s at 27 m/s
-#         # y, x, z = create_grid(10, 20, 10, 5)
-#         if True:
-#             sigma1 = REL_SIGMA * calcSigma1(v_wind_gnd)
-#             u, v, w = create_windfield(x, y, z, sigma1=sigma1)
-#         else:
-#             u, v, w = create_windfield(x, y, z)
+#         sigma1 = REL_SIGMA * calcSigma1(v_wind_gnd)
+#         u, v, w = create_windfield(x, y, z, sigma1=sigma1)
 #         param = np.array((ALPHA, v_wind_gnd))
-#         # addWindSpeed(z, u)
 #         save(x, y, z, u, v, w, param, v_wind_gnd=v_wind_gnd)
-#         print "Finshed creating and saving wind field!"
+#         print "Finished creating and saving wind field!"
 #         del y, x, z, u, v, w
 
 # if __name__ == "__main__":
