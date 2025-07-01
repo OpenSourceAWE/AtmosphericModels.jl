@@ -263,11 +263,11 @@ Base.@kwdef struct WindField
     w::Array{Float64, 3}
     param::Vector{Float64} = [0, 0] # [alpha, v_wind_gnd]
 end
-function WindField(speed)
+function WindField(am, speed)
     try
         last_speed = 0.0
         println("Loading wind field... $speed m/s")
-        x, y, z, u, v, w, param = load_windfield(speed)
+        x, y, z, u, v, w, param = load_windfield(am, speed)
         valid = true
         return WindField(last_speed, valid, x, y, z, u, v, w, param)
     catch
@@ -310,7 +310,7 @@ function Base.getproperty(wf::WindField, sym::Symbol)
     end
 end
 
-function get_wind(wf::WindField, am::AtmosphericModel, x, y, z, t; interpolate=true, rel_turb=0.351)
+function get_wind(wf::WindField, am::AtmosphericModel, x, y, z, t; interpolate=false, rel_turb=0.351)
     """ 
     Return the wind vector for a given position and time. Linear interpolation in x, y and z.
     """
@@ -338,6 +338,8 @@ function get_wind(wf::WindField, am::AtmosphericModel, x, y, z, t; interpolate=t
     while x1 > size(wf.u, 1) - 1
         x1 -= size(wf.u, 1) - 1
     end
+    x1 = Int(round(x1))
+    y1 = Int(round(y1)) 
     
     z1 = z / HEIGHT_STEP
     if z1 > size(wf.u, 3) - 1
@@ -345,20 +347,22 @@ function get_wind(wf::WindField, am::AtmosphericModel, x, y, z, t; interpolate=t
     elseif z1 < 0
         z1 = 0
     end
+    z1 = Int(round(z1))
     
     if interpolate
-        x_wind = ndimage.map_coordinates(wf.u, [[x1], [y1], [z1]], order=3, prefilter=false)
-        y_wind = ndimage.map_coordinates(wf.v, [[x1], [y1], [z1]], order=3, prefilter=false)
-        z_wind = ndimage.map_coordinates(wf.w, [[x1], [y1], [z1]], order=3, prefilter=false)
-        v_x = x_wind[0] * rel_turb + v_wind_height
-        v_y = y_wind[0] * rel_turb
-        v_z = z_wind[0] * rel_turb  
+        # x_wind = ndimage.map_coordinates(wf.u, [[x1], [y1], [z1]], order=3, prefilter=false)
+        # y_wind = ndimage.map_coordinates(wf.v, [[x1], [y1], [z1]], order=3, prefilter=false)
+        # z_wind = ndimage.map_coordinates(wf.w, [[x1], [y1], [z1]], order=3, prefilter=false)
+        # v_x = x_wind[0] * rel_turb + v_wind_height
+        # v_y = y_wind[0] * rel_turb
+        # v_z = z_wind[0] * rel_turb  
     else
         v_x = wf.u[x1, y1, z1] + v_wind_height
         v_y = wf.v[x1, y1, z1]
         v_z = wf.w[x1, y1, z1]
+        return v_x, v_y, v_z
     end
-    return vx, vy, vz
+    return nothing
 end
 
 #     def getWind(self, x, y, z, t, interpolate=True, rel_turb = 0.351):
