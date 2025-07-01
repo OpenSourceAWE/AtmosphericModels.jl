@@ -66,12 +66,11 @@ function load(; basename="windfield_4050_500", v_wind_gnd=8.0)
     return npzfile["x"], npzfile["y"], npzfile["z"], npzfile["u"], npzfile["v"], npzfile["w"], npzfile["param"]
 end
 
-V_WIND_GNDS = [3.483, 5.324, 8.163]
 
-function load_windfield(speed)
+function load_windfield(am::AtmosphericModel, speed)
     # Find the index of the closest wind speed
-    idx = findmin(abs.(V_WIND_GNDS .- speed))[2]
-    return load(v_wind_gnd = V_WIND_GNDS[idx])
+    idx = findmin(abs.(am.set.v_wind_gnds .- speed))[2]
+    return load(v_wind_gnd = am.set.v_wind_gnds[idx])
 end
 
 function ndgrid(xs, ys, zs)
@@ -460,32 +459,39 @@ Create a new wind field object using the given ground wind velocity vector `v_wi
 # Returns
 nothing
 """
-function new_windfield(am::AtmosphericModel, v_wind_gnd)
-    @info "Creating wind field. This might take 30s or more..."
+function new_windfield(am::AtmosphericModel, v_wind_gnd; prn=true)
+    prn && @info "Creating wind field. This might take 30s or more..."
     y, x, z = create_grid(100, 4050, 500, 70)
     sigma1 = REL_SIGMA * calc_sigma1(am, v_wind_gnd)
     u, v, w = create_windfield(x, y, z, sigma1=sigma1)
     # addWindSpeed(z, u)
     param = [am.set.alpha, v_wind_gnd]
     save(x, y, z, u, v, w, param; basename="windfield_4050_500", v_wind_gnd=v_wind_gnd)
-    @info "Finished creating and saving wind field!"
+    prn && @info "Finished creating and saving wind field!"
     nothing
 end
 
-# def new_windfields():
-#     """
-#     Create and save new wind fields for all ground wind speeds, defined in V_WIND_GNDS.
-#     """
+"""
+    new_windfields(am::AtmosphericModel)
 
-#     for v_wind_gnd in V_WIND_GNDS:
-#         print "Creating wind field. This might take 30s or more..."
-#         y, x, z = create_grid(100, 4050, 500, 70)
-#         sigma1 = REL_SIGMA * calcSigma1(v_wind_gnd)
-#         u, v, w = create_windfield(x, y, z, sigma1=sigma1)
-#         param = np.array((ALPHA, v_wind_gnd))
-#         save(x, y, z, u, v, w, param, v_wind_gnd=v_wind_gnd)
-#         print "Finished creating and saving wind field!"
-#         del y, x, z, u, v, w
+Create and initialize new wind fields for all ground wind speeds, defined in V_WIND_GNDS 
+for the given `AtmosphericModel` instance `am`.
+
+# Arguments
+- `am::AtmosphericModel`: The atmospheric model for which wind fields are to be generated.
+
+# Returns
+- nothing
+
+"""
+function new_windfields(am::AtmosphericModel)
+    for v_wind_gnd in am.set.v_wind_gnds
+        @info "Creating wind field for $v_wind_gnd m/s. This might take 30s or more..."
+        new_windfield(am, v_wind_gnd; prn=false)
+    end
+    @info "All wind fields created and saved successfully!"
+    nothing
+end
 
 # if __name__ == "__main__":
 #     SAVE = False # True: calculate and save new wind field; False: use saved wind field
