@@ -328,6 +328,8 @@ function load(wf::WindField, speed)
     wf.valid = true
     ALPHA = wf.param[0]
     V_WIND_GND = wf.param[1]
+    #  self.u_pre, self.v_pre, self.w_pre = [ndimage.spline_filter(item, order=3) for item \
+    #                                                                             in [self.u, self.v, self.w]]
     nothing
 end
 
@@ -348,34 +350,6 @@ function Base.getproperty(wf::WindField, sym::Symbol)
         getfield(wf, sym)
     end
 end
-
-
-#     def load(self, speed):
-#         global ALPHA, V_WIND_GND
-#         if speed == self.last_speed:
-#             return
-#         print "Loading wind field ...", form(speed)
-#         self.last_speed = speed
-#         self.x, self.y, self.z, self.u, self.v, self.w, param = load_windfield(speed)
-#         self.x_max = np.max(self.x)
-#         self.y_max = np.max(self.y)
-#         self.x_min = np.min(self.x)
-#         self.y_min = np.min(self.y)
-#         self.y_range = self.y_max - self.y_min
-#         self.x_range = self.x_max - self.x_min
-#         self.u_pre, self.v_pre, self.w_pre = [ndimage.spline_filter(item, order=3) for item \
-#                                                                                    in [self.u, self.v, self.w]]
-#         ALPHA = param[0]
-#         V_WIND_GND = param[1]
-#         print "Finished loading wind field."
-
-#     def getVWindGnd(self):
-#         return V_WIND_GND
-
-#     def setVWindGnd(self, v_wind_gnd):
-#         global V_WIND_GND
-#         V_WIND_GND = v_wind_gnd
-#         return
 
 #     def getWind(self, x, y, z, t, interpolate=True, rel_turb = 0.351):
 #         """ Return the wind vector for a given position and time. Linear interpolation in x, y and z.
@@ -474,24 +448,6 @@ end
 #     plt.plot(YY, TURB_3, label = 'abs. wind x at 300m [m/s]', color="red")
 #     plt.legend(loc='upper right')
 #     plt.gca().set_xlabel('Y position [m]')
-
-# def new_windfield(v_wind_gnd):
-#     """
-#     Create and save a new wind field for the given ground wind speed.
-#     """
-#     print "Creating wind field. This might take 10 minutes or more..."
-#     y, x, z = create_grid(100, 4050, 500, 70)
-#     # y, x, z = create_grid(50, 16200, 200, 100) # 600s at 27 m/s
-#     # y, x, z = create_grid(10, 20, 10, 5)
-#     if True:
-#         sigma1 = REL_SIGMA * calcSigma1(v_wind_gnd)
-#         u, v, w = create_windfield(x, y, z, sigma1=sigma1)
-#     else:
-#         u, v, w = create_windfield(x, y, z)
-#     param = np.array((ALPHA, v_wind_gnd))
-#     # addWindSpeed(z, u)
-#     save(x, y, z, u, v, w, param, v_wind_gnd=v_wind_gnd)
-#     print "Finished creating and saving wind field!"
 
 """
     new_windfield(v_wind_gnd)
