@@ -142,6 +142,13 @@ end
 #     plt.gca().set_ylabel('Rel. turbulence [%]')
 #     plt.gca().set_xlabel('Height [m]')
 
+function meshgrid(x, y, z)
+    X = [i for i in x, _ in y, _ in z]
+    Y = [j for _ in x, j in y, _ in z]
+    Z = [k for _ in x, _ in y, k in z]
+    return (X, Y, Z)
+end
+
 """
     create_windfield(x::AbstractVector, y::AbstractVector, z::AbstractVector;
                         sigma1::Union{Nothing, Real, AbstractVector}=nothing,
@@ -175,27 +182,27 @@ function create_windfield(x::AbstractArray, y::AbstractArray, z::AbstractArray;
     sigma3 = 0.5 * sigma1
     
     # Domain dimensions
-    nx, ny, nz = length(x), length(y), length(z)
+    nx, ny, nz = size(x, 1), size(y, 2), size(z, 3)
     Lx, Ly, Lz = x[end] - x[1], y[end] - y[1], z[end] - z[1]
-    
-    # Wave number grid
-    x_range = range(-nx/2, nx/2-1, length=nx)
-    y_range = range(-ny/2, ny/2-1, length=ny)
-    z_range = range(-nz/2, nz/2-1, length=nz)
 
-    # m2, m1, m3 = meshgrid(y_range, x_range, z_range)
-    # println("--> $(size(m1)), $(size(m2)), $(size(m3))")
+    # Wave number discretization
+    m1_range = range(-nx/2, nx/2 - 1, length=nx)
+    m2_range = range(-ny/2, ny/2 - 1, length=ny)
+    m3_range = range(-nz/2, nz/2 - 1, length=nz)
+    m1, m2, m3 = meshgrid(m1_range, m2_range, m3_range)
+    println("--> $(size(m1)), $(size(m2)), $(size(m3))")
     
-    # m1 = ifftshift(x_range) .+ 1e-6
-    # m2 = ifftshift(y_range) .+ 1e-6
-    # m3 = ifftshift(z_range) .+ 1e-6
-    # println("--> $(size(m1)), $(size(m2)), $(size(m3))")
+    # Apply ifftshift with epsilon offset
+    m1 = ifftshift(m1 .+ 1e-6)
+    m2 = ifftshift(m2 .+ 1e-6)
+    m3 = ifftshift(m3 .+ 1e-6)
+    println("--> $(size(m1)), $(size(m2)), $(size(m3))")
 
-    # # Create 3D grids using broadcasting
-    # k1 = 2π * m1 * (length_scale / Lx)
-    # k2 = 2π * m2 * (length_scale / Ly)
-    # k3 = 2π * m3 * (length_scale / Lz)
-    # println("--> $(size(k1)), $(size(k2)), $(size(k3))")
+    # Create 3D grids using broadcasting
+    k1 = 2π * m1 * (length_scale / Lx)
+    k2 = 2π * m2 * (length_scale / Ly)
+    k3 = 2π * m3 * (length_scale / Lz)
+    println("--> $(size(k1)), $(size(k2)), $(size(k3))")
 
     # nx = length(x)
     # ny = length(y)
