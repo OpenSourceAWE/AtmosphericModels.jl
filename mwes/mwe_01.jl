@@ -1,3 +1,5 @@
+using FFTW
+
 const GRID_STEP   = 2.0    # Resolution of the grid in x and y direction in meters
 const HEIGHT_STEP = 2.0    # Resolution in z direction in meters
 
@@ -34,5 +36,27 @@ z_range = range(-nz/2, nz/2-1, length=nz)
 
 # m2, m1, m3 = meshgrid(y_range, x_range, z_range)
 # println("--> $(size(m1)), $(size(m2)), $(size(m3))")
+
+m1 = ifftshift(x_range) .+ 1e-6
+m2 = ifftshift(y_range) .+ 1e-6
+m3 = ifftshift(z_range) .+ 1e-6
+println("--> $(size(m1)), $(size(m2)), $(size(m3))")
+
+# # Create 3D grids using broadcasting
+# k1 = 2π * m1 * (length_scale / Lx)
+# k2 = 2π * m2 * (length_scale / Ly)
+# k3 = 2π * m3 * (length_scale / Lz)
+# println("--> $(size(k1)), $(size(k2)), $(size(k3))")
+
+# nx = length(x)
+# ny = length(y)
+# nz = length(z)
+
+# k1 = reshape(k1, nx, 1, 1)  # shape (nx, 1, 1)
+# k2 = reshape(k2, 1, ny, 1)  # shape (1, ny, 1)
+# k3 = reshape(k3, 1, 1, nz)  # shape (1, 1, nz)
+
+# k = sqrt.(k1.^2 .+ k2.^2 .+ k3.^2)  # shape (nx, ny, nz)
+        
 
 
