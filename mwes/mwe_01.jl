@@ -23,7 +23,7 @@ function create_grid(ny=50, nx=100, nz=50, z_min=25; res=GRID_STEP, height_step=
 end
 
 function create_windfield(x::AbstractArray, y::AbstractArray, z::AbstractArray;
-                        sigma1::Union{Nothing, Real, AbstractVector}=nothing)
+                        sigma1::Union{Nothing, Real, AbstractVector}=1.0)
     # Validate inputs
     if sigma1 !== nothing
         if !(sigma1 isa Real) && length(sigma1) ≠ 3
