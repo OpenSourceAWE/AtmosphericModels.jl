@@ -460,7 +460,7 @@ def newWindField(v_wind_gnd):
     param = np.array((ALPHA, v_wind_gnd))
     # addWindSpeed(z, u)
     save(x, y, z, u, v, w, param, v_wind_gnd=v_wind_gnd)
-    print("Finshed creating and saving wind field!")
+    print("Finished creating and saving wind field!")
 
 def newWindFields():
     """
@@ -480,7 +480,7 @@ def newWindFields():
         param = np.array((ALPHA, v_wind_gnd))
         # addWindSpeed(z, u)
         save(x, y, z, u, v, w, param, v_wind_gnd=v_wind_gnd)
-        print("Finshed creating and saving wind field!")
+        print("Finished creating and saving wind field!")
         del y, x, z, u, v, w
 
 if __name__ == "__main__":
