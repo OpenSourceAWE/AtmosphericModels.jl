@@ -9,5 +9,5 @@ v_wind_gnd = 5.324
 am = AtmosphericModel(set)
 am.set.v_wind = v_wind_gnd
 
-u, v, w = new_windfield(am, v_wind_gnd)
+new_windfield(am, v_wind_gnd)
 nothing

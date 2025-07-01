@@ -485,6 +485,11 @@ function new_windfield(am::AtmosphericModel, v_wind_gnd)
     y, x, z = create_grid(100, 4050, 500, 70)
     sigma1 = REL_SIGMA * calc_sigma1(am, v_wind_gnd)
     u, v, w = create_windfield(x, y, z, sigma1=sigma1)
+    # addWindSpeed(z, u)
+    param = [am.set.alpha, v_wind_gnd]
+    save(x, y, z, u, v, w, param; basename="windfield_4050_500", v_wind_gnd=v_wind_gnd)
+    @info "Finished creating and saving wind field!"
+    nothing
 end
 
 # def new_windfields():
