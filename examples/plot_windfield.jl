@@ -7,7 +7,10 @@ using GLMakie, AtmosphericModels, KiteUtils
 num_points = 100
 V_MIN::Float64 = -100.0
 V_MAX::Float64 =  100.0
-V_WIND::Vector{Float64} = zeros(num_points)
+V_WIND_ABS::Vector{Float64} = zeros(num_points)
+V_WIND_X::Vector{Float64} = zeros(num_points)
+V_WIND_Y::Vector{Float64} = zeros(num_points)
+V_WIND_Z::Vector{Float64} = zeros(num_points)
 
 set_data_path("data")
 set = load_settings("system.yaml")
@@ -19,9 +22,12 @@ function v_wind(pos_x, pos_z, time, num_points)
     pos_y = range(V_MIN, V_MAX, length=num_points)
     for (i, y) in pairs(pos_y)
         vx, vy, vz = get_wind(wf, am, pos_x, y, pos_z, time)
-        V_WIND[i] = sqrt(vx^2+vy^2+vz^2)
+        V_WIND_X[i] = vx
+        V_WIND_Y[i] = vy
+        V_WIND_Z[i] = vz
+        V_WIND_ABS[i] = sqrt(vx^2+vy^2+vz^2)
     end
-    return pos_y, V_WIND
+    return V_WIND_ABS
 end
 
 pos_x = Observable(20.0)   # x-position
@@ -29,12 +35,28 @@ pos_z = Observable(200.0) # height
 time = Observable(0.0)    # time
 
 
+function v_wind_abs(pos_x, pos_z, time)
+    v_abs = v_wind(pos_x, pos_z, time, num_points)
+    return v_abs
+end
+function v_wind_x(pos_x, pos_z, time)
+    v_wind(pos_x, pos_z, time, num_points)
+    return V_WIND_X
+end
 function v_wind_y(pos_x, pos_z, time)
-    x, y = v_wind(pos_x, pos_z, time, num_points)
-    return y
+    v_wind(pos_x, pos_z, time, num_points)
+    return V_WIND_Y
+end
+function v_wind_z(pos_x, pos_z, time)
+    v_wind(pos_x, pos_z, time, num_points)
+    return V_WIND_Z
 end
 
-y = @lift(v_wind_y($pos_x, $pos_z, $time))
+
+v_abs = @lift(v_wind_abs($pos_x, $pos_z, $time))
+v_x = @lift(v_wind_x($pos_x, $pos_z, $time))
+v_y = @lift(v_wind_y($pos_x, $pos_z, $time))
+v_z = @lift(v_wind_z($pos_x, $pos_z, $time))
 x = range(V_MIN, V_MAX, length=num_points)
 
 # Create the figure and axis
@@ -42,9 +64,12 @@ fig = Figure()
 ax = Axis(fig[1, 1], xlabel = "pos_y [m]", ylabel = "v_wind [m/s]",
           title = "Wind Field")
 
-# Plot the sine wave
-lineplot = lines!(ax, x, y)
-ylims!(ax, 0, 20)
+# Plot wind speed
+lineplot = lines!(ax, x, v_abs)
+lineplot1 = lines!(ax, x, v_x)
+lineplot2 = lines!(ax, x, v_y)
+lineplot3 = lines!(ax, x, v_z)
+ylims!(ax, -5, 20)
 xlims!(ax, V_MIN, V_MAX)
 
 # Create sliders for amplitude and frequency
