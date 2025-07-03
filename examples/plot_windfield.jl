@@ -31,12 +31,25 @@ function turbulence_intensity(wf::WindField, height::Number)
     end
     turbulence_intensity(V_ABS)
 end
+function wind_speed(wf::WindField, height::Number)
+    pos_z = height
+    pos_x = 0.0
+    y = 0.0
+    V_ABS = zeros(601)
+    for time in 0:600
+        vx, vy, vz = get_wind(wf, am, pos_x, y, pos_z, time)
+        v_abs = sqrt(vx^2+vy^2+vz^2)
+        V_ABS[time+1] = v_abs
+    end
+    round(mean(V_ABS), digits=1)
+end
 
 set_data_path("data")
 set = load_settings("system.yaml")
+set.v_wind = 10.9
 am = AtmosphericModel(set)
 wf::WindField = WindField(am, am.set.v_wind)
-@info "Wind speed at refence height: $(am.set.v_wind) m/s"
+@info "Wind speed at reference height: $(am.set.v_wind) m/s"
 
 
 # Create the figure and axis
@@ -127,6 +140,7 @@ end
 
 # rms = sqrt(mean(A .^ 2))
 ti_200=turbulence_intensity(wf, 200)
+@info "Wind speed at 200m height:           $(wind_speed(wf,200)) m/s"
 @info "Turbulence intensity at 200m height: $(ti_200) %"
 
 fig
