@@ -4,9 +4,9 @@ if ! ("GLMakie" ∈ keys(Pkg.project().dependencies))
 end
 using GLMakie, AtmosphericModels, KiteUtils
 
-num_points = 50
-V_MIN::Float64 = -50.0
-V_MAX::Float64 =  50.0
+num_points = 100
+V_MIN::Float64 = -100.0
+V_MAX::Float64 =  100.0
 V_WIND::Vector{Float64} = zeros(num_points)
 
 set_data_path("data")
@@ -53,9 +53,9 @@ xlims!(ax, V_MIN, V_MAX)
 # Create sliders for amplitude and frequency
 sg = SliderGrid(
     fig[2, 1],
-    (label = "pos_x", range = 0:1:500.0, startvalue =  20.0, update_while_dragging=false),
-    (label = "pos_z", range = 5:1:500.0, startvalue = 200.0, update_while_dragging=false),
-    (label = "time", range = 0.0:1:1000.0, startvalue = 0.0, update_while_dragging=false),
+    (label = "pos_x", range = 0:1:500.0, startvalue =  20.0, update_while_dragging=true),
+    (label = "pos_z", range = 5:1:500.0, startvalue = 200.0, update_while_dragging=true),
+    (label = "time", range = 0.0:1:1000.0, startvalue = 0.0, update_while_dragging=true),
 )
 
 # Connect sliders to observables
