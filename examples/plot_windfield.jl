@@ -12,7 +12,7 @@ V_WIND::Vector{Float64} = zeros(num_points)
 set_data_path("data")
 set = load_settings("system.yaml")
 am = AtmosphericModel(set)
-wf = WindField(am, am.set.v_wind)
+wf::WindField = WindField(am, am.set.v_wind)
 
 function v_wind(pos_x, pos_z, time, num_points)
     pos_y = range(V_MIN, V_MAX, length=num_points)
