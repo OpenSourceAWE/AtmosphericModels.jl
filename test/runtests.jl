@@ -2,7 +2,7 @@ using AtmosphericModels, KiteUtils, BenchmarkTools
 using Test
 
 cd("..")
-KiteUtils.set_data_path("data") 
+KiteUtils.set_data_path() 
 set = load_settings("system.yaml")
 am = AtmosphericModel(set)
 

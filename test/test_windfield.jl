@@ -1,4 +1,4 @@
-set_data_path("data") 
+# set_data_path("data") 
 
 @testset "windfield" begin
     @test AtmosphericModels.pfq(0.1) ≈ 1.079576584249971
