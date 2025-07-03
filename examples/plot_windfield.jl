@@ -2,18 +2,31 @@ using Pkg
 if ! ("GLMakie" ∈ keys(Pkg.project().dependencies))
     using TestEnv; TestEnv.activate()
 end
-using GLMakie
+using GLMakie, AtmosphericModels, KiteUtils
+
+num_points = 50
+V_MIN::Float64 = -50.0
+V_MAX::Float64 =  50.0
+V_WIND::Vector{Float64} = zeros(num_points)
+
+set_data_path("data")
+set = load_settings("system.yaml")
+am = AtmosphericModel(set)
+wf = WindField(am, am.set.v_wind)
 
 function v_wind(pos_x, pos_z, time, num_points)
-    x = range(-200.0,200.0, length=num_points)
-    y = 10*sin.(0.1x)
-    return x, y
+    pos_y = range(V_MIN, V_MAX, length=num_points)
+    for (i, y) in pairs(pos_y)
+        vx, vy, vz = get_wind(wf, am, pos_x, y, pos_z, time)
+        V_WIND[i] = sqrt(vx^2+vy^2+vz^2)
+    end
+    return pos_y, V_WIND
 end
 
 pos_x = Observable(20.0)   # x-position
 pos_z = Observable(200.0) # height
 time = Observable(0.0)    # time
-num_points = 200
+
 
 function v_wind_y(pos_x, pos_z, time)
     x, y = v_wind(pos_x, pos_z, time, num_points)
@@ -21,8 +34,7 @@ function v_wind_y(pos_x, pos_z, time)
 end
 
 function v_wind_x(pos_x, pos_z, time)
-    x, y = v_wind(pos_x, pos_z, time, num_points)
-    return x
+    return range(V_MIN, V_MAX, length=num_points)
 end
 
 y = @lift(v_wind_y($pos_x, $pos_z, $time))
@@ -35,15 +47,15 @@ ax = Axis(fig[1, 1], xlabel = "pos_y [m]", ylabel = "v_wind [m/s]",
 
 # Plot the sine wave
 lineplot = lines!(ax, x, y)
-ylims!(ax, 0, 15)
-xlims!(ax, -200, 200)
+ylims!(ax, 0, 20)
+xlims!(ax, V_MIN, V_MAX)
 
 # Create sliders for amplitude and frequency
 sg = SliderGrid(
     fig[2, 1],
-    (label = "pos_x", range = 0:0.01:500.0, startvalue =  20.0),
-    (label = "pos_z", range = 5:0.01:500.0, startvalue = 200.0),
-    (label = "time", range = 0.0:0.01:1000.0, startvalue = 0.0),
+    (label = "pos_x", range = 0:1:500.0, startvalue =  20.0, update_while_dragging=false),
+    (label = "pos_z", range = 5:1:500.0, startvalue = 200.0, update_while_dragging=false),
+    (label = "time", range = 0.0:1:1000.0, startvalue = 0.0, update_while_dragging=false),
 )
 
 # Connect sliders to observables

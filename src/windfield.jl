@@ -342,8 +342,8 @@ function get_wind(wf::WindField, am::AtmosphericModel, x, y, z, t; interpolate=f
     while x1 > size(wf.u, 1) - 1
         x1 -= size(wf.u, 1) - 1
     end
-    x1 = Int(round(x1))
-    y1 = Int(round(y1)) 
+    x1 = Int(round(x1))+1
+    y1 = Int(round(y1))+1 
     
     z1 = z / HEIGHT_STEP
     if z1 > size(wf.u, 3) - 1
@@ -351,7 +351,7 @@ function get_wind(wf::WindField, am::AtmosphericModel, x, y, z, t; interpolate=f
     elseif z1 < 0
         z1 = 0
     end
-    z1 = Int(round(z1))
+    z1 = Int(round(z1))+1
     
     if interpolate
         # x_wind = ndimage.map_coordinates(wf.u, [[x1], [y1], [z1]], order=3, prefilter=false)
