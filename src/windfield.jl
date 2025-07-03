@@ -20,11 +20,13 @@ const GRID_STEP   = 2.0    # Resolution of the grid in x and y direction in mete
 const HEIGHT_STEP = 2.0    # Resolution in z direction in meters
 const SRL = StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}, Int64}
 
-Base.@kwdef mutable struct WindField
-    _x_max::Float64 = NaN
-    _x_min::Float64 = NaN
-    _y_max::Float64 = NaN
-    _y_min::Float64 = NaN
+Base.@kwdef struct WindField
+    x_max::Float64 = NaN
+    x_min::Float64 = NaN
+    y_max::Float64 = NaN
+    y_min::Float64 = NaN
+    z_max::Float64 = NaN
+    z_min::Float64 = NaN
     last_speed::Float64 = 0.0
     valid::Bool = false
     x::Union{SRL, Array{Float64, 3}}
@@ -36,31 +38,7 @@ Base.@kwdef mutable struct WindField
     param::Vector{Float64} = [0, 0] # [alpha, v_wind_gnd]
 end
 function Base.getproperty(wf::WindField, sym::Symbol)
-    if sym == :x_max
-        if isnan(getfield(wf, :_x_max))
-            setfield!(wf, :_x_max, maximum(getproperty(wf, :x)))
-        end
-        getfield(wf, :_x_max)
-    elseif sym == :x_min
-        if isnan(getfield(wf, :_x_min))
-            setfield!(wf, :_x_min, minimum(getproperty(wf, :x)))
-        end
-        getfield(wf, :_x_min)
-    elseif sym == :y_max
-        if isnan(getfield(wf, :_y_max))
-            setfield!(wf, :_y_max, maximum(getproperty(wf, :y)))
-        end
-        getfield(wf, :_y_max)
-    elseif sym == :y_min
-        if isnan(getfield(wf, :_y_min))
-            setfield!(wf, :_y_min, minimum(getproperty(wf, :y)))
-        end
-        getfield(wf, :_y_min)
-    elseif sym == :z_max
-        maximum(getproperty(wf, :z))
-    elseif sym == :z_min
-        minimum(getproperty(wf, :z))
-    elseif sym == :y_range
+    if sym == :y_range
         getproperty(wf, :y_max) - getproperty(wf, :y_min) 
     elseif sym == :x_range
         getproperty(wf, :x_max) - getproperty(wf, :x_min)
@@ -74,7 +52,13 @@ function WindField(am, speed)
         println("Loading wind field... $speed m/s")
         x, y, z, u, v, w, param = load_windfield(am, speed)
         valid = true
-        return WindField(NaN, NaN, NaN, NaN, last_speed, valid, x, y, z, u, v, w, param)
+        x_max = maximum(x)
+        x_min = minimum(x)
+        y_max = maximum(y)
+        y_min = minimum(y)
+        z_max = maximum(z)
+        z_min = minimum(z)
+        return WindField(x_max, x_min, y_max, y_min, z_max, z_min, last_speed, valid, x, y, z, u, v, w, param)
     catch
         @error "Error reading wind field!"
         return nothing
