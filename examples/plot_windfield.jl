@@ -65,12 +65,16 @@ ax = Axis(fig[1, 1], xlabel = "pos_y [m]", ylabel = "v_wind [m/s]",
           title = "Wind Field")
 
 # Plot wind speed
-lineplot = lines!(ax, x, v_abs)
-lineplot1 = lines!(ax, x, v_x)
-lineplot2 = lines!(ax, x, v_y)
-lineplot3 = lines!(ax, x, v_z)
+line_abs = lines!(ax, x, v_abs)
+line_x = lines!(ax, x, v_x)
+line_y = lines!(ax, x, v_y)
+line_z = lines!(ax, x, v_z)
 ylims!(ax, -5, 20)
 xlims!(ax, V_MIN, V_MAX)
+
+Legend(fig[1, 2],
+    [line_abs, line_x, line_y, line_z],
+    ["v_abs", "v_x", "v_y", "v_z"])
 
 # Create sliders for amplitude and frequency
 sg = SliderGrid(
