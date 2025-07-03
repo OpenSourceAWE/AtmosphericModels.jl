@@ -1,3 +1,5 @@
+set_data_path("data") 
+
 @testset "windfield" begin
     @test AtmosphericModels.pfq(0.1) ≈ 1.079576584249971
     @test AtmosphericModels.calc_sigma1(am, 10.0) ≈ 2.181983002542761
@@ -46,7 +48,8 @@ end
     @test w ≈ w2
     @test param == param2
 
-    windfield = AtmosphericModels.loadWindField(v_wind_gnd+0.2)
+    am = AtmosphericModel(set)
+    windfield = AtmosphericModels.load_windfield(am, v_wind_gnd+0.2)
     @test typeof(windfield) == Tuple{Vector{Int64}, Vector{Int64}, Vector{Int64}, Array{Float64, 3}, Array{Float64, 3}, Array{Float64, 3}, Vector{Int64}}
 
     grid = AtmosphericModels.create_grid()
