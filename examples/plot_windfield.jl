@@ -19,6 +19,11 @@ am = AtmosphericModel(set)
 wf::WindField = WindField(am, am.set.v_wind)
 @info "Wind speed at refence height: $(am.set.v_wind) m/s"
 
+# Create the figure and axis
+fig = Figure()
+ax = Axis(fig[1, 1], xlabel = "pos_y [m]", ylabel = "v_wind [m/s]",
+          title = "Wind Field")
+
 function v_wind(pos_x, pos_z, time, num_points)
     global I
     pos_y = range(V_MIN, V_MAX, length=num_points)
@@ -29,8 +34,12 @@ function v_wind(pos_x, pos_z, time, num_points)
         V_WIND_Z[i] = vz
         V_WIND_ABS[i] = sqrt(vx^2+vy^2+vz^2)
     end
-    rms = sqrt(mean(V_WIND_ABS .^ 2))
-    I = rms/mean(V_WIND_ABS)
+    TURB=V_WIND_ABS .- mean(V_WIND_ABS)
+    v_mean = mean(V_WIND_ABS)
+    rms = sqrt(mean(TURB .^ 2))
+    I = round(100*rms/v_mean; digits=1)
+    v_mean= round(v_mean; digits=1)
+    ax.title="Wind Field, I = $I %, v_mean = $v_mean m/s"
     return V_WIND_ABS
 end
 
@@ -62,11 +71,6 @@ v_x = @lift(v_wind_x($pos_x, $pos_z, $time))
 v_y = @lift(v_wind_y($pos_x, $pos_z, $time))
 v_z = @lift(v_wind_z($pos_x, $pos_z, $time))
 x = range(V_MIN, V_MAX, length=num_points)
-
-# Create the figure and axis
-fig = Figure()
-ax = Axis(fig[1, 1], xlabel = "pos_y [m]", ylabel = "v_wind [m/s]",
-          title = "Wind Field")
 
 # Plot wind speed
 line_abs = lines!(ax, x, v_abs)
