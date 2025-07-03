@@ -2,11 +2,12 @@ using Pkg
 if ! ("GLMakie" ∈ keys(Pkg.project().dependencies))
     using TestEnv; TestEnv.activate()
 end
-using GLMakie, AtmosphericModels, KiteUtils
+using GLMakie, AtmosphericModels, KiteUtils, Statistics
 
 num_points = 100
 V_MIN::Float64 = -100.0
 V_MAX::Float64 =  100.0
+I::Float64 = 0.0 # turbulence intensity
 V_WIND_ABS::Vector{Float64} = zeros(num_points)
 V_WIND_X::Vector{Float64} = zeros(num_points)
 V_WIND_Y::Vector{Float64} = zeros(num_points)
@@ -19,6 +20,7 @@ wf::WindField = WindField(am, am.set.v_wind)
 @info "Wind speed at refence height: $(am.set.v_wind) m/s"
 
 function v_wind(pos_x, pos_z, time, num_points)
+    global I
     pos_y = range(V_MIN, V_MAX, length=num_points)
     for (i, y) in pairs(pos_y)
         vx, vy, vz = get_wind(wf, am, pos_x, y, pos_z, time)
@@ -27,6 +29,8 @@ function v_wind(pos_x, pos_z, time, num_points)
         V_WIND_Z[i] = vz
         V_WIND_ABS[i] = sqrt(vx^2+vy^2+vz^2)
     end
+    rms = sqrt(mean(V_WIND_ABS .^ 2))
+    I = rms/mean(V_WIND_ABS)
     return V_WIND_ABS
 end
 
@@ -96,5 +100,7 @@ end
 on(sg.sliders[3].value) do val
     time[] = val
 end
+
+# rms = sqrt(mean(A .^ 2))
 
 fig
