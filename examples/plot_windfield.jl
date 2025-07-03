@@ -13,6 +13,7 @@ set_data_path("data")
 set = load_settings("system.yaml")
 am = AtmosphericModel(set)
 wf::WindField = WindField(am, am.set.v_wind)
+@info "Wind speed at refence height: $(am.set.v_wind) m/s"
 
 function v_wind(pos_x, pos_z, time, num_points)
     pos_y = range(V_MIN, V_MAX, length=num_points)
@@ -33,12 +34,8 @@ function v_wind_y(pos_x, pos_z, time)
     return y
 end
 
-function v_wind_x(pos_x, pos_z, time)
-    return range(V_MIN, V_MAX, length=num_points)
-end
-
 y = @lift(v_wind_y($pos_x, $pos_z, $time))
-x = @lift(v_wind_x($pos_x, $pos_z, $time))
+x = range(V_MIN, V_MAX, length=num_points)
 
 # Create the figure and axis
 fig = Figure()
