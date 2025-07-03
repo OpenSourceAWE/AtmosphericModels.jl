@@ -13,11 +13,31 @@ V_WIND_X::Vector{Float64} = zeros(num_points)
 V_WIND_Y::Vector{Float64} = zeros(num_points)
 V_WIND_Z::Vector{Float64} = zeros(num_points)
 
+function turbulence_intensity(vec::Vector)
+    TURB=V_WIND_ABS .- mean(V_WIND_ABS)
+    v_mean = mean(V_WIND_ABS)
+    rms = sqrt(mean(TURB .^ 2))
+    I = round(100*rms/v_mean; digits=1)
+end
+function turbulence_intensity(wf::WindField, height::Number)
+    pos_z = height
+    pos_x = 0.0
+    y = 0.0
+    V_ABS = zeros(601)
+    for time in 0:600
+        vx, vy, vz = get_wind(wf, am, pos_x, y, pos_z, time)
+        v_abs = sqrt(vx^2+vy^2+vz^2)
+        V_ABS[time+1] = v_abs
+    end
+    turbulence_intensity(V_ABS)
+end
+
 set_data_path("data")
 set = load_settings("system.yaml")
 am = AtmosphericModel(set)
 wf::WindField = WindField(am, am.set.v_wind)
 @info "Wind speed at refence height: $(am.set.v_wind) m/s"
+
 
 # Create the figure and axis
 fig = Figure()
@@ -34,9 +54,9 @@ function v_wind(pos_x, pos_z, time, num_points)
         V_WIND_Z[i] = vz
         V_WIND_ABS[i] = sqrt(vx^2+vy^2+vz^2)
     end
-    TURB=V_WIND_ABS .- mean(V_WIND_ABS)
+    turb=V_WIND_ABS .- mean(V_WIND_ABS)
     v_mean = mean(V_WIND_ABS)
-    rms = sqrt(mean(TURB .^ 2))
+    rms = sqrt(mean(turb .^ 2))
     I = round(100*rms/v_mean; digits=1)
     v_mean= round(v_mean; digits=1)
     ax.title="Wind Field, I = $I %, v_mean = $v_mean m/s"
@@ -106,5 +126,7 @@ on(sg.sliders[3].value) do val
 end
 
 # rms = sqrt(mean(A .^ 2))
+ti_200=turbulence_intensity(wf, 200)
+@info "Turbulence intensity at 200m height: $(ti_200) %"
 
 fig
