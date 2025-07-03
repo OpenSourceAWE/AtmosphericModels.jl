@@ -18,6 +18,68 @@ const REL_SIGMA  =  1.0    # turbulence relative to the IEC model
 const V_WIND_GND  = 8.0    # Default value, change as needed
 const GRID_STEP   = 2.0    # Resolution of the grid in x and y direction in meters
 const HEIGHT_STEP = 2.0    # Resolution in z direction in meters
+const SRL = StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}, Int64}
+
+Base.@kwdef mutable struct WindField
+    _x_max::Float64 = NaN
+    _x_min::Float64 = NaN
+    _y_max::Float64 = NaN
+    _y_min::Float64 = NaN
+    last_speed::Float64 = 0.0
+    valid::Bool = false
+    x::Union{SRL, Array{Float64, 3}}
+    y::Union{SRL, Array{Float64, 3}}
+    z::Union{SRL, Array{Float64, 3}}
+    u::Array{Float64, 3}
+    v::Array{Float64, 3}
+    w::Array{Float64, 3}
+    param::Vector{Float64} = [0, 0] # [alpha, v_wind_gnd]
+end
+function Base.getproperty(wf::WindField, sym::Symbol)
+    if sym == :x_max
+        if isnan(getfield(wf, :_x_max))
+            setfield!(wf, :_x_max, maximum(getproperty(wf, :x)))
+        end
+        getfield(wf, :_x_max)
+    elseif sym == :x_min
+        if isnan(getfield(wf, :_x_min))
+            setfield!(wf, :_x_min, minimum(getproperty(wf, :x)))
+        end
+        getfield(wf, :_x_min)
+    elseif sym == :y_max
+        if isnan(getfield(wf, :_y_max))
+            setfield!(wf, :_y_max, maximum(getproperty(wf, :y)))
+        end
+        getfield(wf, :_y_max)
+    elseif sym == :y_min
+        if isnan(getfield(wf, :_y_min))
+            setfield!(wf, :_y_min, minimum(getproperty(wf, :y)))
+        end
+        getfield(wf, :_y_min)
+    elseif sym == :z_max
+        maximum(getproperty(wf, :z))
+    elseif sym == :z_min
+        minimum(getproperty(wf, :z))
+    elseif sym == :y_range
+        getproperty(wf, :y_max) - getproperty(wf, :y_min) 
+    elseif sym == :x_range
+        getproperty(wf, :x_max) - getproperty(wf, :x_min)
+    else
+        getfield(wf, sym)
+    end
+end
+function WindField(am, speed)
+    try
+        last_speed = 0.0
+        println("Loading wind field... $speed m/s")
+        x, y, z, u, v, w, param = load_windfield(am, speed)
+        valid = true
+        return WindField(NaN, NaN, NaN, NaN, last_speed, valid, x, y, z, u, v, w, param)
+    catch
+        @error "Error reading wind field!"
+        return nothing
+    end
+end
 
 function pfq(z)
     _₂F₁(1. /3 , 17. /6, 4. /3, z)
@@ -250,31 +312,6 @@ function addWindSpeed(am::AtmosphericModel, z, u)
     end
 end
 
-const SRL = StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}, Int64}
-
-Base.@kwdef struct WindField
-    last_speed::Float64 = 0.0
-    valid::Bool = false
-    x::Union{SRL, Array{Float64, 3}}
-    y::Union{SRL, Array{Float64, 3}}
-    z::Union{SRL, Array{Float64, 3}}
-    u::Array{Float64, 3}
-    v::Array{Float64, 3}
-    w::Array{Float64, 3}
-    param::Vector{Float64} = [0, 0] # [alpha, v_wind_gnd]
-end
-function WindField(am, speed)
-    try
-        last_speed = 0.0
-        println("Loading wind field... $speed m/s")
-        x, y, z, u, v, w, param = load_windfield(am, speed)
-        valid = true
-        return WindField(last_speed, valid, x, y, z, u, v, w, param)
-    catch
-        @error "Error reading wind field!"
-        return nothing
-    end
-end
 
 function load(wf::WindField, speed)
     global ALPHA, V_WIND_GND
@@ -290,28 +327,6 @@ function load(wf::WindField, speed)
     #  self.u_pre, self.v_pre, self.w_pre = [ndimage.spline_filter(item, order=3) for item \
     #                                                                             in [self.u, self.v, self.w]]
     nothing
-end
-
-function Base.getproperty(wf::WindField, sym::Symbol)
-    if sym == :x_max
-        maximum(getproperty(wf, :x))
-    elseif sym == :x_min
-        minimum(getproperty(wf, :x))
-    elseif sym == :y_max
-        maximum(getproperty(wf, :y))
-    elseif sym == :y_min
-        minimum(getproperty(wf, :y))
-    elseif sym == :z_max
-        maximum(getproperty(wf, :z))
-    elseif sym == :z_min
-        minimum(getproperty(wf, :z))
-    elseif sym == :y_range
-        getproperty(wf, :y_max) - getproperty(wf, :y_min) 
-    elseif sym == :x_range
-        getproperty(wf, :x_max) - getproperty(wf, :x_min)
-    else
-        getfield(wf, sym)
-    end
 end
 
 function get_wind(wf::WindField, am::AtmosphericModel, x, y, z, t; interpolate=false, rel_turb=0.351)
@@ -337,6 +352,7 @@ function get_wind(wf::WindField, am::AtmosphericModel, x, y, z, t; interpolate=f
     
     y1 = ((y + wf.y_range / 2) / GRID_STEP)
     v_wind_height = am.set.v_wind * calc_wind_factor(am, z, am.set.profile_law)
+    # v_wind_height = 11.0
     
     x1 = (x + t * v_wind_height) / GRID_STEP
     while x1 > size(wf.u, 1) - 1
