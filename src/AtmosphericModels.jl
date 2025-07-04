@@ -6,7 +6,7 @@ using NPZ, Printf
 using FFTW, LinearAlgebra, Random, Statistics
 
 export AtmosphericModel, ProfileLaw, EXP, LOG, EXPLOG, FAST_EXP, FAST_LOG, FAST_EXPLOG
-export clear, calc_rho, calc_wind_factor
+export clear, calc_rho, calc_wind_factor, rel_turbo
 
 export WindField
 export new_windfield, new_windfields, get_wind

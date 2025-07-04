@@ -74,6 +74,12 @@ function calc_sigma1(am, v_wind_gnd)
     am.set.i_ref * (0.75 * v_height + 5.6)
 end
 
+function rel_turbo(am::AtmosphericModel, v_wind = am.set.v_wind)
+    # Find the closest relative turbulence value for a given ground wind speed
+    min_dist, idx = findmin(abs.(am.set.v_wind_gnds .- v_wind))
+    return am.set.rel_turbs[idx]
+end
+
 """
 Find 2^n that is equal to or greater than i.
 """
