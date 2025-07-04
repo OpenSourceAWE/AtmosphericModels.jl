@@ -1,6 +1,7 @@
 using REPL.TerminalMenus
 
 options = ["bench_get_wind = include(\"bench_get_wind.jl\")",
+           "load_windfield = include(\"load_windfield.jl\")",
            "plot_wind_vs_time_ = include(\"plot_wind_vs_time.jl\")",
            "plot_windfield_ = include(\"plot_windfield.jl\")",
            "new_windfields = include(\"new_windfields.jl\")",

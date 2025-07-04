@@ -6,4 +6,5 @@ am = AtmosphericModel(set)
 
 x,y,z,u,v,w,param = AtmosphericModels.load_windfield(am, 5.324)
 
-println("Windfield dimensions: $(size(x)), $(size(y)), $(size(z))")
+@info "Windfield dimensions: $(size(x)), $(size(y)), $(size(z))"
+@info "Parameters: $param"
