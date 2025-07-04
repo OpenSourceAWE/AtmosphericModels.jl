@@ -9,11 +9,6 @@ const GRID_STEP = 2.0
 
 Random.seed!(1234)  # reproducible wind fields
 
-# Hypergeometric function wrapper
-# function pfq(z)
-#     return real(hyp2f1(1/3, 17/6, 4/3, z))
-# end
-
 function pfq(z)
     _₂F₁(1. /3 , 17. /6, 4. /3, z)
 end
@@ -169,7 +164,7 @@ function create_grid(ny=50, nx=100, nz=50, z_min=25; res=GRID_STEP, height_step=
     x_range = range(0, nx, length=Int(nx/res)+1)
     z_range = range(z_min, z_min+nz, length=Int(nz/height_step)+1)
 
-    # Create meshgrid (Julia's meshgrid returns in order (x, y, z))
+    # Create meshgrid (Julia's ndgrid returns in order (x, y, z))
     X, Y, Z = ndgrid(x_range, y_range, z_range)
 
     return Y, X, Z  # To match the Python (y, x, z) order
@@ -184,6 +179,9 @@ u, v, w = createWindField(x, y, z, sigma1=1.0)
     @test sum(x) == 3960.0
     @test sum(y) == 0.0
     @test sum(z) == 3960.0
+    @test all(x[1,:,:] .== 0)
+    @test all(x[2,:,:] .== 2)
+    @test all(x[11,:,:] .== 20)
     @test size(u) == (11,6,6)
     @test size(v) == (11,6,6)
     @test size(w) == (11,6,6)
