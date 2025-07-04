@@ -6,6 +6,7 @@ options = ["bench_get_wind = include(\"bench_get_wind.jl\")",
            "plot_windfield_ = include(\"plot_windfield.jl\")",
            "new_windfields = include(\"new_windfields.jl\")",
            "show_grid_ = include(\"show_grid.jl\")",
+           "test_all = include(\"test_all.jl\")",
            "quit"]
 
 function example_menu()
