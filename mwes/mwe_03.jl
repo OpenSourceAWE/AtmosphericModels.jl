@@ -180,6 +180,7 @@ y, x, z = create_grid(10, 20, 10, 5)
 u, v, w = createWindField(x, y, z, sigma1=1.0)
 
 @testset "createWindField" begin
+    @test pfq(0.5) ≈ 1.7936563627777333
     @test size(u) == (11,6,6)
     @test size(v) == (11,6,6)
     @test size(w) == (11,6,6)
