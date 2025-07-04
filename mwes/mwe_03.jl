@@ -188,5 +188,8 @@ u, v, w = createWindField(x, y, z, sigma1=1.0)
     @test size(u) == (11,6,6)
     @test size(v) == (11,6,6)
     @test size(w) == (11,6,6)
+    @test std(u) ≈ 1.0
+    @test std(v) ≈ 0.7
+    @test std(w) ≈ 0.5
 end
 nothing
