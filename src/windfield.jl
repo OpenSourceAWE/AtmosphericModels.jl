@@ -46,10 +46,10 @@ function Base.getproperty(wf::WindField, sym::Symbol)
         getfield(wf, sym)
     end
 end
-function WindField(am, speed)
+function WindField(am, speed; prn=true)
     try
         last_speed = 0.0
-        println("Loading wind field... $speed m/s")
+        prn && @info "Loading wind field... $speed m/s"
         x, y, z, u, v, w, param = load_windfield(am, speed)
         valid = true
         x_max = maximum(x)
