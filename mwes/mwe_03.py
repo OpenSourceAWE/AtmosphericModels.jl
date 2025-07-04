@@ -1,5 +1,14 @@
 import numpy as np
 import numpy.random as rd
+from math import pi
+from scipy.special import hyp2f1
+
+HEIGHT_STEP  = 2.0   # use a grid with 2m resolution in z direction
+GRID_STEP    = 2.0   # grid resolution in x and y direction
+np.random.seed(1234) # do this only if you want to have reproducible wind fields
+
+def pfq(z):
+  return np.real(hyp2f1(1./3., 17./6., 4./3., z))
 
 def createWindField(x, y, z,  sigma1 = None, gamma= 3.9, ae= 0.1, length_scale=33.6):
     """
@@ -112,3 +121,22 @@ def createWindField(x, y, z,  sigma1 = None, gamma= 3.9, ae= 0.1, length_scale=3
         v = sigma2/sv * v
         w = sigma3/sw * w
     return u, v, w
+
+def createGrid(ny=50, nx=100, nz=50, z_min=25, res=GRID_STEP):
+    """
+    res: resolution of the grid in x and y direction in meters
+    ny:  number of meters in y direction
+    nx:  number of meters in x direction (downwind)
+    nz:  number of meters in z direction (up)
+    z_min: minimal height in m
+    """
+    res = int(res)
+    y_range=np.linspace(-ny//2, ny//2,      num=ny//res+1)
+    x_range=np.linspace(0, nx,            num=nx//res+1)
+    z_range=np.linspace(z_min, z_min+nz,  num=nz//int(HEIGHT_STEP)+1)
+    # returns three 3-dimensional arrays with the components of the position of the grid points
+    y, x, z = np.meshgrid(y_range, x_range, z_range)
+    return y, x, z
+
+y, x, z = createGrid(10, 20, 10, 5)
+u, v, w = createWindField(x, y, z, sigma1=1)
