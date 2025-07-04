@@ -548,6 +548,7 @@ Create a new wind field object using the given ground wind velocity vector `v_wi
 nothing
 """
 function new_windfield(am::AtmosphericModel, v_wind_gnd; prn=true)
+    Random.seed!(1234) 
     prn && @info "Creating wind field for $v_wind_gnd m/s. This might take 30s or more..."
     y, x, z = create_grid(100, 4050, 500, 70)
     sigma1 = REL_SIGMA * calc_sigma1(am, v_wind_gnd)
