@@ -130,11 +130,6 @@ function createWindField(x, y, z; sigma1=nothing, gamma=3.9, ae=0.1, length_scal
         dZ[:,i,j,k_] = C_mat * n_vec
     end
 
-    # Inverse FFT and scaling
-    # u = nx * ny * nz * real.(ifftn(dZ[1,:,:,:]))
-    # v = nx * ny * nz * real.(ifftn(dZ[2,:,:,:]))
-    # w = nx * ny * nz * real.(ifftn(dZ[3,:,:,:]))
-
     u = nx * ny * nz * real.(ifft(dZ[1,:,:,:]))
     v = nx * ny * nz * real.(ifft(dZ[2,:,:,:]))
     w = nx * ny * nz * real.(ifft(dZ[3,:,:,:]))
