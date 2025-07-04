@@ -94,7 +94,7 @@ def nextpow2(i):
         n *= 2
     return n
 
-def calcFullName(v_wind_gnd, basename='windfield_4050_500', rel_sigma = 1.0):
+def calc_full_name(v_wind_gnd, basename='windfield_4050_500', rel_sigma = 1.0):
     path = HOME+'/00PythonSoftware/KiteSim/Environment/'
     path = '../data/'
     name = basename + "_"+"{:1.1f}".format(rel_sigma)
@@ -103,11 +103,11 @@ def calcFullName(v_wind_gnd, basename='windfield_4050_500', rel_sigma = 1.0):
 
 def save(x, y, z, u, v, w, param, basename='windfield_4050_500', v_wind_gnd = V_WIND_GND):
     # size uncompressed: 50 MB; size compressed: 24 MB
-    fullname = calcFullName(v_wind_gnd, basename = basename )
+    fullname = calc_full_name(v_wind_gnd, basename = basename )
     np.savez_compressed(fullname, x=x, y=y, z=z, u=u, v=v, w=w, param=param)
 
 def load(basename='windfield_4050_500', v_wind_gnd = 8.0):
-    fullname = calcFullName(v_wind_gnd, basename = basename )
+    fullname = calc_full_name(v_wind_gnd, basename = basename )
     print("fullname: ", fullname)
     npzfile = np.load(fullname+".npz")
     return npzfile['x'], npzfile['y'], npzfile['z'], npzfile['u'], npzfile['v'], npzfile['w'], npzfile['param']
