@@ -17,6 +17,7 @@ t = 0.0
 vx, vy, vz = get_wind(wf, am, x, y, z, t)
 @btime get_wind(wf, am, x, y, z, t)
 @info "Wind speed: $(round(sqrt(vx^2 + vy^2 + vz^2), digits=1)) m/s at $z m height."
-# 319.979 ns (11 allocations: 192 bytes) on laptop on battery
+# 319.979 ns (11 allocations: 192 bytes) on laptop on battery (without lookup)
 # 284.933 ns (19 allocations: 368 bytes) on desktop
+# 360.128 ns (19 allocations: 368 bytes) on laptop on battery
 
