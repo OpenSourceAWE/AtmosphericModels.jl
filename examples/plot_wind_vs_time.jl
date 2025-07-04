@@ -35,8 +35,9 @@ function plot_wind_vs_time(wf::WindField, am, x=0.0, y=0.0, z=197.3, rel_turb=RE
         end
     end
     su = std(v_wind_x)
-    mean_val = mean(v_wind_x)
-    println("Mean wind x, standard deviation, turbulence intensity [%]: ", mean_val, ", ", su, ", ", su/mean_val * 100.0)
+    mean_val = round(mean(v_wind_x), digits=1)
+    turbulence_intensity = round(su / mean_val * 100.0, digits=1)
+    println("Mean wind x: $(mean_val) m/s, turbulence intensity: $(turbulence_intensity) %")
     plt.plot(TIME, v_wind_x, label = "Abs. wind speed at 197.3 m [m/s]", color="black")
     plt.xlabel("Time [s]")
     plt.ylabel("Abs. wind speed at 197.3 m height [m/s]")
