@@ -5,8 +5,8 @@ end
 
 using ControlPlots, Statistics, KiteUtils, AtmosphericModels
 
-const REL_TURB = [0.342, 0.465, 0.583]
-const TEST = 2  # Index for the relative turbulence to use
+REL_TURB::Vector{Float64} = [0.342, 0.465, 0.583]
+TEST::Int64 = 2  # Index for the relative turbulence to use
 
 set_data_path("data")
 set = load_settings("system.yaml")
@@ -20,7 +20,6 @@ t = 0.0
 
 function plot_wind_vs_time(wf::WindField, am, x=0.0, y=0.0, z=197.3, rel_turb=REL_TURB[TEST])
     println("Relative turbulence: ", rel_turb)
-    fig = plt.figure()
     TIME = Float64[]
     v_wind_x = Float64[]
     v_wind_norm = Float64[]
@@ -38,7 +37,9 @@ function plot_wind_vs_time(wf::WindField, am, x=0.0, y=0.0, z=197.3, rel_turb=RE
     mean_val = round(mean(v_wind_x), digits=1)
     turbulence_intensity = round(su / mean_val * 100.0, digits=1)
     println("Mean wind x: $(mean_val) m/s, turbulence intensity: $(turbulence_intensity) %")
+    fig = plt.figure("Wind speed at I = $(turbulence_intensity) %")
     plt.plot(TIME, v_wind_x, label = "Abs. wind speed at 197.3 m [m/s]", color="black")
+    plt.grid(true, color=(0.25, 0.25, 0.25), linestyle="--", linewidth=0.5)
     plt.xlabel("Time [s]")
     plt.ylabel("Abs. wind speed at 197.3 m height [m/s]")
     plt.legend(loc="upper right")
