@@ -141,24 +141,6 @@ function createWindField(x, y, z; sigma1=nothing, gamma=3.9, ae=0.1, length_scal
     return u, v, w
 end
 
-# function createGrid(ny=50, nx=100, nz=50, z_min=25, res=GRID_STEP)
-#     res = Int(res)
-#     y_range = range(-ny÷2, stop=ny÷2, length=div(ny,res)+1)
-#     x_range = range(0, stop=nx, length=div(nx,res)+1)
-#     z_range = range(z_min, stop=z_min+nz, length=div(nz,Int(HEIGHT_STEP))+1)
-
-#     # meshgrid: y, x, z shapes (nx, ny, nz)
-#     y = reshape(y_range, 1, length(y_range), 1)
-#     x = reshape(x_range, length(x_range), 1, 1)
-#     z = reshape(z_range, 1, 1, length(z_range))
-
-#     # Broadcast to get full 3D arrays
-#     Y = broadcast(*, ones(length(x_range)), y, ones(length(z_range)))
-#     X = broadcast(*, x, ones(length(y_range)), ones(length(z_range)))
-#     Z = broadcast(*, ones(length(x_range)), ones(length(y_range)), z)
-
-#     return Y, X, Z
-# end
 function create_grid(ny=50, nx=100, nz=50, z_min=25; res=GRID_STEP, height_step=HEIGHT_STEP)
     y_range = range(-ny/2, ny/2, length=Int(ny/res)+1)
     x_range = range(0, nx, length=Int(nx/res)+1)
