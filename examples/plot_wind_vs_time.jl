@@ -5,9 +5,6 @@ end
 
 using ControlPlots, Statistics, KiteUtils, AtmosphericModels
 
-REL_TURB::Vector{Float64} = [0.342, 0.465, 0.583]
-TEST::Int64 = 2  # Index for the relative turbulence to use
-
 set_data_path("data")
 set = load_settings("system.yaml")
 am = AtmosphericModel(set)
