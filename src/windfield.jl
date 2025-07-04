@@ -91,7 +91,7 @@ function nextpow2(i)
     n
 end
 
-function calcFullName(v_wind_gnd; basename="windfield_4050_500", rel_sigma=1.0)
+function calc_full_name(v_wind_gnd; basename="windfield_4050_500", rel_sigma=1.0)
     path = get_data_path() * "/"
     name = basename * "_" * @sprintf("%.1f", rel_sigma)
     name *= "_" * @sprintf("%.1f", v_wind_gnd)
@@ -99,7 +99,7 @@ function calcFullName(v_wind_gnd; basename="windfield_4050_500", rel_sigma=1.0)
 end
 
 function save(x, y, z, u, v, w, param; basename="windfield_4050_500", v_wind_gnd=V_WIND_GND)
-    fullname = calcFullName(v_wind_gnd; basename)
+    fullname = calc_full_name(v_wind_gnd; basename)
     # Save as compressed .npz
     NPZ.npzwrite(fullname * ".npz", Dict(
         "x" => x,
@@ -113,7 +113,7 @@ function save(x, y, z, u, v, w, param; basename="windfield_4050_500", v_wind_gnd
 end
 
 function load(; basename="windfield_4050_500", v_wind_gnd=8.0)
-    fullname = calcFullName(v_wind_gnd, basename=basename)
+    fullname = calc_full_name(v_wind_gnd, basename=basename)
     npzfile = NPZ.npzread(fullname * ".npz")
     return npzfile["x"], npzfile["y"], npzfile["z"], npzfile["u"], npzfile["v"], npzfile["w"], npzfile["param"]
 end
