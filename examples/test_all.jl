@@ -8,11 +8,9 @@ am = AtmosphericModel(set)
 
 function analyze_windfield(wf::WindField, am; z=197.3)
     x = 0.0; y = 0.0
-    TIME = Float64[]
     v_wind_x = Float64[]
     v_wind_norm = Float64[]
     for t in range(0.0, stop=600.0, length=600*20)
-        push!(TIME, t)
         v_x, v_y, v_z = get_wind(wf, am, x, y, z, t)
         v_wind = sqrt(v_x^2 + v_y^2 + v_z^2)
         push!(v_wind_norm, v_wind)
