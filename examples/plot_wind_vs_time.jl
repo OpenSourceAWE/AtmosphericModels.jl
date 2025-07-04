@@ -18,7 +18,14 @@ wf::WindField = WindField(am, am.set.v_wind)
 x, y, z = 20.0, 0.0, 200.0
 t = 0.0
 
-function plot_wind_vs_time(wf::WindField, am, x=0.0, y=0.0, z=197.3, rel_turb=REL_TURB[TEST])
+function rel_turbo(am::AtmosphericModel, v_wind = am.set.v_wind)
+    # Find the closest relative turbulence value for a given ground wind speed
+    min_dist, idx = findmin(abs.(am.set.v_wind_gnds .- v_wind))
+    return am.set.rel_turbs[idx]
+end
+
+function plot_wind_vs_time(wf::WindField, am, x=0.0, y=0.0, z=197.3)
+    rel_turb = rel_turbo(am, wf.set.v_wind)
     println("Relative turbulence: ", rel_turb)
     TIME = Float64[]
     v_wind_x = Float64[]
