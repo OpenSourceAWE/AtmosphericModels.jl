@@ -35,6 +35,6 @@ for v_wind_gnd in am.set.v_wind_gnds
     wf = WindField(am, am.set.v_wind)
     v_mean, ti = analyze_windfield(wf, am)
     v_mean_100, ti_100 = analyze_windfield(wf, am; z=100.0)
-    @info "v_mean_100: $v_mean_100 m/s, ti_100: $ti %"
+    @info "v_mean_100: $v_mean_100 m/s, ti_100: $ti_100 %"
     @info "v_mean_197: $v_mean m/s, ti_197: $ti %"
 end
