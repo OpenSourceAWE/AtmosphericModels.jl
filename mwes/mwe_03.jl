@@ -157,6 +157,17 @@ y, x, z = create_grid(10, 20, 10, 5)
 u, v, w = createWindField(x, y, z, sigma1=1.0)
 
 @testset "createWindField" begin
+    nx, ny, nz = size(x)
+    @test nx == 11
+    @test ny == 6
+    @test nz == 6
+    # Domain lengths
+    Lx = x[end,1,1] - x[1,1,1]
+    Ly = y[1,end,1] - y[1,1,1]
+    Lz = z[1,1,end] - z[1,1,1]
+    @test Lx == 20.0
+    @test Ly == 10.0
+    @test Lz == 10.0
     @test pfq(0.5) ≈ 1.7936563627777333
     @test sum(x) == 3960.0
     @test sum(y) == 0.0
