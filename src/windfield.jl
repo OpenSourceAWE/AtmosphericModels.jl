@@ -361,9 +361,9 @@ function get_wind(wf::WindField, am::AtmosphericModel, x, y, z, t; interpolate=f
         # v_y = y_wind[0] * rel_turb
         # v_z = z_wind[0] * rel_turb  
     else
-        v_x = wf.u[x1, y1, z1] + v_wind_height
-        v_y = wf.v[x1, y1, z1]
-        v_z = wf.w[x1, y1, z1]
+        v_x = wf.u[x1, y1, z1] * rel_turb + v_wind_height
+        v_y = wf.v[x1, y1, z1] * rel_turb
+        v_z = wf.w[x1, y1, z1] * rel_turb
         return v_x, v_y, v_z
     end
     return nothing
