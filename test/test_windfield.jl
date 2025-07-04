@@ -55,9 +55,7 @@ end
     grid = AtmosphericModels.create_grid()
     @test typeof(grid) == Tuple{Array{Float64, 3}, Array{Float64, 3}, Array{Float64, 3}}
 
-    x = range(0, 50, length=25)
-    y = range(0, 800, length=400)
-    z = range(0, 200, length=100)
+    y, x, z = AtmosphericModels.create_grid(10, 20, 10, 5)
 
     u, v, w = AtmosphericModels.create_windfield(x, y, z; sigma1=1.2)
     am = AtmosphericModel(set)
@@ -66,4 +64,34 @@ end
 
     set_data_path(olddir)
     cd(olddir)
+end
+
+y, x, z = AtmosphericModels.create_grid(10, 20, 10, 5)
+u, v, w = AtmosphericModels.create_windfield(x, y, z, sigma1=1.0)
+
+@testset "create_windfield" begin
+    nx, ny, nz = size(x)
+    @test nx == 11
+    @test ny == 6
+    @test nz == 6
+    # Domain lengths
+    Lx = x[end,1,1] - x[1,1,1]
+    Ly = y[1,end,1] - y[1,1,1]
+    Lz = z[1,1,end] - z[1,1,1]
+    @test Lx == 20.0
+    @test Ly == 10.0
+    @test Lz == 10.0
+    @test AtmosphericModels.pfq(0.5) ≈ 1.7936563627777333
+    @test sum(x) == 3960.0
+    @test sum(y) == 0.0
+    @test sum(z) == 3960.0
+    @test all(x[1,:,:] .== 0)
+    @test all(x[2,:,:] .== 2)
+    @test all(x[11,:,:] .== 20)
+    @test size(u) == (11,6,6)
+    @test size(v) == (11,6,6)
+    @test size(w) == (11,6,6)
+    @test std(u) ≈ 1.0
+    @test std(v) ≈ 0.7
+    @test std(w) ≈ 0.5
 end
