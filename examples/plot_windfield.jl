@@ -143,4 +143,4 @@ end
 @info "Wind speed at 200m height:           $(wind_speed(wf,200)) m/s"
 @info "Turbulence intensity at 200m height: $(turbulence_intensity(wf, 200)) %"
 
-fig
+display(fig)
