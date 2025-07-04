@@ -313,7 +313,7 @@ function load(wf::WindField, speed)
     nothing
 end
 
-function get_wind(wf::WindField, am::AtmosphericModel, x, y, z, t; interpolate=false, rel_turb=0.351)
+function get_wind(wf::WindField, am::AtmosphericModel, x, y, z, t; interpolate=false, rel_turb=0.465)
     """ 
     Return the wind vector for a given position and time. Linear interpolation in x, y and z.
     """
@@ -423,9 +423,10 @@ Create a new wind field object using the given ground wind velocity vector `v_wi
 nothing
 """
 function new_windfield(am::AtmosphericModel, v_wind_gnd; prn=true)
-    prn && @info "Creating wind field. This might take 30s or more..."
+    prn && @info "Creating wind field for $v_wind_gnd m/s. This might take 30s or more..."
     y, x, z = create_grid(100, 4050, 500, 70)
     sigma1 = REL_SIGMA * calc_sigma1(am, v_wind_gnd)
+    prn && @info "Creating wind field with sigma1 = $sigma1"
     u, v, w = create_windfield(x, y, z, sigma1=sigma1)
     # addWindSpeed(z, u)
     param = [am.set.alpha, v_wind_gnd]
@@ -447,10 +448,9 @@ for the given `AtmosphericModel` instance `am`.
 - nothing
 
 """
-function new_windfields(am::AtmosphericModel)
+function new_windfields(am::AtmosphericModel; prn=true)
     for v_wind_gnd in am.set.v_wind_gnds
-        @info "Creating wind field for $v_wind_gnd m/s. This might take 30s or more..."
-        new_windfield(am, v_wind_gnd; prn=false)
+        new_windfield(am, v_wind_gnd; prn)
     end
     @info "All wind fields created and saved successfully!"
     nothing
