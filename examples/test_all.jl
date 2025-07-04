@@ -4,7 +4,7 @@
 # 6.00 m/s  9.7 % 7.2 %
 # 9.20 m/s  9.8 % 7.9 %
 
-using ControlPlots, Statistics, KiteUtils, AtmosphericModels
+using Statistics, KiteUtils, AtmosphericModels
 
 set_data_path("data")
 set = load_settings("system.yaml")
