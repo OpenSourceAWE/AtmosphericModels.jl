@@ -62,7 +62,7 @@ V_REF = 42.5         # five times the average wind speed in m/s at hub height ov
                      # cabau: 8.5863 m/s * 5.0 = 42.7 m/s
 HEIGHT_STEP  = 2.0   # use a grid with 2m resolution in z direction
 GRID_STEP    = 2.0   # grid resolution in x and y direction
-np.random.seed(1234) # do this only if you want to have reproducable wind fields
+np.random.seed(1234) # do this only if you want to have reproducible wind fields
 
 def form(number):
     return "{:.2f}".format(number)
