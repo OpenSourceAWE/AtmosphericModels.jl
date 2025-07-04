@@ -319,7 +319,7 @@ function load(wf::WindField, speed)
     nothing
 end
 
-function get_wind(wf::WindField, am::AtmosphericModel, x, y, z, t; interpolate=false, rel_turb=0.465)
+function get_wind(wf::WindField, am::AtmosphericModel, x, y, z, t; interpolate=false)
     """ 
     Return the wind vector for a given position and time. Linear interpolation in x, y and z.
     """
@@ -328,6 +328,7 @@ function get_wind(wf::WindField, am::AtmosphericModel, x, y, z, t; interpolate=f
         z = 10.0
     end
     @assert t >= 0.0 "Time must be non-negative"
+    rel_turb = rel_turbo(am)  
     
     # duplicate the wind field in x and y direction
     while x < wf.x_min
