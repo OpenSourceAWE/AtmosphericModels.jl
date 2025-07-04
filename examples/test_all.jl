@@ -19,9 +19,6 @@ function analyze_windfield(wf::WindField, am; z=197.3)
         v_wind = sqrt(v_x^2 + v_y^2 + v_z^2)
         push!(v_wind_norm, v_wind)
         push!(v_wind_x, v_x)
-        if v_wind < 0.1
-            println("Error for x, y, z, t: ", x, y, z, t)
-        end
     end
     su = std(v_wind_norm)
     v_mean = round(mean(v_wind_norm), digits=1)
