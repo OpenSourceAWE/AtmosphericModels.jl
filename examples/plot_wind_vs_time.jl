@@ -13,7 +13,7 @@ wf::WindField = WindField(am, am.set.v_wind)
 x, y, z = 20.0, 0.0, 200.0
 t = 0.0
 
-function plot_wind_vs_time(wf::WindField, am, x=0.0, y=0.0, z=197.3)
+function plot_wind_vs_time(wf::WindField, am, x=0.0, y=0.0; z=197.3)
     rel_turb = rel_turbo(am)
     @info "Relative turbulence: $rel_turb"
     TIME = Float64[]
@@ -33,7 +33,7 @@ function plot_wind_vs_time(wf::WindField, am, x=0.0, y=0.0, z=197.3)
     mean_val = round(mean(v_wind_x), digits=1)
     turbulence_intensity = round(su / mean_val * 100.0, digits=1)
     println("Mean wind x: $(mean_val) m/s, turbulence intensity: $(turbulence_intensity) %")
-    fig = plt.figure("Wind speed at I = $(turbulence_intensity) %")
+    fig = plt.figure("Wind speed at I = $(turbulence_intensity) %, z= $(z) m")
     plt.plot(TIME, v_wind_x, label = "Abs. wind speed at 197.3 m [m/s]", color="black")
     plt.grid(true, color=(0.25, 0.25, 0.25), linestyle="--", linewidth=0.5)
     plt.xlabel("Time [s]")
@@ -41,6 +41,7 @@ function plot_wind_vs_time(wf::WindField, am, x=0.0, y=0.0, z=197.3)
     plt.legend(loc="upper right")
 end
 
-plot_wind_vs_time(wf, am)
+plot_wind_vs_time(wf, am; z=197.3)
+plot_wind_vs_time(wf, am; z=100.0)
 nothing
 
