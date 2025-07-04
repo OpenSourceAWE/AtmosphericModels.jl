@@ -50,7 +50,7 @@ ALPHA = 0.234
 # ALPHA =  0.08163
 REF_HEIGHT =  6.0
 HUB_HEIGHT= 200.0    # average height during reel-out phase; Julia: avg_height
-TEST = 2
+TEST = 1
 V_WIND_GNDS = [3.483, 5.324, 8.163]
 REL_TURB = [0.342, 0.465, 0.583]
 # V_WIND_GND = 5.2  # at ref_height in m/s
@@ -227,21 +227,17 @@ def createWindField(x, y, z,  sigma1 = None, gamma= 3.9, ae= 0.1, length_scale=3
     x_range=np.linspace(-nx/2., nx/2. - 1,  num=nx)
     z_range=np.linspace(-nz/2., nz/2. - 1,  num=nz)
     m2, m1, m3 = np.meshgrid(y_range, x_range, z_range)
-    print(m2.shape, " ", m1.shape, " ", m3.shape)
 
     m1 = np.fft.ifftshift(m1 + 1e-6)
     m2 = np.fft.ifftshift(m2 + 1e-6)
     m3 = np.fft.ifftshift(m3 + 1e-6)
-    print(m2.shape, " ", m1.shape, " ", m3.shape)
 
     # Wave number vectors
     k1 = 2 * pi * m1 * (length_scale / Lx)
     k2 = 2 * pi * m2 * (length_scale / Ly)
     k3 = 2 * pi * m3 * (length_scale / Lz)
-    print("-->", k1.shape, " ", k2.shape, " ", k3.shape)
 
     k = np.sqrt(k1**2 + k2**2 + k3**2)
-    return None, None, None
 
     # Non-dimensional distortion time
     pfq_term = pfq(-k**-2)
@@ -516,8 +512,9 @@ if __name__ == "__main__":
         v_x, v_y, v_z = WIND_FIELD.getWind(0, 0, 197, 0)
         print(v_x, v_y, v_z)
         plotWindVsTime(0., 0., 197.)
+        plt.show()
     if True:
-        print("sigma1", REL_TURB[2] * calcSigma1(V_WIND_GNDS[TEST]))
+        print("sigma1", REL_TURB[TEST] * calcSigma1(V_WIND_GNDS[TEST]))
     if True:
         print("V_WIND_GND at 6 m", V_WIND_GNDS[TEST])
         print("wind at 197m:", calcWindHeight(V_WIND_GNDS[TEST], 197.0))
