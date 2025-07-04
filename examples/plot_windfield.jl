@@ -138,6 +138,7 @@ on(sg.sliders[3].value) do val
 end
 
 # rms = sqrt(mean(A .^ 2))
+@info "Wind speed at  10m height:           $(wind_speed(wf,10)) m/s"
 @info "Wind speed at 100m height:           $(wind_speed(wf,100)) m/s"
 @info "Wind speed at 200m height:           $(wind_speed(wf,200)) m/s"
 @info "Turbulence intensity at 200m height: $(turbulence_intensity(wf, 200)) %"
