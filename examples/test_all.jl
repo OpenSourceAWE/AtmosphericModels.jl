@@ -19,9 +19,9 @@ function analyze_windfield(wf::WindField, am; z=197.3)
             println("Error for x, y, z, t: ", x, y, z, t)
         end
     end
-    su = std(v_wind_x)
-    v_mean = round(mean(v_wind_x), digits=1)
-    turbulence_intensity = round(su / mean(v_wind_x) * 100.0, digits=1)
+    su = std(v_wind_norm)
+    v_mean = round(mean(v_wind_norm), digits=1)
+    turbulence_intensity = round(su / mean(v_wind_norm) * 100.0, digits=1)
     return v_mean, turbulence_intensity 
 end
 
