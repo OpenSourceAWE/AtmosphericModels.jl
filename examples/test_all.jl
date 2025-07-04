@@ -1,4 +1,8 @@
-# test the wind field for all three test cases
+# Expected results for low, medium and high wind speed:
+# vw_10m    I 99  I197
+# 4.26 m/s  8.5 % 6.3 %
+# 6.00 m/s  9.7 % 7.2 %
+# 9.20 m/s  9.8 % 7.9 %
 
 using ControlPlots, Statistics, KiteUtils, AtmosphericModels
 
