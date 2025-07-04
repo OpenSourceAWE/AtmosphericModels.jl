@@ -2,6 +2,7 @@ using Random
 using HypergeometricFunctions:_₂F₁
 using LinearAlgebra
 using FFTW, Statistics
+using Test
 
 const HEIGHT_STEP = 2.0
 const GRID_STEP = 2.0
@@ -182,6 +183,10 @@ end
 # Example usage
 y, x, z = create_grid(10, 20, 10, 5)
 u, v, w = createWindField(x, y, z, sigma1=1.0)
-println(size(u))
-println(size(v))
-println(size(w))
+
+@testset "createWindField" begin
+    @test size(u) == (11,6,6)
+    @test size(v) == (11,6,6)
+    @test size(w) == (11,6,6)
+end
+nothing
