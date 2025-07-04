@@ -140,3 +140,6 @@ def createGrid(ny=50, nx=100, nz=50, z_min=25, res=GRID_STEP):
 
 y, x, z = createGrid(10, 20, 10, 5)
 u, v, w = createWindField(x, y, z, sigma1=1)
+print(u.shape)
+print(v.shape)
+print(w.shape)

@@ -1,7 +1,7 @@
 using Random
 using HypergeometricFunctions:_₂F₁
 using LinearAlgebra
-using FFTW
+using FFTW, Statistics
 
 const HEIGHT_STEP = 2.0
 const GRID_STEP = 2.0
@@ -182,4 +182,6 @@ end
 # Example usage
 y, x, z = create_grid(10, 20, 10, 5)
 u, v, w = createWindField(x, y, z, sigma1=1.0)
-nothing
+println(size(u))
+println(size(v))
+println(size(w))
