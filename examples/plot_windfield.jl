@@ -46,7 +46,6 @@ end
 
 set_data_path("data")
 set = load_settings("system.yaml")
-set.v_wind = 10.9
 am = AtmosphericModel(set)
 wf::WindField = WindField(am, am.set.v_wind)
 @info "Wind speed at reference height: $(am.set.v_wind) m/s"
