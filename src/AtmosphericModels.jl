@@ -35,6 +35,11 @@ end
     mutable struct AtmosphericModel
 
 Struct that is storing the settings and the state of the atmosphere. 
+
+# Fields
+- set::Settings: The Settings struct
+- `rho_zero_temp`
+- wf::Union{WindField, Nothing}: The 3D windfield or `nothing`
 """
 Base.@kwdef mutable struct AtmosphericModel
     set::Settings
@@ -61,7 +66,7 @@ Clears or resets the state of the given `AM` (Atmospheric Model) instance `s`.
 - `s::AM`: An instance of the `AM` (Atmospheric Model) struct containing atmospheric parameters.
 
 # Returns
-nothing
+- nothing
 """
 function clear(s::AM)
      s.rho_zero_temp       = (15.0 - ABS_ZERO) / (s.set.temp_ref - ABS_ZERO) * s.set.rho_0
