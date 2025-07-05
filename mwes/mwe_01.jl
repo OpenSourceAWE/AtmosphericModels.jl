@@ -1,5 +1,11 @@
 using LinearAlgebra
 using FFTW
+using KiteUtils
+using AtmosphericModels
+
+set_data_path("data")
+set = load_settings("system.yaml")
+am::AtmosphericModel = AtmosphericModel(set)
 
 const GRID_STEP = 2.0  # Grid resolution in x/y (meters)
 const HEIGHT_STEP = 2.0  # Z-resolution (meters)
