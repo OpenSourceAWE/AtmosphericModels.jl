@@ -24,13 +24,9 @@ clear(s::AM)
 calc_rho(s::AM, height)
 calc_wind_factor(am::AM, height, profile_law::Int64=am.set.profile_law)
 ```
-## Wind profile
-
-<p align="center"><img src="wind_profile.png" width="500" /></p>
-
-The EXPLOG profile law is the fitted linear combination of the exponential and the log law.
 
 ## Usage
+### Calculate the height dependant wind speed
 ```julia
 using AtmosphericModels
 am = AtmosphericModel()
@@ -42,9 +38,13 @@ wf = calc_wind_factor(am, height, profile_law)
 The result is the factor with which the ground wind speed needs to be multiplied
 to get the wind speed at the given height.
 
-## Using the turbulent wind field
+![Wind Profile](wind_profile.png)
+
+The `EXPLOG` profile law is the fitted linear combination of the exponential and the log law.
+
+### Using the turbulent wind field
 You can get a wind vector as function of x,y,z and time using the following code:
-```
+```julia
 using AtmosphericModels, KiteUtils
 
 set_data_path("data")
@@ -65,7 +65,7 @@ It is suggested to check out the code using git before executing this example,
 because it requires that a data directory with the correct files `system.yaml`
 and `settings.yaml` exists. See below how to do that.
 
-## Plot a wind profile
+### Plot a wind profile
 ```julia
 using AtmosphericModels, KiteUtils, ControlPlots
 am = AtmosphericModel(se())
@@ -87,25 +87,7 @@ wf = [calc_wind_factor(am, height, Int(EXP)) for height in heights]
 plot(heights, wf, xlabel="height [m]", ylabel="wind factor")
 ```
 
-## Benchmark
-```julia
-using AtmosphericModels, BenchmarkTools, KiteUtils
-
-am = AtmosphericModel(se())
-@benchmark calc_wind_factor(am, height, Int(EXPLOG)) setup=(height=Float64((6.0+rand()*500.0)))
-```
-|Profile law|time [ns]|
-| ---    |:---:|
-|EXP     |12   |
-|LOG     |16   |
-|EXPLOG  |33   |
-|FAST_EXP|6.6  |
-|FAST_LOG|6.6  |
-|FAST_EXPLOG|6.6|
-
-The FAST versions are an approximations with an error of less than $1.5 \cdot 10^{-5}$ and are correct only for the default values of h_ref, z0 and alpha.
-
-## Air density
+### Air density
 ```julia
 using AtmosphericModels, BenchmarkTools, KiteUtils
 am = AtmosphericModel(se())
@@ -117,7 +99,7 @@ heights = 6:1000
 rhos = [calc_rho(am, height) for height in heights]
 plot(heights, rhos, legend=false, xlabel="height [m]", ylabel="air density [kg/m³]")
 ```
-<p align="center"><img src="airdensity.png" width="500" /></p>
+![Airdensity](airdensity.png)
 
 ## Running the tests
 Launch Julia using this project and run the tests:
