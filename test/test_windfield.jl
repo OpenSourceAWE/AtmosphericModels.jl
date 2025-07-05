@@ -34,13 +34,12 @@ end
     x, y, z = create_xyz()
     u, v, w = create_uvw()
     param = [1, 2]
-    am = AtmosphericModel(set)
+    am = AtmosphericModel(set; nowindfield=true)
     AtmosphericModels.save(am, x, y, z, u, v, w, param; v_wind_gnd=am.set.v_wind)
-    println("Saved windfield data to: ", fullname*".npz")
     @test isfile(fullname * ".npz")
 
     # Load the data back
-    x2, y2, z2, u2, v2, w2, param2 = AtmosphericModels.load(;v_wind_gnd)
+    x2, y2, z2, u2, v2, w2, param2 = AtmosphericModels.load(am;v_wind_gnd)
     @test x == x2
     @test y == y2
     @test z == z2
@@ -49,7 +48,7 @@ end
     @test w ≈ w2
     @test param == param2
 
-    am = AtmosphericModel(set)
+    am = AtmosphericModel(set; nowindfield=true)
     windfield = AtmosphericModels.load_windfield(am, v_wind_gnd+0.2)
     @test typeof(windfield) == Tuple{Vector{Int64}, Vector{Int64}, Vector{Int64}, Array{Float64, 3}, Array{Float64, 3},
                                      Array{Float64, 3}, Vector{Int64}}
@@ -58,7 +57,6 @@ end
     @test typeof(grid) == Tuple{Array{Float64, 3}, Array{Float64, 3}, Array{Float64, 3}}
 
     y, x, z = AtmosphericModels.create_grid(am, 10, 20, 10, 5)
-
     u, v, w = AtmosphericModels.create_windfield(x, y, z; sigma1=1.2)
 
     set_data_path(olddir)
