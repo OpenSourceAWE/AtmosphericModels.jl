@@ -76,8 +76,8 @@ function calc_full_name(v_wind_gnd; basename="windfield_4050_500", rel_sigma=1.0
     return path * name
 end
 
-function save(am, x, y, z, u, v, w, param; basename="windfield_4050_500")
-    fullname = calc_full_name(am.set.v_wind; basename, rel_sigma=am.set.use_turbulence)
+function save(am, x, y, z, u, v, w, param; basename="windfield_4050_500", v_wind_gnd)
+    fullname = calc_full_name(v_wind_gnd; basename, rel_sigma=am.set.use_turbulence)
     @info "Saving wind field to: $fullname.npz"
     # Save as compressed .npz
     NPZ.npzwrite(fullname * ".npz", Dict(
@@ -465,6 +465,29 @@ function get_wind(wf::WindField, am::AtmosphericModel, x, y, z, t; interpolate=f
         return v_x, v_y, v_z
     end
     return nothing
+end
+
+"""
+    new_windfield(am::AtmosphericModel, v_wind_gnd; prn=true)
+
+Create a new wind field object using the given ground wind velocity vector `v_wind_gnd`.
+
+# Arguments
+- `v_wind_gnd`: A scalar representing the wind velocity at ground level.
+
+# Returns
+nothing
+"""
+function new_windfield(am::AtmosphericModel, v_wind_gnd; prn=true)
+    Random.seed!(1234) 
+    prn && @info "Creating wind field for $v_wind_gnd m/s. This might take 30s or more..."
+    y, x, z = create_grid(am, 100, 4050, 500, 70)
+    sigma1 = am.set.use_turbulence * calc_sigma1(am, v_wind_gnd)
+    u, v, w = create_windfield(x, y, z, sigma1=sigma1)
+    param = [am.set.alpha, v_wind_gnd]
+    save(am, x, y, z, u, v, w, param; basename="windfield_4050_500", v_wind_gnd)
+    prn && @info "Finished creating and saving wind field!"
+    nothing
 end
 
 """
