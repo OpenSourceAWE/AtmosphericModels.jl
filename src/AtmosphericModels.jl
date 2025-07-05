@@ -173,6 +173,20 @@ function calc_wind_factor6(s::AM, height)
         evalpoly(1/height, (1.0, 1735.2333827029918, 279373.0012683715))
 end
 
+"""
+    calc_wind_factor(am::AM, height; profile_law::Int64=am.set.profile_law)
+
+Calculates the wind factor at a given `height` using the specified wind profile law.
+
+# Arguments
+- `am::AM`: An instance of the `AM` type containing atmospheric model parameters.
+- `height`: The height (in meters) at which to calculate the wind factor.
+- `profile_law::Int64`: (Optional) The wind profile law to use for the calculation. 
+  Defaults to `am.set.profile_law`.
+
+# Returns
+- The wind factor at the specified height as determined by the chosen profile law.
+"""
 @inline function calc_wind_factor(am::AM, height, profile_law::Int64=am.set.profile_law)
     if profile_law == 1
         calc_wind_factor1(am, height)
