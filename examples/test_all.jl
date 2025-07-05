@@ -36,8 +36,8 @@ for (i, v_wind_gnd) in pairs(am.set.v_wind_gnds)
     am::AtmosphericModel = AtmosphericModel(set)
     v_mean, ti = analyze_windfield(am)
     v_mean_99, ti_99 = analyze_windfield(am; z=99.0)
-    @test ti_99 ≈ I99[i]  rtol=0.07
-    @test ti    ≈ I197[i] rtol=0.07
+    @test ti_99 ≈ I99[i]  rtol=0.06
+    @test ti    ≈ I197[i] rtol=0.06
     @info "v_mean_99: $v_mean_99 m/s, ti_99: $ti_99 %"
     @info "v_mean_197: $v_mean m/s, ti_197: $ti %"
 end
