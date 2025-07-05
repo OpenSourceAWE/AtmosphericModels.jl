@@ -271,13 +271,12 @@ function create_windfield(x, y, z; sigma1=nothing, gamma=3.9, ae=0.1, length_sca
 end
 
 """
-    get_wind(wf::WindField, am::AtmosphericModel, x, y, z, t; interpolate=false)
+    get_wind(am::AtmosphericModel, x, y, z, t; interpolate=false)
 
 Returns the wind vector at the specified position (`x`, `y`, `z`) and time `t` using the given 
-`WindField` (`wf`) and `AtmosphericModel` (`am`).
+`AtmosphericModel` (`am`).
 
 # Arguments
-- `wf::WindField`: The wind field object containing wind data.
 - `am::AtmosphericModel`: The atmospheric model providing environmental parameters.
 - `x`, `y`, `z`: Coordinates specifying the location where the wind is to be evaluated. [m]
 - `t`: Time at which the wind is to be evaluated. [s]

@@ -52,6 +52,7 @@ end
 
 const AM = AtmosphericModel
 
+
 function clear(s::AM)
      s.rho_zero_temp       = (15.0 - ABS_ZERO) / (s.set.temp_ref - ABS_ZERO) * s.set.rho_0
 end
@@ -63,7 +64,24 @@ end
   y
 end
 
-# Calculate the air densisity as function of height
+"""
+    calc_rho(s::AM, height)
+
+Calculates the air density at a given height above ground level.
+
+# Arguments
+- `s::AM`: An instance of the `AM` (Atmospheric Model) struct containing atmospheric parameters.
+- `height`: The height above ground level (in meters) at which to calculate the air density.
+
+# Returns
+- The air density at the specified height (in kg/m³).
+
+# Notes
+- The calculation assumes an exponential decrease of air density with altitude.
+- `s.rho_zero_temp` is the reference air density at ground level.
+- `s.set.height_gnd` is the ground height offset.
+- The scale height used is 8550.0 meters.
+"""
 calc_rho(s::AM, height) = s.rho_zero_temp * fastexp(-(height+s.set.height_gnd) / 8550.0)
 
 """
