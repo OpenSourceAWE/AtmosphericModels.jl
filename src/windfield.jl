@@ -99,6 +99,7 @@ end
 
 function save(am, x, y, z, u, v, w, param; basename="windfield_4050_500", v_wind_gnd=V_WIND_GND)
     fullname = calc_full_name(v_wind_gnd; basename, rel_sigma=am.set.use_turbulence)
+    @info "Saving wind field to: $fullname.npz"
     # Save as compressed .npz
     NPZ.npzwrite(fullname * ".npz", Dict(
         "x" => x,

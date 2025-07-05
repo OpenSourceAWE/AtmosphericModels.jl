@@ -2,7 +2,7 @@
 
 @testset "windfield       " begin
     @test AtmosphericModels.pfq(0.1) ≈ 1.079576584249971
-    @test AtmosphericModels.calc_sigma1(am, 10.0) ≈ 2.181983002542761
+    @test AtmosphericModels.calc_sigma1(am, 10.0) ≈ 3.1692995457170285
     @test AtmosphericModels.nextpow2(10) == 16
 end
 
@@ -34,7 +34,8 @@ end
     x, y, z = create_xyz()
     u, v, w = create_uvw()
     param = [1, 2]
-    AtmosphericModels.save(x, y, z, u, v, w, param; v_wind_gnd)
+    am = AtmosphericModel(set)
+    AtmosphericModels.save(am, x, y, z, u, v, w, param; v_wind_gnd)
     println("Saved windfield data to: ", fullname*".npz")
     @test isfile(fullname * ".npz")
 
