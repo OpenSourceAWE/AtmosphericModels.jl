@@ -35,7 +35,7 @@ end
     u, v, w = create_uvw()
     param = [1, 2]
     am = AtmosphericModel(set)
-    AtmosphericModels.save(am, x, y, z, u, v, w, param)
+    AtmosphericModels.save(am, x, y, z, u, v, w, param; v_wind_gnd=am.set.v_wind)
     println("Saved windfield data to: ", fullname*".npz")
     @test isfile(fullname * ".npz")
 
