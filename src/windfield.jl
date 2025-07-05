@@ -14,7 +14,6 @@ The code is based on the following papers:
 """
 
 # TODO: the following values are hardcoded, but should be set in the settings
-const V_WIND_GND  = 8.0    # Default value, change as needed
 const GRID_STEP   = 2.0    # Resolution of the grid in x and y direction in meters
 const HEIGHT_STEP = 2.0    # Resolution in z direction in meters
 const SRL = StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}, Int64}
@@ -135,24 +134,23 @@ function ndgrid(xs, ys, zs)
 end
 
 """
-    create_grid(ny=50, nx=100, nz=50, z_min=25; res=GRID_STEP, height_step=HEIGHT_STEP)
+    create_grid(am, ny=50, nx=100, nz=50, z_min=25)
 
 Creates a 3D grid for the wind field model.
 
-# Arguments
+# Parameters
+- `am`:       An instance of `AtmosphericModel` containing the settings.
 - `ny=50`:    Number of grid points in the y-direction.
 - `nx=100`:   Number of grid points in the x-direction.
 - `nz=50`:    Number of grid points in the z-direction (vertical).
 - `z_min=25`: Minimum height (starting z value) of the grid.
 
-# Keyword Arguments
-- `res=GRID_STEP`:           Horizontal grid resolution (distance between points in x and y)   [m]
-- `height_step=HEIGHT_STEP`: Vertical grid resolution (distance between points in z) [m]
-
 # Returns
 A data structure representing the generated 3D grid.
 """
-function create_grid(ny=50, nx=100, nz=50, z_min=25; res=GRID_STEP, height_step=HEIGHT_STEP)
+function create_grid(am, ny=50, nx=100, nz=50, z_min=25)
+    res = am.set.grid_step
+    height_step = am.set.height_step
     y_range = range(-ny/2, ny/2, length=Int(ny/res)+1)
     x_range = range(0, nx, length=Int(nx/res)+1)
     z_range = range(z_min, z_min+nz, length=Int(nz/height_step)+1)
@@ -544,7 +542,7 @@ nothing
 function new_windfield(am::AtmosphericModel, v_wind_gnd; prn=true)
     Random.seed!(1234) 
     prn && @info "Creating wind field for $v_wind_gnd m/s. This might take 30s or more..."
-    y, x, z = create_grid(100, 4050, 500, 70)
+    y, x, z = create_grid(am, 100, 4050, 500, 70)
     sigma1 = set.use_turbulence * calc_sigma1(am, v_wind_gnd)
     prn && @info "Creating wind field with sigma1 = $sigma1"
     u, v, w = create_windfield(x, y, z, sigma1=sigma1)

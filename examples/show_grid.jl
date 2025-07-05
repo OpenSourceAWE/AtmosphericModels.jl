@@ -2,7 +2,11 @@ using Pkg
 if ! ("ControlPlots" ∈ keys(Pkg.project().dependencies))
     Pkg.activate("examples")
 end
-using ControlPlots, AtmosphericModels
+using ControlPlots, AtmosphericModels, KiteUtils
+
+set_data_path("data")
+set = load_settings("system.yaml")
+am::AtmosphericModel = AtmosphericModel(set)
 
 function show_grid(x, y, z)
     """
@@ -19,6 +23,6 @@ function show_grid(x, y, z)
     plt.show()
 end
 
-grid = AtmosphericModels.create_grid()
+grid = AtmosphericModels.create_grid(am)
 x, y, z = grid
 show_grid(x, y, z)
