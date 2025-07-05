@@ -472,8 +472,10 @@ end
 
 Create a new wind field object using the given ground wind velocity vector `v_wind_gnd`.
 
-# Arguments
+# Parameters
+- `am::AtmosphericModel`: The atmospheric model for which the wind field is created.
 - `v_wind_gnd`: A scalar representing the wind velocity at ground level.
+- `prn`: Optional boolean flag to control printing of progress messages (default is `true`).
 
 # Returns
 nothing
