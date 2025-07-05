@@ -47,6 +47,18 @@ Base.@kwdef mutable struct AtmosphericModel
     wf::Union{WindField, Nothing} = nothing
 end
 
+"""
+    AtmosphericModel(set::Settings; nowindfield::Bool=false)
+
+Constructs an `AtmosphericModel` using the provided `Settings`.
+
+# Arguments
+- `set::Settings`: The settings object containing configuration parameters for the atmospheric model.
+- `nowindfield::Bool=false`: Optional keyword argument. If `true`, the wind field will not be loaded.
+
+# Returns
+- An instance of `AtmosphericModel` configured according to the provided settings.
+"""
 function AtmosphericModel(set::Settings; nowindfield::Bool=false) 
     am = AtmosphericModel(set=set)
     if set.use_turbulence > 0 && !nowindfield
