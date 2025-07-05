@@ -14,7 +14,6 @@ The code is based on the following papers:
 """
 
 # TODO: the following values are hardcoded, but should be set in the settings
-const REL_SIGMA  =  1.0    # turbulence relative to the IEC model
 const V_WIND_GND  = 8.0    # Default value, change as needed
 const GRID_STEP   = 2.0    # Resolution of the grid in x and y direction in meters
 const HEIGHT_STEP = 2.0    # Resolution in z direction in meters
@@ -98,8 +97,8 @@ function calc_full_name(v_wind_gnd; basename="windfield_4050_500", rel_sigma=1.0
     return path * name
 end
 
-function save(x, y, z, u, v, w, param; basename="windfield_4050_500", v_wind_gnd=V_WIND_GND)
-    fullname = calc_full_name(v_wind_gnd; basename)
+function save(am, x, y, z, u, v, w, param; basename="windfield_4050_500", v_wind_gnd=V_WIND_GND)
+    fullname = calc_full_name(v_wind_gnd; basename, rel_sigma=am.set.use_turbulence)
     # Save as compressed .npz
     NPZ.npzwrite(fullname * ".npz", Dict(
         "x" => x,
@@ -545,12 +544,12 @@ function new_windfield(am::AtmosphericModel, v_wind_gnd; prn=true)
     Random.seed!(1234) 
     prn && @info "Creating wind field for $v_wind_gnd m/s. This might take 30s or more..."
     y, x, z = create_grid(100, 4050, 500, 70)
-    sigma1 = REL_SIGMA * calc_sigma1(am, v_wind_gnd)
+    sigma1 = set.use_turbulence * calc_sigma1(am, v_wind_gnd)
     prn && @info "Creating wind field with sigma1 = $sigma1"
     u, v, w = create_windfield(x, y, z, sigma1=sigma1)
     # addWindSpeed(z, u)
     param = [am.set.alpha, v_wind_gnd]
-    save(x, y, z, u, v, w, param; basename="windfield_4050_500", v_wind_gnd=v_wind_gnd)
+    save(am, x, y, z, u, v, w, param; basename="windfield_4050_500", v_wind_gnd)
     prn && @info "Finished creating and saving wind field!"
     nothing
 end
