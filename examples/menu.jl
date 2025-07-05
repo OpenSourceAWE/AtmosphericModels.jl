@@ -7,6 +7,7 @@ options = ["bench_get_wind = include(\"bench_get_wind.jl\")",
            "new_windfields_ = include(\"new_windfields.jl\")",
            "show_grid_ = include(\"show_grid.jl\")",
            "test_all = include(\"test_all.jl\")",
+           "delete_windfields = foreach(rm, filter(endswith(\".npz\"), readdir(\"data\",join=true)))",
            "quit"]
 
 function example_menu()
