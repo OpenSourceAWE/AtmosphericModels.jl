@@ -1,5 +1,11 @@
 using REPL.TerminalMenus, Pkg
 
+if ! isfile("examples/Manifest.toml")
+    using Pkg
+    Pkg.activate("examples")
+    Pkg.instantiate()
+end
+
 options = ["bench_get_wind = include(\"bench_get_wind.jl\")",
            "load_windfield = include(\"load_windfield.jl\")",
            "plot_wind_vs_time_ = include(\"plot_wind_vs_time.jl\")",
