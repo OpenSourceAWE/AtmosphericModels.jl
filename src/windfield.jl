@@ -286,21 +286,20 @@ function create_windfield(x, y, z; sigma1=nothing, gamma=3.9, ae=0.1, length_sca
 end
 
 """
-    create_windfield(x::AbstractVector, y::AbstractVector, z::AbstractVector;
+    create_windfield(x::AbstractArray, y::AbstractArray, z::AbstractArray;
                         sigma1::Union{Nothing, Real, AbstractVector}=nothing,
                         gamma::Real=3.9, ae::Real=0.1, length_scale::Real=33.6)
 
 ## Parameters:
-- sigma1: Target value(s) for the turbulence intensity. This can either be a single value, in
-          which case the statistics are corrected based on the longitudinal component only, or a vector where
-          each u,v,w-component can be defined separately.
-- gamma:  wind shear (zero for isotropic turbulence, 3.9 for IEC wind profile)
-- ae:     Coefficient of the inertial cascade, ae = a*e^(2/3),
-          where a = 1.7 is the three-dimensional Kolmogorov
-          constant and e = the mean TKE dissipation rate [m/s].
-
-Performance: Python:  17 seconds for a field of 50x800x200 m with 2 m resolution
-             Matlab:  17 seconds
+- x, y, z: 3D arrays representing the grid points in the x, y, and z dimensions.
+- sigma1:  Target value(s) for the turbulence intensity. This can either be a single value, in
+           which case the statistics are corrected based on the longitudinal component only, or a vector where
+           each u,v,w-component can be defined separately.
+- gamma:   wind shear (zero for isotropic turbulence, 3.9 for IEC wind profile)
+- ae:      Coefficient of the inertial cascade, ae = a*e^(2/3),
+           where a = 1.7 is the three-dimensional Kolmogorov
+           constant and e = the mean TKE dissipation rate [m/s].
+- length_scale: Length scale of the turbulence, default: 33.6 m.
 """
 function create_windfield_(x::AbstractArray, y::AbstractArray, z::AbstractArray;
                         sigma1::Union{Nothing, Real, AbstractVector}=nothing,
@@ -400,18 +399,6 @@ function create_windfield_(x::AbstractArray, y::AbstractArray, z::AbstractArray;
     return u, v, w
 end
 
-function addWindSpeed(am::AtmosphericModel, z, u)
-    """
-    Modify the velocity component u such that the average wind speed, calculated according
-    to the given wind profile, is added.
-    """
-    for i in axes(z, 3)
-        height = z[1, 1, i]
-        v_wind = am.set.v_wind * calc_wind_factor(am, height, am.set.profile_law)
-        u[:, :, i] .+= v_wind
-    end
-end
-
 function load(wf::WindField, speed)
     global ALPHA, V_WIND_GND
     if speed == wf.last_speed
@@ -428,118 +415,23 @@ function load(wf::WindField, speed)
     nothing
 end
 
-function get_wind(wf::WindField, am::AtmosphericModel, x, y, z, t; interpolate=false)
-    """ 
-    Return the wind vector for a given position and time. Linear interpolation in x, y and z.
-    """
-    @assert z >= 5.0 "Height must be at least 5 m"
-    if z < 10.0
-        z = 10.0
-    end
-    @assert t >= 0.0 "Time must be non-negative"
-    rel_turb = rel_turbo(am)  
-    
-    # duplicate the wind field in x and y direction
-    while x < wf.x_min
-        x += wf.x_range
-    end
-    while y > wf.y_max
-        y -= wf.y_range
-    end
-    while y < wf.y_min
-        y += wf.y_range
-    end
-    
-    y1 = ((y + wf.y_range / 2) / GRID_STEP)
-    v_wind_height = am.set.v_wind * calc_wind_factor(am, z, am.set.profile_law)
-    # v_wind_height = 11.0
-    
-    x1 = (x + t * v_wind_height) / GRID_STEP
-    while x1 > size(wf.u, 1) - 1
-        x1 -= size(wf.u, 1) - 1
-    end
-    x1 = Int(round(x1))+1
-    y1 = Int(round(y1))+1 
-    
-    z1 = z / HEIGHT_STEP
-    if z1 > size(wf.u, 3) - 1
-        z1 = size(wf.u, 3) - 1
-    elseif z1 < 0
-        z1 = 0
-    end
-    z1 = Int(round(z1))+1
-    
-    if interpolate
-        # x_wind = ndimage.map_coordinates(wf.u, [[x1], [y1], [z1]], order=3, prefilter=false)
-        # y_wind = ndimage.map_coordinates(wf.v, [[x1], [y1], [z1]], order=3, prefilter=false)
-        # z_wind = ndimage.map_coordinates(wf.w, [[x1], [y1], [z1]], order=3, prefilter=false)
-        # v_x = x_wind[0] * rel_turb + v_wind_height
-        # v_y = y_wind[0] * rel_turb
-        # v_z = z_wind[0] * rel_turb  
-    else
-        v_x = wf.u[x1, y1, z1] * rel_turb + v_wind_height
-        v_y = wf.v[x1, y1, z1] * rel_turb
-        v_z = wf.w[x1, y1, z1] * rel_turb
-        return v_x, v_y, v_z
-    end
-    return nothing
-end
-
-#     def getWind(self, x, y, z, t, interpolate=True, rel_turb = 0.351):
-#         """ Return the wind vector for a given position and time. Linear interpolation in x, y and z.
-#         3.34 sec for order = 2; 37µs for order = 1
-#         """
-#         assert(z >= 5.)
-#         if z < 10.:
-#             z = 10.0
-#         assert(t >= 0.)
-#         while x < 0.0:
-#             x += self.x_range
-#         while y > self.y_max:
-#             y -= self.y_range
-#         while y < self.y_min:
-#             y += self.y_range
-#         y1 = ((y + self.y_range / 2) / GRID_STEP)
-#         v_wind_height = calcWindHeight(V_WIND_GND, z)
-#         # print "--->", v_wind_height
-#         # sys.exit()
-#         x1 = (x + t * v_wind_height) / GRID_STEP
-#         while x1 > self.u.shape[0] - 1:
-#             x1 -= self.u.shape[0] - 1
-#         z1 = z / HEIGHT_STEP
-#         if z1 > self.u.shape[2] - 1:
-#             z1 = self.u.shape[2] - 1
-#         if z1 < 0:
-#             z1 = 0
-#         if interpolate:
-#             x_wind = ndimage.map_coordinates(self.u_pre, [[x1], [y1], [z1]], order=3, prefilter=False)
-#             y_wind = ndimage.map_coordinates(self.v_pre, [[x1], [y1], [z1]], order=3, prefilter=False)
-#             z_wind = ndimage.map_coordinates(self.w_pre, [[x1], [y1], [z1]], order=3, prefilter=False)
-#             v_x, v_y, v_z = x_wind[0]*rel_turb + v_wind_height, y_wind[0]*rel_turb, z_wind[0]*rel_turb
-#             # v_x, v_y, v_z = v_wind_height, 0.0, 0.0
-#             v_wind = sqrt(v_x*v_x + v_y*v_y + v_z*v_z)
-#             if v_wind < 1.0:
-#                 print "x1, y1, z1", x1, y1, z1
-#             # print " v_x, v_y, v_z",  v_x, v_y, v_z
-#             return v_x, v_y, v_z
-#         else:
-#             vx, vy, vz = self.u[x1, y1, z1] + v_wind_height, self.v[x1, y1, z1], self.w[x1, y1, z1]
-#             return vx, vy, vz
-
-
 """
-    new_windfield(v_wind_gnd)
+    get_wind(wf::WindField, am::AtmosphericModel, x, y, z, t; interpolate=false)
 
-Create a new wind field object using the given ground wind velocity vector `v_wind_gnd`.
+Returns the wind vector at the specified position (`x`, `y`, `z`) and time `t` using the given 
+`WindField` (`wf`) and `AtmosphericModel` (`am`).
 
 # Arguments
-- `v_wind_gnd`: A scalar representing the wind velocity at ground level.
+- `wf::WindField`: The wind field object containing wind data.
+- `am::AtmosphericModel`: The atmospheric model providing environmental parameters.
+- `x`, `y`, `z`: Coordinates specifying the location where the wind is to be evaluated. [m]
+- `t`: Time at which the wind is to be evaluated. [s]
+- `interpolate` (optional, default = `false`): If `true`, interpolate wind values between grid points; 
+                                               otherwise, use nearest or direct values.
 
 # Returns
-nothing
+- A wind vector representing the wind at the specified location and time.
 """
-function new_windfield(am::AtmosphericModel, v_wind_gnd; prn=true)
-    Random.seed!(1234) 
     prn && @info "Creating wind field for $v_wind_gnd m/s. This might take 30s or more..."
     y, x, z = create_grid(am, 100, 4050, 500, 70)
     sigma1 = set.use_turbulence * calc_sigma1(am, v_wind_gnd)
@@ -555,7 +447,7 @@ end
 """
     new_windfields(am::AtmosphericModel)
 
-Create and initialize new wind fields for all ground wind speeds, defined in V_WIND_GNDS 
+Create and initialize new wind fields for all ground wind speeds, defined in `am.set.v_wind_gnds` and save them
 for the given `AtmosphericModel` instance `am`.
 
 # Arguments
@@ -572,38 +464,3 @@ function new_windfields(am::AtmosphericModel; prn=true)
     @info "All wind fields created and saved successfully!"
     nothing
 end
-
-# if __name__ == "__main__":
-#     SAVE = False # True: calculate and save new wind field; False: use saved wind field
-#     if not SAVE:
-#         if WIND_FIELD.valid:
-#             x, y, z = WIND_FIELD.x, WIND_FIELD.y, WIND_FIELD.z
-#             u, v, w = WIND_FIELD.u, WIND_FIELD.v, WIND_FIELD.w
-#         else:
-#             SAVE = True
-#     v_wind = calcWindHeight(V_WIND_GND, 200)
-#     if SAVE:
-#         new_windfield(V_WIND_GND)
-#         WIND_FIELD = WindField()
-
-#     if False:
-#         showGrid(x, y, z)
-#     if False:
-#         plotTurbulenceVsHeight(x, y, z, u, v, w)
-#     if False:
-#         plotWindVsY(x, y, z, u, v, w)
-#     if False:
-#         u2 =  u[:,1,:]
-#         w2 =  w[:,1,:]
-#         show2Dfield(x[:,1,:], z[:,1,:], u2, w2, scale=8.0)
-#         # showGrid(X, Y, Z)
-#     if True:
-#         v_x, v_y, v_z = WIND_FIELD.getWind(0, 0, 197, 0)
-#         print v_x, v_y, v_z
-#         plotWindVsTime(0., 0., 197.)
-#     if True:
-#         print "sigma1", REL_TURB[2] * calcSigma1(V_WIND_GNDS[TEST])
-#     if True:
-#         print "V_WIND_GND at 6 m", V_WIND_GNDS[TEST]
-#         print "wind at 197m:", calcWindHeight(V_WIND_GNDS[TEST], 197.0)
-
