@@ -97,8 +97,8 @@ function calc_full_name(v_wind_gnd; basename="windfield_4050_500", rel_sigma=1.0
     return path * name
 end
 
-function save(am, x, y, z, u, v, w, param; basename="windfield_4050_500", v_wind_gnd=V_WIND_GND)
-    fullname = calc_full_name(v_wind_gnd; basename, rel_sigma=am.set.use_turbulence)
+function save(am, x, y, z, u, v, w, param; basename="windfield_4050_500")
+    fullname = calc_full_name(am.set.v_wind; basename, rel_sigma=am.set.use_turbulence)
     @info "Saving wind field to: $fullname.npz"
     # Save as compressed .npz
     NPZ.npzwrite(fullname * ".npz", Dict(
@@ -550,7 +550,7 @@ function new_windfield(am::AtmosphericModel, v_wind_gnd; prn=true)
     u, v, w = create_windfield(x, y, z, sigma1=sigma1)
     # addWindSpeed(z, u)
     param = [am.set.alpha, v_wind_gnd]
-    save(am, x, y, z, u, v, w, param; basename="windfield_4050_500", v_wind_gnd)
+    save(am, x, y, z, u, v, w, param; basename="windfield_4050_500")
     prn && @info "Finished creating and saving wind field!"
     nothing
 end
