@@ -409,17 +409,12 @@ function addWindSpeed(am::AtmosphericModel, z, u)
     Modify the velocity component u such that the average wind speed, calculated according
     to the given wind profile, is added.
     """
-    min_height = minimum(z)
-    max_height = maximum(z)
-    println("Minimal height: ", min_height)
-    println("Maximal height: ", max_height)
     for i in axes(z, 3)
         height = z[1, 1, i]
         v_wind = am.set.v_wind * calc_wind_factor(am, height, am.set.profile_law)
         u[:, :, i] .+= v_wind
     end
 end
-
 
 function load(wf::WindField, speed)
     global ALPHA, V_WIND_GND

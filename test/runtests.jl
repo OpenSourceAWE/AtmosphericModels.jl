@@ -33,7 +33,7 @@ include("test_windfield.jl")
     end
 end
 
-@testset "calc_rho" begin
+@testset "calc_rho        " begin
     @test calc_rho(am, 0.0) ≈ am.set.rho_0
     am.set.temp_ref = 15 - AtmosphericModels.ABS_ZERO + 15.0
     clear(am)

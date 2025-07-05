@@ -1,6 +1,6 @@
 # set_data_path("data") 
 
-@testset "windfield" begin
+@testset "windfield       " begin
     @test AtmosphericModels.pfq(0.1) ≈ 1.079576584249971
     @test AtmosphericModels.calc_sigma1(am, 10.0) ≈ 2.181983002542761
     @test AtmosphericModels.nextpow2(10) == 16
@@ -20,7 +20,7 @@ function create_uvw()
     return u, v, w
 end
 
-@testset "3d_windfield" begin
+@testset "3d_windfield    " begin
     datapath = get_data_path()
     tmpdir = joinpath(mktempdir(cleanup=true), "data")
     mkpath(tmpdir)
