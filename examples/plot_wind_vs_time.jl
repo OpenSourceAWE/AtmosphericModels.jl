@@ -9,11 +9,7 @@ set_data_path("data")
 set = load_settings("system.yaml")
 am::AtmosphericModel = AtmosphericModel(set)
 
-wf::WindField = WindField(am, am.set.v_wind)
-x, y, z = 20.0, 0.0, 200.0
-t = 0.0
-
-function plot_wind_vs_time(wf::WindField, am, x=0.0, y=0.0; z=197.3)
+function plot_wind_vs_time(am, x=0.0, y=0.0; z=197.3)
     rel_turb = rel_turbo(am)
     @info "Relative turbulence: $rel_turb"
     TIME = Float64[]
@@ -21,7 +17,7 @@ function plot_wind_vs_time(wf::WindField, am, x=0.0, y=0.0; z=197.3)
     v_wind_norm = Float64[]
     for t in range(0.0, stop=600.0, length=600*20)
         push!(TIME, t)
-        v_x, v_y, v_z = get_wind(wf, am, x, y, z, t)
+        v_x, v_y, v_z = get_wind(am, x, y, z, t)
         v_wind = sqrt(v_x^2 + v_y^2 + v_z^2)
         push!(v_wind_norm, v_wind)
         push!(v_wind_x, v_x)
@@ -41,7 +37,7 @@ function plot_wind_vs_time(wf::WindField, am, x=0.0, y=0.0; z=197.3)
     plt.legend(loc="upper right")
 end
 
-plot_wind_vs_time(wf, am; z=197.3)
-plot_wind_vs_time(wf, am; z=100.0)
+plot_wind_vs_time(am; z=197.3)
+plot_wind_vs_time(am; z=100.0)
 nothing
 

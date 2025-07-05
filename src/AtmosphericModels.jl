@@ -43,7 +43,13 @@ Base.@kwdef mutable struct AtmosphericModel
     wf::Union{WindField, Nothing} = nothing
 end
 
-AtmosphericModel(set::Settings) = AtmosphericModel(set=set)
+function AtmosphericModel(set::Settings; nowindfield::Bool=false) 
+    am = AtmosphericModel(set=set)
+    if set.use_turbulence > 0 && !nowindfield
+        am.wf = WindField(am, am.set.v_wind)
+    end
+    am
+end
 
 const AM = AtmosphericModel
 

@@ -417,8 +417,10 @@ Returns the wind vector at the specified position (`x`, `y`, `z`) and time `t` u
 # Returns
 - A wind vector representing the wind at the specified location and time.
 """
-function get_wind(wf::WindField, am::AtmosphericModel, x, y, z, t; interpolate=false)
+function get_wind(am::AtmosphericModel, x, y, z, t; interpolate=false)
     @assert z >= 5.0 "Height must be at least 5 m"
+    wf = am.wf
+    @assert wf !== nothing "Wind field is not initialized"
     if z < 10.0
         z = 10.0
     end

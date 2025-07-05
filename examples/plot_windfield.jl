@@ -19,25 +19,25 @@ function turbulence_intensity(vec::Vector)
     rms = sqrt(mean(TURB .^ 2))
     I = round(100*rms/v_mean; digits=1)
 end
-function turbulence_intensity(wf::WindField, height::Number)
+function turbulence_intensity(am::AtmosphericModel, height::Number)
     pos_z = height
     pos_x = 0.0
     y = 0.0
     V_ABS = zeros(601)
     for time in 0:600
-        vx, vy, vz = get_wind(wf, am, pos_x, y, pos_z, time)
+        vx, vy, vz = get_wind(am, pos_x, y, pos_z, time)
         v_abs = sqrt(vx^2+vy^2+vz^2)
         V_ABS[time+1] = v_abs
     end
     turbulence_intensity(V_ABS)
 end
-function wind_speed(wf::WindField, height::Number)
+function wind_speed(am::AtmosphericModel, height::Number)
     pos_z = height
     pos_x = 0.0
     y = 0.0
     V_ABS = zeros(601)
     for time in 0:600
-        vx, vy, vz = get_wind(wf, am, pos_x, y, pos_z, time)
+        vx, vy, vz = get_wind(am, pos_x, y, pos_z, time)
         v_abs = sqrt(vx^2+vy^2+vz^2)
         V_ABS[time+1] = v_abs
     end
@@ -47,7 +47,6 @@ end
 set_data_path("data")
 set = load_settings("system.yaml")
 am::AtmosphericModel = AtmosphericModel(set)
-wf::WindField = WindField(am, am.set.v_wind)
 @info "Wind speed at reference height: $(am.set.v_wind) m/s"
 
 
@@ -60,7 +59,7 @@ function v_wind(pos_x, pos_z, time, num_points)
     global I
     pos_y = range(V_MIN, V_MAX, length=num_points)
     for (i, y) in pairs(pos_y)
-        vx, vy, vz = get_wind(wf, am, pos_x, y, pos_z, time)
+        vx, vy, vz = get_wind(am, pos_x, y, pos_z, time)
         V_WIND_X[i] = vx
         V_WIND_Y[i] = vy
         V_WIND_Z[i] = vz
@@ -138,9 +137,9 @@ on(sg.sliders[3].value) do val
 end
 
 # rms = sqrt(mean(A .^ 2))
-@info "Wind speed at  10m height:           $(wind_speed(wf,10)) m/s"
-@info "Wind speed at 100m height:           $(wind_speed(wf,100)) m/s"
-@info "Wind speed at 200m height:           $(wind_speed(wf,200)) m/s"
-@info "Turbulence intensity at 200m height: $(turbulence_intensity(wf, 200)) %"
+@info "Wind speed at  10m height:           $(wind_speed(am,10)) m/s"
+@info "Wind speed at 100m height:           $(wind_speed(am,100)) m/s"
+@info "Wind speed at 200m height:           $(wind_speed(am,200)) m/s"
+@info "Turbulence intensity at 200m height: $(turbulence_intensity(am, 200)) %"
 
 display(fig)
