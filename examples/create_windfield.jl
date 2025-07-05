@@ -2,7 +2,7 @@ using AtmosphericModels, KiteUtils
 
 set_data_path("data") 
 set = load_settings("system.yaml")
-am = AtmosphericModel(set)
+am::AtmosphericModel = AtmosphericModel(set)
 
 v_wind_gnd = 5.324
 

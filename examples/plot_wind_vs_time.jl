@@ -7,7 +7,7 @@ using ControlPlots, Statistics, KiteUtils, AtmosphericModels
 
 set_data_path("data")
 set = load_settings("system.yaml")
-am = AtmosphericModel(set)
+am::AtmosphericModel = AtmosphericModel(set)
 
 wf::WindField = WindField(am, am.set.v_wind)
 x, y, z = 20.0, 0.0, 200.0

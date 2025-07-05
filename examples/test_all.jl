@@ -8,7 +8,7 @@ using Statistics, KiteUtils, AtmosphericModels
 
 set_data_path("data")
 set = load_settings("system.yaml")
-am = AtmosphericModel(set)
+am::AtmosphericModel = AtmosphericModel(set)
 
 function analyze_windfield(wf::WindField, am; z=197.3)
     x = 0.0; y = 0.0

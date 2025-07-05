@@ -1,4 +1,4 @@
-using REPL.TerminalMenus
+using REPL.TerminalMenus, Pkg
 
 options = ["bench_get_wind = include(\"bench_get_wind.jl\")",
            "load_windfield = include(\"load_windfield.jl\")",
@@ -25,3 +25,4 @@ function example_menu()
 end
 
 example_menu()
+Pkg.activate(".")
