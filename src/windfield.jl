@@ -438,7 +438,6 @@ function get_wind(wf::WindField, am::AtmosphericModel, x, y, z, t; interpolate=f
     
     y1 = ((y + wf.y_range / 2) / am.set.grid_step)
     v_wind_height = am.set.v_wind * calc_wind_factor(am, z, am.set.profile_law)
-    # v_wind_height = 11.0
     
     x1 = (x + t * v_wind_height) / am.set.grid_step
     while x1 > size(wf.u, 1) - 1
@@ -456,6 +455,7 @@ function get_wind(wf::WindField, am::AtmosphericModel, x, y, z, t; interpolate=f
     z1 = Int(round(z1))+1
     
     if interpolate
+        # TODO: Implement interpolation using Interpolations.jl or similar
         # x_wind = ndimage.map_coordinates(wf.u, [[x1], [y1], [z1]], order=3, prefilter=false)
         # y_wind = ndimage.map_coordinates(wf.v, [[x1], [y1], [z1]], order=3, prefilter=false)
         # z_wind = ndimage.map_coordinates(wf.w, [[x1], [y1], [z1]], order=3, prefilter=false)
