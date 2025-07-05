@@ -14,8 +14,8 @@ V_WIND_Y::Vector{Float64} = zeros(num_points)
 V_WIND_Z::Vector{Float64} = zeros(num_points)
 
 function turbulence_intensity(vec::Vector)
-    TURB=V_WIND_ABS .- mean(V_WIND_ABS)
-    v_mean = mean(V_WIND_ABS)
+    TURB=vec .- mean(vec)
+    v_mean = mean(vec)
     rms = sqrt(mean(TURB .^ 2))
     I = round(100*rms/v_mean; digits=1)
 end
@@ -140,6 +140,7 @@ end
 @info "Wind speed at  10m height:           $(wind_speed(am,10)) m/s"
 @info "Wind speed at 100m height:           $(wind_speed(am,100)) m/s"
 @info "Wind speed at 200m height:           $(wind_speed(am,200)) m/s"
+@info "Turbulence intensity at 100m height: $(turbulence_intensity(am, 100)) %"
 @info "Turbulence intensity at 200m height: $(turbulence_intensity(am, 200)) %"
 
 display(fig)
