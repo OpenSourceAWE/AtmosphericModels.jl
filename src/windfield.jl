@@ -13,25 +13,6 @@ The code is based on the following papers:
    Engineering Mechanics 13(4), pp. 269-282.
 """
 
-const SRL = StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}, Int64}
-
-Base.@kwdef struct WindField
-    x_max::Float64 = NaN
-    x_min::Float64 = NaN
-    y_max::Float64 = NaN
-    y_min::Float64 = NaN
-    z_max::Float64 = NaN
-    z_min::Float64 = NaN
-    last_speed::Float64 = 0.0
-    valid::Bool = false
-    x::Union{SRL, Array{Float64, 3}}
-    y::Union{SRL, Array{Float64, 3}}
-    z::Union{SRL, Array{Float64, 3}}
-    u::Array{Float64, 3}
-    v::Array{Float64, 3}
-    w::Array{Float64, 3}
-    param::Vector{Float64} = [0, 0] # [alpha, v_wind_gnd]
-end
 function Base.getproperty(wf::WindField, sym::Symbol)
     if sym == :y_range
         getproperty(wf, :y_max) - getproperty(wf, :y_min) 
@@ -432,16 +413,58 @@ Returns the wind vector at the specified position (`x`, `y`, `z`) and time `t` u
 # Returns
 - A wind vector representing the wind at the specified location and time.
 """
-    prn && @info "Creating wind field for $v_wind_gnd m/s. This might take 30s or more..."
-    y, x, z = create_grid(am, 100, 4050, 500, 70)
-    sigma1 = set.use_turbulence * calc_sigma1(am, v_wind_gnd)
-    prn && @info "Creating wind field with sigma1 = $sigma1"
-    u, v, w = create_windfield(x, y, z, sigma1=sigma1)
-    # addWindSpeed(z, u)
-    param = [am.set.alpha, v_wind_gnd]
-    save(am, x, y, z, u, v, w, param; basename="windfield_4050_500")
-    prn && @info "Finished creating and saving wind field!"
-    nothing
+function get_wind(wf::WindField, am::AtmosphericModel, x, y, z, t; interpolate=false)
+    @assert z >= 5.0 "Height must be at least 5 m"
+    if z < 10.0
+        z = 10.0
+    end
+    @assert t >= 0.0 "Time must be non-negative"
+    rel_turb = rel_turbo(am)  
+    
+    # duplicate the wind field in x and y direction
+    while x < wf.x_min
+        x += wf.x_range
+    end
+    while y > wf.y_max
+        y -= wf.y_range
+    end
+    while y < wf.y_min
+        y += wf.y_range
+    end
+    
+    y1 = ((y + wf.y_range / 2) / GRID_STEP)
+    v_wind_height = am.set.v_wind * calc_wind_factor(am, z, am.set.profile_law)
+    # v_wind_height = 11.0
+    
+    x1 = (x + t * v_wind_height) / GRID_STEP
+    while x1 > size(wf.u, 1) - 1
+        x1 -= size(wf.u, 1) - 1
+    end
+    x1 = Int(round(x1))+1
+    y1 = Int(round(y1))+1 
+    
+    z1 = z / HEIGHT_STEP
+    if z1 > size(wf.u, 3) - 1
+        z1 = size(wf.u, 3) - 1
+    elseif z1 < 0
+        z1 = 0
+    end
+    z1 = Int(round(z1))+1
+    
+    if interpolate
+        # x_wind = ndimage.map_coordinates(wf.u, [[x1], [y1], [z1]], order=3, prefilter=false)
+        # y_wind = ndimage.map_coordinates(wf.v, [[x1], [y1], [z1]], order=3, prefilter=false)
+        # z_wind = ndimage.map_coordinates(wf.w, [[x1], [y1], [z1]], order=3, prefilter=false)
+        # v_x = x_wind[0] * rel_turb + v_wind_height
+        # v_y = y_wind[0] * rel_turb
+        # v_z = z_wind[0] * rel_turb  
+    else
+        v_x = wf.u[x1, y1, z1] * rel_turb + v_wind_height
+        v_y = wf.v[x1, y1, z1] * rel_turb
+        v_z = wf.w[x1, y1, z1] * rel_turb
+        return v_x, v_y, v_z
+    end
+    return nothing
 end
 
 """
@@ -455,7 +478,6 @@ for the given `AtmosphericModel` instance `am`.
 
 # Returns
 - nothing
-
 """
 function new_windfields(am::AtmosphericModel; prn=true)
     for v_wind_gnd in am.set.v_wind_gnds

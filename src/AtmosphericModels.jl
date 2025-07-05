@@ -12,6 +12,26 @@ export WindField
 export new_windfield, new_windfields, get_wind
 
 const ABS_ZERO = -273.15
+const SRL = StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}, Int64}
+
+Base.@kwdef struct WindField
+    x_max::Float64 = NaN
+    x_min::Float64 = NaN
+    y_max::Float64 = NaN
+    y_min::Float64 = NaN
+    z_max::Float64 = NaN
+    z_min::Float64 = NaN
+    last_speed::Float64 = 0.0
+    valid::Bool = false
+    x::Union{SRL, Array{Float64, 3}}
+    y::Union{SRL, Array{Float64, 3}}
+    z::Union{SRL, Array{Float64, 3}}
+    u::Array{Float64, 3}
+    v::Array{Float64, 3}
+    w::Array{Float64, 3}
+    param::Vector{Float64} = [0, 0] # [alpha, v_wind_gnd]
+end
+
 """
     mutable struct AtmosphericModel
 
@@ -19,8 +39,8 @@ Struct that is storing the settings and the state of the atmosphere.
 """
 Base.@kwdef mutable struct AtmosphericModel
     set::Settings
-    turbulence::Float64 = 0.0
     rho_zero_temp::Float64 = (15.0 - ABS_ZERO) / (set.temp_ref - ABS_ZERO) * set.rho_0
+    wf::Union{WindField, Nothing} = nothing
 end
 
 AtmosphericModel(set::Settings) = AtmosphericModel(set=set)

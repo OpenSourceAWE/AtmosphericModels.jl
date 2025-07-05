@@ -51,7 +51,8 @@ end
 
     am = AtmosphericModel(set)
     windfield = AtmosphericModels.load_windfield(am, v_wind_gnd+0.2)
-    @test typeof(windfield) == Tuple{Vector{Int64}, Vector{Int64}, Vector{Int64}, Array{Float64, 3}, Array{Float64, 3}, Array{Float64, 3}, Vector{Int64}}
+    @test typeof(windfield) == Tuple{Vector{Int64}, Vector{Int64}, Vector{Int64}, Array{Float64, 3}, Array{Float64, 3},
+                                     Array{Float64, 3}, Vector{Int64}}
 
     grid = AtmosphericModels.create_grid(am)
     @test typeof(grid) == Tuple{Array{Float64, 3}, Array{Float64, 3}, Array{Float64, 3}}
@@ -59,9 +60,6 @@ end
     y, x, z = AtmosphericModels.create_grid(am, 10, 20, 10, 5)
 
     u, v, w = AtmosphericModels.create_windfield(x, y, z; sigma1=1.2)
-    am = AtmosphericModel(set)
-    am.set.v_wind = v_wind_gnd
-    AtmosphericModels.addWindSpeed(am, z, u)
 
     set_data_path(olddir)
     cd(olddir)
