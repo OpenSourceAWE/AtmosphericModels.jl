@@ -118,7 +118,6 @@ function load(; basename="windfield_4050_500", v_wind_gnd=8.0)
     return npzfile["x"], npzfile["y"], npzfile["z"], npzfile["u"], npzfile["v"], npzfile["w"], npzfile["param"]
 end
 
-
 function load_windfield(am::AtmosphericModel, speed)
     # Find the index of the closest wind speed
     idx = findmin(abs.(am.set.v_wind_gnds .- speed))[2]
