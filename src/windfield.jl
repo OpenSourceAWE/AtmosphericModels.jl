@@ -50,6 +50,18 @@ function calc_sigma1(am, v_wind_gnd)
     am.set.i_ref * (0.75 * v_height + 5.6)
 end
 
+"""
+    rel_turbo(am::AtmosphericModel, v_wind = am.set.v_wind)
+
+Find the closest relative turbulence value for a given ground wind speed.
+
+# Arguments
+- `am::AtmosphericModel`: The atmospheric model instance containing relevant parameters.
+- `v_wind`: (Optional) The wind velocity to use for the calculation. Defaults to `am.set.v_wind`.
+
+# Returns
+- The computed relative turbulence value.
+"""
 function rel_turbo(am::AtmosphericModel, v_wind = am.set.v_wind)
     # Find the closest relative turbulence value for a given ground wind speed
     min_dist, idx = findmin(abs.(am.set.v_wind_gnds .- v_wind))
