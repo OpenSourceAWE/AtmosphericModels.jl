@@ -91,8 +91,12 @@ function save(am, x, y, z, u, v, w, param; basename="windfield_4050_500", v_wind
     ))
 end
 
-function load(; basename="windfield_4050_500", v_wind_gnd=8.0)
+function load(am::AtmosphericModel; basename="windfield_4050_500", v_wind_gnd=8.0)
     fullname = calc_full_name(v_wind_gnd, basename=basename)
+    if !isfile(fullname * ".npz")
+        # throw(ArgumentError("Wind field file not found: $fullname.npz"))
+        new_windfield(am::AtmosphericModel, v_wind_gnd; prn=true)
+    end
     npzfile = NPZ.npzread(fullname * ".npz")
     return npzfile["x"], npzfile["y"], npzfile["z"], npzfile["u"], npzfile["v"], npzfile["w"], npzfile["param"]
 end
@@ -100,7 +104,7 @@ end
 function load_windfield(am::AtmosphericModel, speed)
     # Find the index of the closest wind speed
     idx = findmin(abs.(am.set.v_wind_gnds .- speed))[2]
-    return load(v_wind_gnd = am.set.v_wind_gnds[idx])
+    return load(am; v_wind_gnd = am.set.v_wind_gnds[idx])
 end
 
 function ndgrid(xs, ys, zs)
@@ -380,21 +384,21 @@ function create_windfield_(x::AbstractArray, y::AbstractArray, z::AbstractArray;
     return u, v, w
 end
 
-function load(wf::WindField, speed)
-    global ALPHA, V_WIND_GND
-    if speed == wf.last_speed
-        return
-    end
-    println("Loading wind field ... $speed m/s")
-    wf.last_speed = speed
-    wf.x, wf.y, wf.z, wf.u, wf.v, wf.w, wf.param = load_windfield(speed)
-    wf.valid = true
-    ALPHA = wf.param[0]
-    V_WIND_GND = wf.param[1]
-    #  self.u_pre, self.v_pre, self.w_pre = [ndimage.spline_filter(item, order=3) for item \
-    #                                                                             in [self.u, self.v, self.w]]
-    nothing
-end
+# function load(wf::WindField, speed)
+#     global ALPHA, V_WIND_GND
+#     if speed == wf.last_speed
+#         return
+#     end
+#     println("Loading wind field ... $speed m/s")
+#     wf.last_speed = speed
+#     wf.x, wf.y, wf.z, wf.u, wf.v, wf.w, wf.param = load_windfield(speed)
+#     wf.valid = true
+#     ALPHA = wf.param[0]
+#     V_WIND_GND = wf.param[1]
+#     #  self.u_pre, self.v_pre, self.w_pre = [ndimage.spline_filter(item, order=3) for item \
+#     #                                                                             in [self.u, self.v, self.w]]
+#     nothing
+# end
 
 """
     get_wind(wf::WindField, am::AtmosphericModel, x, y, z, t; interpolate=false)
@@ -432,18 +436,18 @@ function get_wind(wf::WindField, am::AtmosphericModel, x, y, z, t; interpolate=f
         y += wf.y_range
     end
     
-    y1 = ((y + wf.y_range / 2) / GRID_STEP)
+    y1 = ((y + wf.y_range / 2) / am.set.grid_step)
     v_wind_height = am.set.v_wind * calc_wind_factor(am, z, am.set.profile_law)
     # v_wind_height = 11.0
     
-    x1 = (x + t * v_wind_height) / GRID_STEP
+    x1 = (x + t * v_wind_height) / am.set.grid_step
     while x1 > size(wf.u, 1) - 1
         x1 -= size(wf.u, 1) - 1
     end
     x1 = Int(round(x1))+1
     y1 = Int(round(y1))+1 
     
-    z1 = z / HEIGHT_STEP
+    z1 = z / am.set.height_step
     if z1 > size(wf.u, 3) - 1
         z1 = size(wf.u, 3) - 1
     elseif z1 < 0
