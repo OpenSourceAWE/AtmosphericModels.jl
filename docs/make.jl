@@ -1,4 +1,4 @@
-using KiteUtils
+using KiteUtils, AtmosphericModels
 using Pkg
 if ("TestEnv" ∈ keys(Pkg.project().dependencies))
     if ! ("Documents" ∈ keys(Pkg.project().dependencies))
@@ -7,7 +7,7 @@ if ("TestEnv" ∈ keys(Pkg.project().dependencies))
 end
 using Documenter
 
-DocMeta.setdocmeta!(KiteUtils, :DocTestSetup, :(using KiteUtils); recursive=true)
+DocMeta.setdocmeta!(AtmosphericModels, :DocTestSetup, :(using AtmosphericModels); recursive=true)
 
 makedocs(;
     modules=[AtmosphericModels],
