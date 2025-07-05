@@ -13,9 +13,6 @@ The code is based on the following papers:
    Engineering Mechanics 13(4), pp. 269-282.
 """
 
-# TODO: the following values are hardcoded, but should be set in the settings
-const GRID_STEP   = 2.0    # Resolution of the grid in x and y direction in meters
-const HEIGHT_STEP = 2.0    # Resolution in z direction in meters
 const SRL = StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}, Int64}
 
 Base.@kwdef struct WindField
@@ -79,6 +76,8 @@ function rel_turbo(am::AtmosphericModel, v_wind = am.set.v_wind)
 end
 
 """
+    nextpow2(i)
+
 Find 2^n that is equal to or greater than i.
 """
 function nextpow2(i)
@@ -145,8 +144,8 @@ Creates a 3D grid for the wind field model.
 - `nz=50`:    Number of grid points in the z-direction (vertical).
 - `z_min=25`: Minimum height (starting z value) of the grid.
 
-# Returns
-A data structure representing the generated 3D grid.
+# Returns Y, X and Z
+Three arrays representing the generated 3D grid.
 """
 function create_grid(am, ny=50, nx=100, nz=50, z_min=25)
     res = am.set.grid_step

@@ -23,6 +23,5 @@ function show_grid(x, y, z)
     plt.show()
 end
 
-grid = AtmosphericModels.create_grid(am)
-x, y, z = grid
+y, x, z = AtmosphericModels.create_grid(am)
 show_grid(x, y, z)
