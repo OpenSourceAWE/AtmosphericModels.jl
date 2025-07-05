@@ -1,5 +1,5 @@
 ```@meta
-CurrentModule = KiteUtils
+CurrentModule = AtmosphericModels
 ```
 # AtmosphericModels
 This package provides functions for modelling the influence of the atmosphere on wind energy systems. It models the air density, the vertical wind profile and the wind turbulence. Further functions to import measured data are planned. 
@@ -12,18 +12,26 @@ pkg"add AtmosphericModels"
 ``` 
 at the Julia prompt.
 
-## Exported types
+### Running the tests
+Launch Julia using this project and run the tests:
 ```julia
-AtmosphericModel
-@enum ProfileLaw EXP=1 LOG=2 EXPLOG=3 FAST_EXP=4 FAST_LOG=5 FAST_EXPLOG=6
+julia --project
+using Pkg
+Pkg.test("AtmosphericModels")
 ```
 
-## Exported functions
-```julia
-clear(s::AM)
-calc_rho(s::AM, height)
-calc_wind_factor(am::AM, height, profile_law::Int64=am.set.profile_law)
+### Running the examples
+If you check out the project using git, you can more easily run the examples:
 ```
+git clone https://github.com/OpenSourceAWE/AtmosphericModels.jl
+cd AtmosphericModels.jl
+```
+Launch Julia using this project and run the example menu:
+```julia
+julia --project
+include("examples/menu.jl")
+```
+The first time will take some time, because the graphic libraries will get installed, the second time it is fast.
 
 ## Usage
 ### Calculate the height dependant wind speed
@@ -100,27 +108,6 @@ rhos = [calc_rho(am, height) for height in heights]
 plot(heights, rhos, legend=false, xlabel="height [m]", ylabel="air density [kg/m³]")
 ```
 ![Airdensity](airdensity.png)
-
-## Running the tests
-Launch Julia using this project and run the tests:
-```julia
-julia --project
-using Pkg
-Pkg.test("AtmosphericModels")
-```
-
-## Running the examples
-If you check out the project using git, you can more easily run the examples:
-```
-git clone https://github.com/OpenSourceAWE/AtmosphericModels.jl
-cd AtmosphericModels.jl
-```
-Launch Julia using this project and run the example menu:
-```julia
-julia --project
-include("examples/menu.jl")
-```
-The first time will take some time, because the graphic libraries will get installed, the second time it is fast.
 
 ## Further reading
 These models are described in detail in [Dynamic Model of a Pumping Kite Power System](http://arxiv.org/abs/1406.6218).
