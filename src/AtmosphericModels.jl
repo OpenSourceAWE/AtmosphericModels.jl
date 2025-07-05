@@ -52,9 +52,20 @@ end
 
 const AM = AtmosphericModel
 
+"""
+    clear(s::AM)
 
+Clears or resets the state of the given `AM` (Atmospheric Model) instance `s`.
+
+# Arguments
+- `s::AM`: An instance of the `AM` (Atmospheric Model) struct containing atmospheric parameters.
+
+# Returns
+nothing
+"""
 function clear(s::AM)
      s.rho_zero_temp       = (15.0 - ABS_ZERO) / (s.set.temp_ref - ABS_ZERO) * s.set.rho_0
+    nothing
 end
 
 @inline function fastexp(x)
