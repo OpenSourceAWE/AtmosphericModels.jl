@@ -21,4 +21,6 @@ clear
 calc_rho
 calc_wind_factor
 get_wind
+new_windfield
+new_windfields
 ```

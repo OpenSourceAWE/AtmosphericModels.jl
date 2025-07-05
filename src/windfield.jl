@@ -345,7 +345,7 @@ end
 """
     new_windfield(am::AtmosphericModel, v_wind_gnd; prn=true)
 
-Create a new wind field object using the given ground wind velocity vector `v_wind_gnd`.
+Create a new wind field file using the given, scalar ground wind velocity `v_wind_gnd`.
 
 # Parameters
 - `am::AtmosphericModel`: The atmospheric model for which the wind field is created.
@@ -353,7 +353,7 @@ Create a new wind field object using the given ground wind velocity vector `v_wi
 - `prn`: Optional boolean flag to control printing of progress messages (default is `true`).
 
 # Returns
-nothing
+- nothing
 """
 function new_windfield(am::AtmosphericModel, v_wind_gnd; prn=true)
     Random.seed!(1234) 
@@ -368,13 +368,14 @@ function new_windfield(am::AtmosphericModel, v_wind_gnd; prn=true)
 end
 
 """
-    new_windfields(am::AtmosphericModel)
+    new_windfields(am::AtmosphericModel; prn=true)
 
 Create and initialize new wind fields for all ground wind speeds, defined in `am.set.v_wind_gnds` and save them
 for the given `AtmosphericModel` instance `am`.
 
 # Arguments
 - `am::AtmosphericModel`: The atmospheric model for which wind fields are to be generated.
+- `prn`: Optional boolean flag to control printing of progress messages (default is `true`).
 
 # Returns
 - nothing
