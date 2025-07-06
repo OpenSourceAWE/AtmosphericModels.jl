@@ -1,5 +1,5 @@
 environment:
-    v_wind: 10.0             # wind speed at reference height          [m/s]
+    v_wind: 10.35            # wind speed at reference height          [m/s]
     upwind_dir: -90.0        # upwind direction                        [deg]
     temp_ref: 15.0           # temperature at reference height         [°C]
     height_gnd: 0.0          # height of groundstation above see level [m]

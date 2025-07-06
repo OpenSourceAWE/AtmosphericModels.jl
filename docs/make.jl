@@ -25,7 +25,7 @@ makedocs(;
         "Home" => "index.md",
         "API"  => "api.md",
         "Settings" => "settings.md",
-        "3D Wind Field" => "wind_field.md",
+        "3D Wind Fields" => "wind_field.md",
     ],
 )
 

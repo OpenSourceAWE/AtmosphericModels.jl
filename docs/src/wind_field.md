@@ -3,11 +3,43 @@ CurrentModule = AtmosphericModels
 ```
 ## Wind Fields
 
+### Wind shear, scenario Maasvlakte (near shore), The Netherlands
+To determine the wind speed vw at the height of the kite and at
+the height of each tether segment, the power law and the log
+law are used. Input parameters are the ground wind speed
+$v_\mathrm{w,ref}$ and the current height $z$ of the kite or tether segment. The
+ground wind speed used in this paper was measured at $z_\mathrm{ref} = 6.0~m$.
+The power law establishes the relationship between $v_\mathrm{w}$ and $v_\mathrm{w,ref}$ as
+
+$v_\mathrm{w} = v_\mathrm{w,ref}\left(\frac{z}{10~\mathrm{m}}\right)^{\mathrm{p}}$
+
+with the exponent $p$ as fitting parameter. The logarithmic law can be written in the following form
+
+$v_\mathrm{w,log} = v_\mathrm{w,ref}\left( \frac{\mathrm{log}(z/z_0)}{\mathrm{log}(z_\mathrm{ref}/z_0)}\right)$
+
+where $z_\mathrm{ref}$ is the reference height and $z_0$ is the roughness length. For
+the paper **Fechner (2015)** not only the ground wind speed $v_\mathrm{w,ref}$ is measured, but
+once per flight additionally the wind speed at two more heights, $z_1$
+and $z_2$. Then, a wind profile is fitted to these three wind speeds. To
+make a fit with three (speed, height) pairs possible, Eqs. (2) and (1)
+are combined in the following way
+
+$v_\mathrm{w} = v_\mathrm{w,log} + K (v_\mathrm{w,log} - v_\mathrm{w,exp})$
+
+The fit is done by varying the surface roughness z0 and K until vw
+according to Eq. (3) matches the measured wind speed at all three
+heights. The following result was achieved:
+
+| Parameter  | Value  |
+|:---:|:------:|
+| K   | 1.0    |
+| p   | 0.08163| 
+|$z_0$| 0.0002 |
+
 ### Wind shear, scenario Cabauw, The Netherlands
 Wind data from Royal Netherlands Meteorological Institute (KNMI 2011) at the
 inland location Cabauw, The Netherlands was used and the wind profile fitted, using
 the power law according to the following equation:
-
 
 $v_\mathrm{w} = v_\mathrm{w,ref}\left(\frac{z}{10~\mathrm{m}}\right)^{\mathrm{p}}$
 
