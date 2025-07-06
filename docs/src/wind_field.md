@@ -57,6 +57,8 @@ chosen such that the wind speed sequence repeats every 13.5 minutes at a wind sp
 **KNMI 2011** KNMI, The Royal Netherlands Meteorological Institute. (2011). Cesar Tower Meteoro
 logical Profiles (Wind Data from Cabauw, The Netherlands), validated. Retrieved
 from [www.cesar-database.nl](http://www.cesar-database.nl)  
-**Mann 1994** Mann, J. (1994, April). The spatial structure of neutral atmospheric surface-layer turbulence. Journal of Fluid Mechanics, 273, 141. doi:10.1017/S0022112094001886  
-**Mann 1998** Mann, J. (1998, October). Wind field simulation. Probabilistic Engineering Mechanics, 13(4), 269–282. doi:10.1016/S0266-8920(97)00036-2
+
+**Mann 1994** Mann, J. (1994, April). The spatial structure of neutral atmospheric surface-layer turbulence. Journal of Fluid Mechanics, 273, 141. [doi:10.1017/S0022112094001886](https://doi.org/10.1017/S0022112094001886)  
+
+**Mann 1998** Mann, J. (1998, October). Wind field simulation. Probabilistic Engineering Mechanics, 13(4), 269–282. [doi:10.1016/S0266-8920(97)00036-2](https://doi.org/10.1016/S0266-8920(97)00036-2)
 
