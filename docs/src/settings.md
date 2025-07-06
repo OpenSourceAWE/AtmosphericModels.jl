@@ -2,11 +2,20 @@
 CurrentModule = AtmosphericModels
 ```
 
+## Settings
 The parameters af the atmospheric model can be configured in the section `environment` of the `settings.yaml` file in the `data` folder.
 
 The file `system.yaml` specifies which `yaml` files are used to configure
 the current project.
 
+### Example for system.yaml
+```yaml
+system:
+    project: "settings.yaml"  # simulator settings
+```
+Often additional `yaml` files, for example for the controller settings are used.
+
+### Example for settings.yaml
 ```yaml
 environment:
     v_wind: 5.324            # wind speed at reference height          [m/s]
@@ -30,3 +39,6 @@ environment:
     height_step: 2.0         # use a grid with 2m resolution in z direction                                 [m]
     grid_step:   2.0         # grid resolution in x and y direction    [m]
 ```
+
+## Remarks
+- If the parameter `use_turbulence` is zero, no windfield is loaded.
