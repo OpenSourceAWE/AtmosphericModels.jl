@@ -1,8 +1,6 @@
 /Manifest.toml
 .vscode/settings.json
-data/windfield_4050_500_1.0_5.3.npz
-data/windfield_4050_500_1.0_3.5.npz
-data/windfield_4050_500_1.0_8.2.npz
+data/*.npz
 examples/Manifest.toml
 examples/Manifest-v1.10.toml
 examples/Manifest-v1.11.toml
