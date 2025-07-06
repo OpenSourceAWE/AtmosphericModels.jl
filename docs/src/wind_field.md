@@ -26,9 +26,14 @@ are combined in the following way
 
 $v_\mathrm{w} = v_\mathrm{w,log} + K (v_\mathrm{w,log} - v_\mathrm{w,exp})$
 
-The fit is done by varying the surface roughness $z_0$ and K until $v_\mathrm{w}$
-according to Eq. (3) matches the measured wind speed at all three
-heights. The following result was achieved:
+The fit is done by varying the surface roughness $z_0$ and $K$ until $v_\mathrm{w}$ according to Eq. (3) matches the measured wind speed at all three heights. The exponent $\alpha$ is chosen according to
+
+$\alpha = \frac{\mathrm{log} (v_\mathrm{w,exp}(z_1)) / v_\mathrm{w,ref}}{\mathrm{log}(z) - \mathrm{log}(z_\mathrm {ref})}$
+
+which results in $v_\mathrm{w,exp}(z_1) = v_\mathrm{w,log}(z_1)$.
+
+
+The following result was achieved:
 
 | Parameter| Value  |
 |:--------:|:------:|
@@ -45,16 +50,14 @@ am::AtmosphericModel = AtmosphericModel(set)
 
 ### Wind shear, scenario Cabauw, The Netherlands
 Wind data from Royal Netherlands Meteorological Institute (KNMI 2011) at the
-inland location Cabauw, The Netherlands was used and the wind profile fitted, using
-the power law according to the following equation:
+inland location Cabauw, The Netherlands was used and the wind profile fitted, using the power law according to the following equation:
 
 $v_\mathrm{w} = v_\mathrm{w,ref}\left(\frac{z}{z_\mathrm{ref}}\right)^{\mathrm{\alpha}}$
 
-where z is the height and $\alpha$ the power coefficient.
+where z is the height and $\alpha$ the power coefficient. 
 
 A coefficient **$\alpha$ = 0.234** was obtained, which is
-significantly larger than for the location Valkenburg. This is to be expected because
-Cabauw is a lot further away from the shore than Valkenburg.
+significantly larger than for the location Maasvlakte. This is to be expected because Cabauw is a lot further away from the shore than Maasvlakte.
 
 ### Wind turbulence, scenario Cabauw
 A one year measurement time series from the wind measurement tower in Cabauw was used to calibrate
