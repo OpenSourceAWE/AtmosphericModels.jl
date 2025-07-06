@@ -1,0 +1,49 @@
+```@meta
+CurrentModule = AtmosphericModels
+```
+## Wind Fields
+
+### Wind shear, scenario Cabauw, The Netherlands
+Wind data from Royal Netherlands Meteorological Institute (KNMI 2011) at the
+inland location Cabauw, The Netherlands was used and the wind profile fitted, using
+the power law according to the following equation:
+$$
+v_\mathrm{w} = v_\mathrm{w,ref}\left(\frac{z}{10~\mathrm{m}}\right)^{\mathrm{p}}
+$$
+where z is the height and p the power coefficient.
+
+A coefficient **p = 0.234** was obtained, which is
+significantly larger than for the location Valkenburg. This is to be expected because
+Cabauw is a lot further away from the shore than Valkenburg.
+
+### Wind turbulence, scenario Cabauw
+A one year measurement time series from the wind measurement tower in Cabauw was used to calibrate
+the wind speed, wind shear and wind turbulence of this scenario.
+
+The relative turbulence intensity I, the ratio of the standard deviation of the wind speed
+within 10 minute intervals and the 10 minute wind speed average ws calculated, based on
+the Cabauw data set from Royal Netherlands Meteorological Institute (KNMI 2011).
+Three scenarios are chosen for the simulation: The average ground wind speed of
+**3.483 m/s**, the wind speed for nominal power of **5.324 m/s** and the maximal wind speed
+for operation without the need to depower the kite of **8.163 m/s**.
+
+| $v_{w,g}$  | $I_{99}$ |$I_{197}$| Description      |
+|:----------:|:--------:|:-------:|:-----------------|
+|  3.483 m/s  |    8.5%  | 6.3%    |Average wind speed|
+|  5.324 m/s  |    9.7%  | 7.2%    |Nominal wind speed|
+|  8.163 m/s  |    9.8%  | 7.9%    |High wind speed   |
+
+The reference height for the ground wind speed is 6m. The reason for choosing 6m instead of the standard height of 10m is that during the flight tests only a 6m mast was available.
+
+A correction factor was used to adapt the turbulence from the IEC model to the measured values.
+In settings.yaml, this line defines the correction factors: `rel_turbs:   [0.342, 0.465, 0.583]`.
+
+As you see, in this scenario the turbulence increases with the average wind speed and decreases
+with the height.
+
+**References**
+
+**KNMI 2011** KNMI, The Royal Netherlands Meteorological Institute. (2011). Cesar Tower Meteoro
+logical Profiles (Wind Data from Cabauw, The Netherlands), validated. Retrieved
+from [www.cesar-database.nl](www.cesar-database.nl)
+
