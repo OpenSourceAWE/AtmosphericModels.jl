@@ -4,7 +4,7 @@ CurrentModule = AtmosphericModels
 ## Wind Fields
 
 ### Wind shear, scenario Maasvlakte (near shore), The Netherlands
-To determine the wind speed vw at the height of the kite and at
+To determine the wind speed $v_\mathrm{w}$ at the height of the kite and at
 the height of each tether segment, the power law and the log
 law are used. Input parameters are the ground wind speed
 $v_\mathrm{w,ref}$ and the current height $z$ of the kite or tether segment. The
