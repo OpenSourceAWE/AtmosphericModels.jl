@@ -1,9 +1,11 @@
 ```@meta
 CurrentModule = AtmosphericModels
 ```
-## Wind Fields
+# Wind Fields
 
-### Wind shear, scenario Maasvlakte (near shore), The Netherlands
+## Wind shear, scenario Maasvlakte, NL
+Maasvlakte is a location close to Rotterdam, The Netherlands, very close to the sea (near-shore).
+
 To determine the wind speed $v_\mathrm{w}$ at the height of the kite and at
 the height of each tether segment, the power law and the log
 law are used. Input parameters are the ground wind speed
@@ -48,7 +50,7 @@ set = load_settings("system_nearshore.yaml"; relax=true)
 am::AtmosphericModel = AtmosphericModel(set)
 ```
 
-### Wind shear, scenario Cabauw, The Netherlands
+## Wind shear, scenario Cabauw, NL
 Wind data from Royal Netherlands Meteorological Institute (KNMI 2011) at the
 inland location Cabauw, The Netherlands was used and the wind profile fitted, using the power law according to the following equation:
 
@@ -59,7 +61,7 @@ where z is the height and $\alpha$ the power coefficient.
 A coefficient **$\alpha$ = 0.234** was obtained, which is
 significantly larger than for the location Maasvlakte. This is to be expected because Cabauw is a lot further away from the shore than Maasvlakte.
 
-### Wind turbulence, scenario Cabauw
+## Wind turbulence, scenario Cabauw
 A one year measurement time series from the wind measurement tower in Cabauw was used to calibrate
 the wind speed, wind shear and wind turbulence of this scenario.
 
