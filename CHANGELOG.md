@@ -5,3 +5,4 @@
 
 ## Added
 - The function `get_wind(am, x, y, z, t)` which returns a wind vector for the given position and time. It creates a 3D wind field if it does not exist in the data folder. The parameters of this wind field are configured in `settings.yaml`.
+- Documenter generated documentation. 

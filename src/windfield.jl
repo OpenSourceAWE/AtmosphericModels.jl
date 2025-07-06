@@ -50,6 +50,18 @@ function calc_sigma1(am, v_wind_gnd)
     am.set.i_ref * (0.75 * v_height + 5.6)
 end
 
+"""
+    rel_turbo(am::AtmosphericModel, v_wind = am.set.v_wind)
+
+Find the closest relative turbulence value for a given ground wind speed.
+
+# Arguments
+- `am::AtmosphericModel`: The atmospheric model instance containing relevant parameters.
+- `v_wind`: (Optional) The wind velocity to use for the calculation. Defaults to `am.set.v_wind`.
+
+# Returns
+- The computed relative turbulence value.
+"""
 function rel_turbo(am::AtmosphericModel, v_wind = am.set.v_wind)
     # Find the closest relative turbulence value for a given ground wind speed
     min_dist, idx = findmin(abs.(am.set.v_wind_gnds .- v_wind))
@@ -271,13 +283,12 @@ function create_windfield(x, y, z; sigma1=nothing, gamma=3.9, ae=0.1, length_sca
 end
 
 """
-    get_wind(wf::WindField, am::AtmosphericModel, x, y, z, t; interpolate=false)
+    get_wind(am::AtmosphericModel, x, y, z, t; interpolate=false)
 
 Returns the wind vector at the specified position (`x`, `y`, `z`) and time `t` using the given 
-`WindField` (`wf`) and `AtmosphericModel` (`am`).
+`AtmosphericModel` (`am`).
 
 # Arguments
-- `wf::WindField`: The wind field object containing wind data.
 - `am::AtmosphericModel`: The atmospheric model providing environmental parameters.
 - `x`, `y`, `z`: Coordinates specifying the location where the wind is to be evaluated. [m]
 - `t`: Time at which the wind is to be evaluated. [s]
@@ -346,7 +357,7 @@ end
 """
     new_windfield(am::AtmosphericModel, v_wind_gnd; prn=true)
 
-Create a new wind field object using the given ground wind velocity vector `v_wind_gnd`.
+Create a new wind field file using the given, scalar ground wind velocity `v_wind_gnd`.
 
 # Parameters
 - `am::AtmosphericModel`: The atmospheric model for which the wind field is created.
@@ -354,7 +365,7 @@ Create a new wind field object using the given ground wind velocity vector `v_wi
 - `prn`: Optional boolean flag to control printing of progress messages (default is `true`).
 
 # Returns
-nothing
+- nothing
 """
 function new_windfield(am::AtmosphericModel, v_wind_gnd; prn=true)
     Random.seed!(1234) 
@@ -369,13 +380,14 @@ function new_windfield(am::AtmosphericModel, v_wind_gnd; prn=true)
 end
 
 """
-    new_windfields(am::AtmosphericModel)
+    new_windfields(am::AtmosphericModel; prn=true)
 
 Create and initialize new wind fields for all ground wind speeds, defined in `am.set.v_wind_gnds` and save them
 for the given `AtmosphericModel` instance `am`.
 
 # Arguments
 - `am::AtmosphericModel`: The atmospheric model for which wind fields are to be generated.
+- `prn`: Optional boolean flag to control printing of progress messages (default is `true`).
 
 # Returns
 - nothing
