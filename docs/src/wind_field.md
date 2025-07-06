@@ -11,7 +11,7 @@ $v_\mathrm{w,ref}$ and the current height $z$ of the kite or tether segment. The
 ground wind speed used in this paper was measured at $z_\mathrm{ref} = 6.0~m$.
 The power law establishes the relationship between $v_\mathrm{w}$ and $v_\mathrm{w,ref}$ as
 
-$v_\mathrm{w} = v_\mathrm{w,ref}\left(\frac{z}{z\mathrm{ref}}\right)^{\alpha}$
+$v_\mathrm{w} = v_\mathrm{w,ref}\left(\frac{z}{z_\mathrm{ref}}\right)^{\alpha}$
 
 with the exponent $p$ as fitting parameter. The logarithmic law can be written in the following form
 
@@ -26,7 +26,7 @@ are combined in the following way
 
 $v_\mathrm{w} = v_\mathrm{w,log} + K (v_\mathrm{w,log} - v_\mathrm{w,exp})$
 
-The fit is done by varying the surface roughness z0 and K until vw
+The fit is done by varying the surface roughness $z_0$ and K until $v_\mathrm{w}$
 according to Eq. (3) matches the measured wind speed at all three
 heights. The following result was achieved:
 
@@ -41,7 +41,7 @@ Wind data from Royal Netherlands Meteorological Institute (KNMI 2011) at the
 inland location Cabauw, The Netherlands was used and the wind profile fitted, using
 the power law according to the following equation:
 
-$v_\mathrm{w} = v_\mathrm{w,ref}\left(\frac{z}{z\mathrm{ref}}\right)^{\mathrm{\alpha}}$
+$v_\mathrm{w} = v_\mathrm{w,ref}\left(\frac{z}{z_\mathrm{ref}}\right)^{\mathrm{\alpha}}$
 
 where z is the height and $\alpha$ the power coefficient.
 
