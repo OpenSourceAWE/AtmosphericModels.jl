@@ -93,7 +93,10 @@ set_data_path("data")
 set = load_settings("system.yaml"; relax=true)
 am::AtmosphericModel = AtmosphericModel(set)
 ```
-If the file `windfield_4050_500_1.0_5.3.npz`, which contains the required wind field does not exist it will be created automatically. This might take 30s, but is required only once.
+If the file `windfield_4050_100_500_70_1.0_5.3.npz`, which contains the required wind field does not exist it will be created automatically. This might take 30s, but is required only once.
+
+**Known limitation:** Only three of the parameters that determine the wind field
+are encoded in the filename. Therefore, if you change one of the other parameters the wrong file might be loaded. Workaround: Delete all `*.npz` files in the data folder before changing another parameter than `grid`, `use_turbulence` or `v_wind_gnds`.
 
 **References**
 

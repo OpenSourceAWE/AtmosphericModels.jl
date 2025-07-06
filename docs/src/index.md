@@ -110,7 +110,7 @@ plot(heights, rhos, legend=false, xlabel="height [m]", ylabel="air density [kg/m
 ![Airdensity](airdensity.png)
 
 ## Further reading
-These models are described in detail in [Dynamic Model of a Pumping Kite Power System](http://arxiv.org/abs/1406.6218).
+These models are described in detail in [Dynamic Model of a Pumping Kite Power System](http://arxiv.org/abs/1406.6218). You can find a summary in the section [Wind Fields](@ref).
 
 ## Licence
 This project is licensed under the MIT License. Please see the below WAIVER in association with the license.
