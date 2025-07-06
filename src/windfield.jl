@@ -81,14 +81,14 @@ function nextpow2(i)
     n
 end
 
-function calc_full_name(v_wind_gnd; basename="windfield_4050_500", rel_sigma=1.0)
+function calc_full_name(v_wind_gnd; basename, rel_sigma=1.0)
     path = get_data_path() * "/"
     name = basename * "_" * @sprintf("%.1f", rel_sigma)
     name *= "_" * @sprintf("%.1f", v_wind_gnd)
     return path * name
 end
 
-function save(am, x, y, z, u, v, w, param; basename="windfield_4050_500", v_wind_gnd)
+function save(am, x, y, z, u, v, w, param; basename=calc_basename(am.set), v_wind_gnd)
     fullname = calc_full_name(v_wind_gnd; basename, rel_sigma=am.set.use_turbulence)
     @info "Saving wind field to: $fullname.npz"
     # Save as compressed .npz
@@ -103,7 +103,7 @@ function save(am, x, y, z, u, v, w, param; basename="windfield_4050_500", v_wind
     ))
 end
 
-function load(am::AtmosphericModel; basename="windfield_4050_500", v_wind_gnd=8.0)
+function load(am::AtmosphericModel; basename=calc_basename(am.set), v_wind_gnd=8.0)
     fullname = calc_full_name(v_wind_gnd, basename=basename)
     if !isfile(fullname * ".npz")
         # throw(ArgumentError("Wind field file not found: $fullname.npz"))
@@ -374,9 +374,14 @@ function new_windfield(am::AtmosphericModel, v_wind_gnd; prn=true)
     sigma1 = am.set.use_turbulence * calc_sigma1(am, v_wind_gnd)
     u, v, w = create_windfield(x, y, z, sigma1=sigma1)
     param = [am.set.alpha, v_wind_gnd]
-    save(am, x, y, z, u, v, w, param; basename="windfield_4050_500", v_wind_gnd)
+    # TODO calculate the basename based on am.set.grid
+    save(am, x, y, z, u, v, w, param; basename=calc_basename(am.set), v_wind_gnd)
     prn && @info "Finished creating and saving wind field!"
     nothing
+end
+
+function calc_basename(set::Settings)
+    "windfield_$(string(set.grid[1]))_$(string(set.grid[2]))_$(string(set.grid[3]))_$(string(set.grid[4]))" 
 end
 
 """
