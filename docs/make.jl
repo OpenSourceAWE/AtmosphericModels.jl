@@ -1,4 +1,4 @@
-using KiteUtils, AtmosphericModels
+using AtmosphericModels
 using Pkg
 if ("TestEnv" ∈ keys(Pkg.project().dependencies))
     if ! ("Documents" ∈ keys(Pkg.project().dependencies))
