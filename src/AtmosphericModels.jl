@@ -13,6 +13,30 @@ export new_windfield, new_windfields, get_wind
 const ABS_ZERO = -273.15
 const SRL = StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}, Int64}
 
+"""
+    struct WindField
+
+Struct that is storing a 3D model of wind vectors of the atmosphere. The Fields
+x, y and z store the grid coordinates, the fields u, v and w the wind turbulence
+vectors. 
+
+# Fields
+- x_max::Float64 = NaN
+- x_min::Float64 = NaN
+- y_max::Float64 = NaN
+- y_min::Float64 = NaN
+- z_max::Float64 = NaN
+- z_min::Float64 = NaN
+- last_speed::Float64 = 0.0
+- valid::Bool = false
+- x::Union{SRL, Array{Float64, 3}}
+- y::Union{SRL, Array{Float64, 3}}
+- z::Union{SRL, Array{Float64, 3}}
+- u::Array{Float64, 3}
+- v::Array{Float64, 3}
+- w::Array{Float64, 3}
+- param::Vector{Float64} = [0, 0] # [alpha, `v_wind_gnd`]
+"""
 Base.@kwdef struct WindField
     x_max::Float64 = NaN
     x_min::Float64 = NaN
@@ -39,7 +63,7 @@ Struct that is storing the settings and the state of the atmosphere.
 # Fields
 - set::Settings: The Settings struct
 - `rho_zero_temp`
-- wf::Union{WindField, Nothing}: The 3D windfield or `nothing`
+- wf::Union{WindField, Nothing}: The 3D [`WindField`](@ref) or `nothing`
 """
 Base.@kwdef mutable struct AtmosphericModel
     set::Settings

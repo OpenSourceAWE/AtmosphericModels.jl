@@ -22,6 +22,10 @@ ProfileLaw
 AtmosphericModel
 AtmosphericModel(set::Settings; nowindfield::Bool=false)
 ```
+### Private types
+```@docs
+WindField
+```
 
 ## Functions
 
