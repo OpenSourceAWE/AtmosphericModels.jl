@@ -36,6 +36,13 @@ heights. The following result was achieved:
 |$\alpha$  | 0.08163| 
 |$z_0$     | 0.0002 |
 
+To use this atmospheric model, execute:
+```julia
+set_data_path("data")
+set = load_settings("system_nearshore.yaml"; relax=true)
+am::AtmosphericModel = AtmosphericModel(set)
+```
+
 ### Wind shear, scenario Cabauw, The Netherlands
 Wind data from Royal Netherlands Meteorological Institute (KNMI 2011) at the
 inland location Cabauw, The Netherlands was used and the wind profile fitted, using
@@ -78,12 +85,15 @@ The turbulence is modelled in three dimensions, using the Mann model as describe
 by **Mann (1994)** and **Mann (1998)**. The resulting homogeneous velocity field is obtained
 by a 3D FFT (Fast Fourier Transformation) of the spectral tensor. Randomization is done by a white noise vector to give the wave numbers a random phase and amplitude.
 A wind field of 4050 x 100 x 500 points with 2 m resolution is pre-calculated. To obtain the 3D wind speed vector at any given position a 3rd order spline interpolation is
-used. To take the time dependency of the wind into account, the product of the simulation
-time and the average wind speed at the height of the kite is added to the x-coordinate
-before the wind vector lookup. The turbulent component of the wind field is periodic
-in all directions, because it is generated using reverse FFT. The size of the wind field is
-chosen such that the wind speed sequence repeats every 13.5 minutes at a wind speed of
-10 m/s.
+used. To take the time dependency of the wind into account, the product of the simulation time and the average wind speed at the height of the kite is added to the x-coordinate before the wind vector lookup. The turbulent component of the wind field is periodic in all directions, because it is generated using reverse FFT. The size of the wind field is chosen such that the wind speed sequence repeats every 13.5 minutes at a wind speed of 10 m/s.
+
+To use this atmospheric model, execute:
+```julia
+set_data_path("data")
+set = load_settings("system.yaml"; relax=true)
+am::AtmosphericModel = AtmosphericModel(set)
+```
+If the file `windfield_4050_500_1.0_5.3.npz`, which contains the required wind field does not exist it will be created automatically. This might take 30s, but is required only once.
 
 **References**
 
