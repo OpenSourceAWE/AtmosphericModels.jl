@@ -7,7 +7,7 @@
 using Statistics, KiteUtils, AtmosphericModels, Test
 
 set_data_path("data")
-set = load_settings("system.yaml")
+set = load_settings("system.yaml"; relax=true)
 
 I99::Vector{Float64}  = [8.5, 9.7, 9.8] # Turbulence intensity at  99 m height
 I197::Vector{Float64} = [6.3, 7.2, 7.9] # Turbulence intensity at 197 m height

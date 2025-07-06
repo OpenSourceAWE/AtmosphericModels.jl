@@ -5,7 +5,7 @@ end
 using AtmosphericModels, KiteUtils, BenchmarkTools, Timers
 
 set_data_path("data")
-set = load_settings("system.yaml")
+set = load_settings("system.yaml"; relax=true)
 
 @info "Ground wind speed: $(set.v_wind) m/s"
 tic()

@@ -5,7 +5,7 @@ end
 using AtmosphericModels, BenchmarkTools, Remez, KiteUtils
 
 set_data_path()
-set = load_settings("system.yaml")
+set = load_settings("system.yaml"; relax=true)
 am::AtmosphericModel = AtmosphericModel(set)
 
 tofloat64(x) = [Float64(elem) for elem in x]

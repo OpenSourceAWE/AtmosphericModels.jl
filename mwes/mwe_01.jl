@@ -4,7 +4,7 @@ using KiteUtils
 using AtmosphericModels
 
 set_data_path("data")
-set = load_settings("system.yaml")
+set = load_settings("system.yaml"; relax=true)
 am::AtmosphericModel = AtmosphericModel(set)
 
 const GRID_STEP = 2.0  # Grid resolution in x/y (meters)

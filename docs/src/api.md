@@ -9,7 +9,7 @@ which can be created using the following code:
 using AtmosphericModels, KiteUtils
 
 set_data_path("data")
-set = load_settings("system.yaml")
+set = load_settings("system.yaml"; relax=true)
 am::AtmosphericModel = AtmosphericModel(set)
 ```
 This requires that the files `system.yaml` and `settings.yaml` exist in the folder `data`. See also [Settings](@ref).

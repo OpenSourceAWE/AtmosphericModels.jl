@@ -45,7 +45,7 @@ function wind_speed(am::AtmosphericModel, height::Number)
 end
 
 set_data_path("data")
-set = load_settings("system.yaml")
+set = load_settings("system.yaml"; relax=true)
 am::AtmosphericModel = AtmosphericModel(set)
 @info "Wind speed at reference height: $(am.set.v_wind) m/s"
 

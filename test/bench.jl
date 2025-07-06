@@ -1,7 +1,7 @@
 using AtmosphericModels, BenchmarkTools
 
 set_data_path()
-set = load_settings("system.yaml")
+set = load_settings("system.yaml"; relax=true)
 am::AtmosphericModel = AtmosphericModel(set)
 
 am.set.profile_law=6

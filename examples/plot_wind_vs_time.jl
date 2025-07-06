@@ -6,7 +6,7 @@ end
 using ControlPlots, Statistics, KiteUtils, AtmosphericModels
 
 set_data_path("data")
-set = load_settings("system.yaml")
+set = load_settings("system.yaml"; relax=true)
 am::AtmosphericModel = AtmosphericModel(set)
 
 function plot_wind_vs_time(am, x=0.0, y=0.0; z=197.3)

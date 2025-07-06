@@ -3,7 +3,7 @@ using Test
 
 cd("..")
 KiteUtils.set_data_path("data") 
-set = load_settings("system.yaml")
+set = load_settings("system.yaml"; relax=true)
 am = AtmosphericModel(set)
 
 include("test_windfield.jl")

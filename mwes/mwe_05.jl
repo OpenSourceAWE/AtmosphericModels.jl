@@ -11,7 +11,7 @@ function meshgrid(x, y)
 end
 
 set_data_path("data") 
-set = load_settings("system.yaml")
+set = load_settings("system.yaml"; relax=true)
 am = AtmosphericModel(set)
 
 x,y,z,u,v,w,param = AtmosphericModels.load_windfield(am, 5.324)
