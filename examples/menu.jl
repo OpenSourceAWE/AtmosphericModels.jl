@@ -7,6 +7,7 @@ if ! isfile("examples/Manifest.toml")
 end
 
 options = ["bench_get_wind = include(\"bench_get_wind.jl\")",
+           "get_wind_ = include(\"get_wind.jl\")",
            "load_windfield = include(\"load_windfield.jl\")",
            "plot_wind_vs_time_ = include(\"plot_wind_vs_time.jl\")",
            "plot_windfield_ = include(\"plot_windfield.jl\")",
