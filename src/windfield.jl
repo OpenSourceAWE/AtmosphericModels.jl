@@ -130,22 +130,22 @@ function ndgrid(xs, ys, zs)
 end
 
 """
-    create_grid(am, ny=50, nx=100, nz=50, z_min=25)
+    create_grid(am::AtmosphericModel)
 
 Creates a 3D grid for the wind field model.
 
 # Parameters
 - `am`:       An instance of `AtmosphericModel` containing the settings.
-- `ny=50`:    Number of grid points in the y-direction.
-- `nx=100`:   Number of grid points in the x-direction.
-- `nz=50`:    Number of grid points in the z-direction (vertical).
-- `z_min=25`: Minimum height (starting z value) of the grid.
 
 # Returns Y, X and Z
 Three arrays representing the generated 3D grid.
 """
-function create_grid(am, ny=50, nx=100, nz=50, z_min=25)
+function create_grid(am::AtmosphericModel)
     res = am.set.grid_step
+    nx = am.set.grid[1]
+    ny = am.set.grid[2]
+    nz = am.set.grid[3]
+    z_min = am.set.grid[4]
     height_step = am.set.height_step
     y_range = range(-ny/2, ny/2, length=Int(ny/res)+1)
     x_range = range(0, nx, length=Int(nx/res)+1)
@@ -370,7 +370,7 @@ Create a new wind field file using the given, scalar ground wind velocity `v_win
 function new_windfield(am::AtmosphericModel, v_wind_gnd; prn=true)
     Random.seed!(1234) 
     prn && @info "Creating wind field for $v_wind_gnd m/s. This might take 30s or more..."
-    y, x, z = create_grid(am, 100, 4050, 500, 70)
+    y, x, z = create_grid(am)
     sigma1 = am.set.use_turbulence * calc_sigma1(am, v_wind_gnd)
     u, v, w = create_windfield(x, y, z, sigma1=sigma1)
     param = [am.set.alpha, v_wind_gnd]

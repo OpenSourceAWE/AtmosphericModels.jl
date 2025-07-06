@@ -10,7 +10,7 @@ am::AtmosphericModel = AtmosphericModel(set)
 const GRID_STEP = 2.0  # Grid resolution in x/y (meters)
 const HEIGHT_STEP = 2.0  # Z-resolution (meters)
 
-function create_grid(am, ny=50, nx=100, nz=50, z_min=25, res=GRID_STEP)
+function create_grid(am, res=GRID_STEP)
     res = Int(res)
     y_range = range(-ny÷2, ny÷2, length=ny÷res + 1)
     x_range = range(0, nx, length=nx÷res + 1)
@@ -26,7 +26,7 @@ function meshgrid(x, y, z)
 end
 
 # Create grid
-x, y, z = create_grid(am, 100, 4050, 500, 70)
+x, y, z = create_grid(am)
 
 # Get dimensions
 nx, ny, nz = size(x, 1), size(y, 2), size(z, 3)

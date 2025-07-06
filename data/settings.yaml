@@ -125,5 +125,6 @@ environment:
     i_ref: 0.14              # is the expected value of the turbulence intensity at 15 m/s.
     v_ref: 42.9              # five times the average wind speed in m/s at hub height over the full year    [m/s]
                              # Cabauw: 8.5863 m/s * 5.0 = 42.9 m/s
+    grid: [4050, 100, 500, 70] # grid size nx, ny, nz and minimal height z_min                              [m]
     height_step: 2.0         # use a grid with 2m resolution in z direction                                 [m]
     grid_step:   2.0         # grid resolution in x and y direction                                         [m]               

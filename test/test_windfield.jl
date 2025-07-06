@@ -53,17 +53,19 @@ end
     @test typeof(windfield) == Tuple{Vector{Int64}, Vector{Int64}, Vector{Int64}, Array{Float64, 3}, Array{Float64, 3},
                                      Array{Float64, 3}, Vector{Int64}}
 
+    am.set.grid=[20, 10, 10, 5]
     grid = AtmosphericModels.create_grid(am)
     @test typeof(grid) == Tuple{Array{Float64, 3}, Array{Float64, 3}, Array{Float64, 3}}
 
-    y, x, z = AtmosphericModels.create_grid(am, 10, 20, 10, 5)
+    y, x, z = AtmosphericModels.create_grid(am)
     u, v, w = AtmosphericModels.create_windfield(x, y, z; sigma1=1.2)
 
     set_data_path(olddir)
     cd(olddir)
 end
 
-y, x, z = AtmosphericModels.create_grid(am, 10, 20, 10, 5)
+am.set.grid=[20, 10, 10, 5]
+y, x, z = AtmosphericModels.create_grid(am)
 u, v, w = AtmosphericModels.create_windfield(x, y, z, sigma1=1.0)
 
 @testset "create_windfield" begin
