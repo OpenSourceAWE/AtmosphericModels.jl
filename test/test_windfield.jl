@@ -29,8 +29,8 @@ end
     set_data_path(tmpdir)
 
     v_wind_gnd = 5.324
-    fullname = AtmosphericModels.calc_full_name(v_wind_gnd)
-    @test basename(fullname) == "windfield_4050_500_1.0_5.3"
+    fullname = AtmosphericModels.calc_full_name(v_wind_gnd; basename="windfield_4050_100_500_70")
+    @test basename(fullname) == "windfield_4050_100_500_70_1.0_5.3"
     x, y, z = create_xyz()
     u, v, w = create_uvw()
     param = [1, 2]
