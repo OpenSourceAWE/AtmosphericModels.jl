@@ -30,4 +30,5 @@ makedocs(;
 deploydocs(;
     repo="github.com/OpenSourceAWE/AtmosphericModels.jl",
     devbranch="main",
+    push_preview=true,
 )
