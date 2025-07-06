@@ -7,9 +7,10 @@ CurrentModule = AtmosphericModels
 Wind data from Royal Netherlands Meteorological Institute (KNMI 2011) at the
 inland location Cabauw, The Netherlands was used and the wind profile fitted, using
 the power law according to the following equation:
-$$
-v_\mathrm{w} = v_\mathrm{w,ref}\left(\frac{z}{10~\mathrm{m}}\right)^{\mathrm{p}}
-$$
+
+
+$v_\mathrm{w} = v_\mathrm{w,ref}\left(\frac{z}{10~\mathrm{m}}\right)^{\mathrm{p}}$
+
 where z is the height and p the power coefficient.
 
 A coefficient **p = 0.234** was obtained, which is
