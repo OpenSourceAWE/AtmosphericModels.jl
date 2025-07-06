@@ -11,7 +11,7 @@ $v_\mathrm{w,ref}$ and the current height $z$ of the kite or tether segment. The
 ground wind speed used in this paper was measured at $z_\mathrm{ref} = 6.0~m$.
 The power law establishes the relationship between $v_\mathrm{w}$ and $v_\mathrm{w,ref}$ as
 
-$v_\mathrm{w} = v_\mathrm{w,ref}\left(\frac{z}{10~\mathrm{m}}\right)^{\mathrm{p}}$
+$v_\mathrm{w} = v_\mathrm{w,ref}\left(\frac{z}{10~\mathrm{m}}\right)^{\alpha}$
 
 with the exponent $p$ as fitting parameter. The logarithmic law can be written in the following form
 
@@ -33,7 +33,7 @@ heights. The following result was achieved:
 | Parameter  | Value  |
 |:---:|:------:|
 | K   | 1.0    |
-| p   | 0.08163| 
+|$\alpha$  | 0.08163| 
 |$z_0$| 0.0002 |
 
 ### Wind shear, scenario Cabauw, The Netherlands
@@ -41,11 +41,11 @@ Wind data from Royal Netherlands Meteorological Institute (KNMI 2011) at the
 inland location Cabauw, The Netherlands was used and the wind profile fitted, using
 the power law according to the following equation:
 
-$v_\mathrm{w} = v_\mathrm{w,ref}\left(\frac{z}{10~\mathrm{m}}\right)^{\mathrm{p}}$
+$v_\mathrm{w} = v_\mathrm{w,ref}\left(\frac{z}{10~\mathrm{m}}\right)^{\mathrm{\alpha}}$
 
-where z is the height and p the power coefficient.
+where z is the height and $\alpha$ the power coefficient.
 
-A coefficient **p = 0.234** was obtained, which is
+A coefficient **$\alpha$ = 0.234** was obtained, which is
 significantly larger than for the location Valkenburg. This is to be expected because
 Cabauw is a lot further away from the shore than Valkenburg.
 
@@ -86,6 +86,9 @@ chosen such that the wind speed sequence repeats every 13.5 minutes at a wind sp
 10 m/s.
 
 **References**
+
+**Fechner 2015** Fechner, U., Vlugt, R. V. D., Schreuder, E. & Schmehl, R. (2015). Dynamic Model of
+a Pumping Kite Power System. Renewable Energy, 83, 705–716. [doi:10.1016/j.renene.2015.04.028](https://doi.org/10.1016/j.renene.2015.04.028)
 
 **KNMI 2011** KNMI, The Royal Netherlands Meteorological Institute. (2011). Cesar Tower Meteoro
 logical Profiles (Wind Data from Cabauw, The Netherlands), validated. Retrieved
