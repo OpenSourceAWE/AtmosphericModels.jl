@@ -15,7 +15,7 @@ The power law establishes the relationship between $v_\mathrm{w}$ and $v_\mathrm
 
 $v_\mathrm{w} = v_\mathrm{w,ref}\left(\frac{z}{z_\mathrm{ref}}\right)^{\alpha}$
 
-with the exponent $p$ as fitting parameter. The logarithmic law can be written in the following form
+with the exponent $\alpha$ as fitting parameter. The logarithmic law can be written in the following form
 
 $v_\mathrm{w,log} = v_\mathrm{w,ref}\left( \frac{\mathrm{log}(z/z_0)}{\mathrm{log}(z_\mathrm{ref}/z_0)}\right)$
 
