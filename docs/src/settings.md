@@ -15,7 +15,7 @@ system:
 ```
 Often additional `yaml` files, for example for the controller settings are used.
 
-### Example for settings.yaml
+### Example for settings.yaml, scenario Cabauw, NL
 ```yaml
 environment:
     v_wind: 5.324            # wind speed at reference height          [m/s]
@@ -27,7 +27,7 @@ environment:
     rho_0:  1.225            # air density at zero height and 15 °C    [kg/m³]
     alpha:  0.234            # exponent of the wind profile law
     z0:     0.0002           # surface roughness                       [m]
-    profile_law: 1           # 1=EXP, 2=LOG, 3=EXPLOG, 4=FAST_EXP, 5=FAST_LOG, 6=FAST_EXPLOG
+    profile_law: 1           # 1=EXP, 2=LOG, 3=EXPLOG
     # the following parameters are for calculating the turbulent wind field using the Mann model
     use_turbulence: 1.0      # turbulence intensity relative to Cabauw, NL
     v_wind_gnds: [3.483, 5.324, 8.163] # wind speeds at ref height for calculating the turbulent wind field [m/s]
