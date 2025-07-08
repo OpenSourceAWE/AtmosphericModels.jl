@@ -91,7 +91,7 @@ wf = [calc_wind_factor(am, height, Int(EXPLOG)) for height in heights]
 
 plot(heights, wf, xlabel="height [m]", ylabel="wind factor", fig="Nearshore")
 ```
-![Wind profile nearshore](nearshore.png)
+![Wind profile nearshore](docs/src/nearshore.png)
 ```julia
 using AtmosphericModels, ControlPlots, KiteUtils
 am = AtmosphericModel(se())
