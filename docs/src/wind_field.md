@@ -64,8 +64,8 @@ A coefficient **$\alpha$ = 0.234** was obtained, which is
 significantly larger than for the location Maasvlakte. This is to be expected because Cabauw is a lot further away from the shore than Maasvlakte.
 
 ## Wind turbulence, scenario Cabauw
-A one year measurement time series from the wind measurement tower in Cabauw was used to calibrate
-the wind speed, wind shear and wind turbulence of this scenario.
+A one year measurement time series from the wind measurement tower in Cabauw was used by **Fechner (2016)**
+to calibrate the wind speed, wind shear and wind turbulence of this scenario.
 
 The relative turbulence intensity I, the ratio of the standard deviation of the wind speed
 within 10 minute intervals and the 10 minute wind speed average ws calculated, based on
@@ -109,6 +109,8 @@ are encoded in the filename. Therefore, if you change one of the other parameter
 
 **Fechner 2015** Fechner, U., Vlugt, R. V. D., Schreuder, E. & Schmehl, R. (2015). Dynamic Model of
 a Pumping Kite Power System. Renewable Energy, 83, 705–716. [doi:10.1016/j.renene.2015.04.028](https://doi.org/10.1016/j.renene.2015.04.028)
+
+**Fechner 2016** Fechner, U. (2016). A Methodology for the Design of Kite-Power Control Systems (Doctoral thesis, Delft University of Technology). 87-91. [doi:10.4233/uuid:85efaf4c-9dce-4111-bc91-7171b9da4b77](https://doi.org/10.4233/uuid:85efaf4c-9dce-4111-bc91-7171b9da4b77)
 
 **KNMI 2011** KNMI, The Royal Netherlands Meteorological Institute. (2011). Cesar Tower Meteoro
 logical Profiles (Wind Data from Cabauw, The Netherlands), validated. Retrieved
