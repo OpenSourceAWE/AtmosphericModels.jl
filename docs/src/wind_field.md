@@ -45,7 +45,7 @@ The following result was achieved:
 |$z_0$     | 0.0002 |
 
 ```@raw html
-<center><img src="wind_profile.png" width="500" height="333"/></center>
+<center><img src="https://raw.githubusercontent.com/OpenSourceAWE/AtmosphericModels.jl/refs/heads/main/docs/src/wind_profile.png" width="500" height="333"/></center>
 ``` 
 
 To use this atmospheric model, execute:
