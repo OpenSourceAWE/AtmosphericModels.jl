@@ -5,7 +5,7 @@ using HypergeometricFunctions:_₂F₁
 using NPZ, Printf
 using FFTW, LinearAlgebra, Random, Statistics
 
-export AtmosphericModel, ProfileLaw, EXP, LOG, EXPLOG, FAST_EXP, FAST_LOG, FAST_EXPLOG
+export AtmosphericModel, ProfileLaw, EXP, LOG, EXPLOG
 export clear, calc_rho, calc_wind_factor, rel_turbo
 
 export new_windfield, new_windfields, get_wind
@@ -146,9 +146,6 @@ Enumeration to describe the wind profile low that is used.
     EXP=1 
     LOG=2 
     EXPLOG=3 
-    FAST_EXP=4 
-    FAST_LOG=5 
-    FAST_EXPLOG=6
 end
 
 @doc """
@@ -193,27 +190,6 @@ end
     log1 +  K * (log1 - exp1)
 end
 
-@inline function calc_wind_factor(s::AM, height, ::Type{Val{4}}); calc_wind_factor4(s, height); end
-@inline function calc_wind_factor4(s::AM, height)
-    if height < 6.0 return 1.0 end
-    evalpoly(1/height, (1.8427619589823305, 3617.0786194064476, 590119.886685333, -2.53435240735932e6, 5.4120682033388115e7, -9.636216067310344e8, 1.2056636533430845e10, -9.962127083327875e10, 5.1324465874649536e11, -1.4865348277628154e12, 1.8431054022301477e12))/
-        evalpoly(1/height, (1.0, 2487.0429567107535, 495940.74312868936))
-end
-
-@inline function calc_wind_factor(s::AM, height, ::Type{Val{5}}); calc_wind_factor5(s, height); end
-@inline function calc_wind_factor5(s::AM, height)
-    if height < 6.0 return 1.0 end
-    evalpoly(1/height, (1.7254692847178346, 3180.6368701426595, 489764.5131517146, -2.1080713892318057e6, 4.227143439940046e7, -7.322154139158928e8, 9.013764300164715e9, -7.36716754548423e10, 3.7658022380555835e11, -1.0842283673197954e12, 1.338030926540245e12))/
-        evalpoly(1/height, (1.0, 2200.4764287411545, 404389.8285052791))
-end
-
-@inline function calc_wind_factor(s::AM, height, ::Type{Val{6}}); calc_wind_factor6(s, height); end
-function calc_wind_factor6(s::AM, height)
-    if height < 6.0 return 1.0 end
-    evalpoly(1/height, (1.6133163094857612, 2488.963179734051, 343230.7633444393, -1.450703528831999e6, 2.6919154959563803e7, -4.4848947369166476e8, 5.387689053876384e9, -4.329358467994954e10, 2.1854676308520227e11, -6.232058566966395e11, 7.632537480818357e11))/
-        evalpoly(1/height, (1.0, 1735.2333827029918, 279373.0012683715))
-end
-
 """
     calc_wind_factor(am::AM, height; profile_law::Int64=am.set.profile_law)
 
@@ -234,13 +210,7 @@ Calculates the wind factor at a given `height` using the specified wind profile 
     elseif profile_law == 2
         calc_wind_factor2(am, height)
     elseif profile_law == 3
-        calc_wind_factor3(am, height)
-    elseif profile_law == 4
-        calc_wind_factor4(am, height)
-    elseif profile_law == 5
-        calc_wind_factor5(am, height)
-    elseif profile_law == 6
-        calc_wind_factor6(am, height)    
+        calc_wind_factor3(am, height)   
     else
         throw(DomainError(profile_law, "invalid profile_law"))
     end
