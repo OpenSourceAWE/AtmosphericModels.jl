@@ -44,7 +44,9 @@ The following result was achieved:
 |$\alpha$  | 0.08163| 
 |$z_0$     | 0.0002 |
 
-![Fitted wind profile nearshore](wind_profile.png)
+```@raw html
+<center><img src="wind_profile.png" width="500" height="333"/></center>
+``` 
 
 To use this atmospheric model, execute:
 ```julia
