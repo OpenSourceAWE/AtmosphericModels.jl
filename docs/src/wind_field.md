@@ -43,6 +43,8 @@ The following result was achieved:
 |$\alpha$  | 0.08163| 
 |$z_0$     | 0.0002 |
 
+![Fitted wind profile nearshore](wind_profile.png)
+
 To use this atmospheric model, execute:
 ```julia
 set_data_path("data")
