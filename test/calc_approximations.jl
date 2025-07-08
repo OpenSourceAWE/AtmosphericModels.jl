@@ -1,6 +1,12 @@
-using AtmosphericModels, BenchmarkTools, Remez
+using Pkg
+if ! ("Remez" ∈ keys(Pkg.project().dependencies))
+    using TestEnv; TestEnv.activate()
+end
+using AtmosphericModels, BenchmarkTools, Remez, KiteUtils
 
-am = AtmosphericModel()
+set_data_path()
+set = load_settings("system.yaml"; relax=true)
+am::AtmosphericModel = AtmosphericModel(set)
 
 tofloat64(x) = [Float64(elem) for elem in x]
 function wind_factor1(height)
