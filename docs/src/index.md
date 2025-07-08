@@ -5,7 +5,7 @@ CurrentModule = AtmosphericModels
 This package provides functions for modelling the influence of the atmosphere on wind energy systems. It models the air density, the vertical wind profile and the wind turbulence. Further functions to import measured data are planned. 
 
 ## Installation
-Install [Julia 1.10](http://www.julialang.org) or later, if you haven't already. 
+Install [Julia 1.10](https://ufechner7.github.io/2024/08/09/installing-julia-with-juliaup.html) or later, if you haven't already. 
 
 First, create a new Julia project:
 ```bash
