@@ -122,12 +122,14 @@ plot(heights, rhos, legend=false, xlabel="height [m]", ylabel="air density [kg/m
 These models are described in detail in [Dynamic Model of a Pumping Kite Power System](http://arxiv.org/abs/1406.6218).
 
 ## Licence
-This project is licensed under the MIT License. Please see the below WAIVER in association with the license.
+This project is licensed under the MIT License. Please see the below `Copyright notice` in association with the licenses that can be found in the file [LICENSE](LICENSE) in this folder.
 
-## WAIVER
-Technische Universiteit Delft hereby disclaims all copyright interest in the package “AtmosphericModels.jl” (models for airborne wind energy systems) written by the Author(s).
+## Copyright notice
+Technische Universiteit Delft hereby disclaims all copyright interest in the package “KiteModels.jl” (models for airborne wind energy systems) written by the Author(s).
 
-Prof.dr. H.G.C. (Henri) Werij, Dean of Aerospace Engineering
+Prof.dr. H.G.C. (Henri) Werij, Dean of Aerospace Engineering, Technische Universiteit Delft.
+
+See the copyright notices in the source files, and the list of authors in [AUTHORS.md](AUTHORS.md).
 
 ## See also
 - [Research Fechner](https://research.tudelft.nl/en/publications/?search=Uwe+Fechner&pageSize=50&ordering=rating&descending=true)

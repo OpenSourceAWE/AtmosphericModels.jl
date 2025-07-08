@@ -1,0 +1,36 @@
+version = 1
+
+[[annotations]]
+path = ["*.*", ".github/*.*", ".github/workflows/*.*"]
+SPDX-FileCopyrightText = "2025 Uwe Fechner"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = ["docs/*.*", "docs/src/*.*"]
+SPDX-FileCopyrightText = "2025 Uwe Fechner"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = ["data/*.*"]
+SPDX-FileCopyrightText = "2025 Uwe Fechner"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = ["examples/*.*"]
+SPDX-FileCopyrightText = "2025 Uwe Fechner"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = ["test/*.*"]
+SPDX-FileCopyrightText = "2025 Uwe Fechner"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = ["src/*.*"]
+SPDX-FileCopyrightText = "2025 Uwe Fechner"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = ["mwes/*.*"]
+SPDX-FileCopyrightText = "2025 Uwe Fechner"
+SPDX-License-Identifier = "MIT"
