@@ -5,6 +5,15 @@
 
 ## Installation
 Install [Julia 1.10](http://www.julialang.org) or later, if you haven't already. You can add AtmosphericModels from  Julia's package manager, by typing 
+
+First, create a new Julia project:
+```bash
+mkdir test
+cd test
+julia --project=.
+```
+
+You can now add AtmosphericModels from  Julia's package manager, by typing 
 ```julia
 using Pkg
 pkg"add AtmosphericModels"
@@ -33,8 +42,8 @@ The EXPLOG profile law is the fitted linear combination of the exponential and t
 Launch Julia using this project and run the tests:
 ```julia
 julia --project
-using Pkg
-Pkg.test("AtmosphericModels")
+julia> using Pkg
+julia> Pkg.test("AtmosphericModels")
 ```
 
 ## Running the examples
@@ -50,20 +59,26 @@ include("examples/menu.jl")
 The first time will take some time, because the graphic libraries will get installed, the second time it is fast.
 
 ## Usage
-```julia
-using AtmosphericModels
-am = AtmosphericModel()
+### Calculate the height dependant wind speed
+Make sure that the folder `data` exist and contains the files `system_nearshore.yaml` and `settings_nearshore.yaml`.
+These configuration files contain the wind profile parameters, fitted to the near shore location Maasvlakte, NL
+on a specific day.
 
-const profile_law = Int(EXPLOG)
+```julia
+using AtmosphericModels, KiteUtils
+set_data_path("data")
+set = load_settings("system.yaml"; relax=true)
+am = AtmosphericModel(set)
+
 height = 100.0
-wf = calc_wind_factor(am, height, profile_law)
+wf = calc_wind_factor(am, height)
 ```
 The result is the factor with which the ground wind speed needs to be multiplied
 to get the wind speed at the given height.
 
 ## Using the turbulent wind field
 You can get a wind vector as function of x,y,z and time using the following code:
-```
+```julia
 using AtmosphericModels, KiteUtils
 
 set_data_path("data")
