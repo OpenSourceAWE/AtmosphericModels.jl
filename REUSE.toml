@@ -1,7 +1,7 @@
 version = 1
 
 [[annotations]]
-path = ["*.*", ".github/*.*", ".github/workflows/*.*"]
+path = ["*.*"]
 SPDX-FileCopyrightText = "2025 Uwe Fechner"
 SPDX-License-Identifier = "MIT"
 
