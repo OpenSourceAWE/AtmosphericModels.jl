@@ -43,9 +43,8 @@ If you check out the project using git, you can more easily run the examples:
 git clone https://github.com/OpenSourceAWE/AtmosphericModels.jl
 cd AtmosphericModels.jl
 ```
-Launch Julia using this project and run the example menu:
+Launch Julia using this project with `julia --project` and run the example menu:
 ```julia
-julia --project
 include("examples/menu.jl")
 ```
 The first time will take some time, because the graphic libraries will get installed, the second time it is fast.
