@@ -106,7 +106,7 @@ If the file `windfield_4050_100_500_70_1.0_5.3.npz`, which contains the required
 **Known limitation:** Only three of the parameters that determine the wind field
 are encoded in the filename. Therefore, if you change one of the other parameters the wrong file might be loaded. Workaround: Delete all `*.npz` files in the data folder before changing another parameter than `grid`, `use_turbulence` or `v_wind_gnds`.
 
-**References**
+## References
 
 **Fechner 2015** Fechner, U., Vlugt, R. V. D., Schreuder, E. & Schmehl, R. (2015). Dynamic Model of
 a Pumping Kite Power System. Renewable Energy, 83, 705–716. [doi:10.1016/j.renene.2015.04.028](https://doi.org/10.1016/j.renene.2015.04.028)
