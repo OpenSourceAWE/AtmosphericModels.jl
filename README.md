@@ -119,7 +119,7 @@ plot(heights, rhos, legend=false, xlabel="height [m]", ylabel="air density [kg/m
 <p align="center"><img src="./docs/src/airdensity.png" width="500" /></p>
 
 ## Further reading
-Please read the [documentation](https://OpenSourceAWE.github.io/AtmosphericModels.jl/dev), or have a look at the paper [Dynamic Model of a Pumping Kite Power System](http://arxiv.org/abs/1406.6218).
+Please read the [documentation](https://OpenSourceAWE.github.io/AtmosphericModels.jl/dev). At the end of the documentation you find references to the scientific literature.
 
 ## Licence
 This project is licensed under the MIT License. Please see the below `Copyright notice` in association with the licenses that can be found in the file [LICENSE](LICENSE) in this folder.
