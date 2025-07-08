@@ -8,7 +8,8 @@ Maasvlakte is a location close to Rotterdam, The Netherlands, very close to the 
 
 To determine the wind speed $v_\mathrm{w}$ at the height of the kite and at
 the height of each tether segment, the power law and the log
-law are used. Input parameters are the ground wind speed
+law, which according to **Stull (2000)** p. 20 is more accurate than the least-
+square power law, are used. Input parameters are the ground wind speed
 $v_\mathrm{w,ref}$ and the current height $z$ of the kite or tether segment. The
 ground wind speed used in this paper was measured at $z_\mathrm{ref} = 6.0~m$.
 The power law establishes the relationship between $v_\mathrm{w}$ and $v_\mathrm{w,ref}$ as
@@ -114,7 +115,9 @@ a Pumping Kite Power System. Renewable Energy, 83, 705–716. [doi:10.1016/j.ren
 
 **KNMI 2011** KNMI, The Royal Netherlands Meteorological Institute. (2011). Cesar Tower Meteoro
 logical Profiles (Wind Data from Cabauw, The Netherlands), validated. Retrieved
-from [www.cesar-database.nl](http://www.cesar-database.nl)  
+from [www.cesar-database.nl](http://www.cesar-database.nl)
+
+**Stull 2000** Stull, R. (2000). Meteorology for scientists and engineers: A technical companion book with Ahrens' Meteorology Today (2nd ed.). Brooks/Cole.
 
 **Mann 1994** Mann, J. (1994, April). The spatial structure of neutral atmospheric surface-layer turbulence. Journal of Fluid Mechanics, 273, 141. [doi:10.1017/S0022112094001886](https://doi.org/10.1017/S0022112094001886)  
 
