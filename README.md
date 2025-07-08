@@ -31,7 +31,7 @@ julia> Pkg.test("AtmosphericModels")
 
 ## Running the examples
 If you check out the project using git, you can more easily run the examples:
-```
+```bash
 git clone https://github.com/OpenSourceAWE/AtmosphericModels.jl
 cd AtmosphericModels.jl
 ```
