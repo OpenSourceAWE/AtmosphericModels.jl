@@ -20,24 +20,6 @@ pkg"add AtmosphericModels"
 ``` 
 at the Julia prompt.
 
-## Exported types
-```julia
-AtmosphericModel
-@enum ProfileLaw EXP=1 LOG=2 EXPLOG=3
-```
-
-## Exported functions
-```julia
-clear(s::AM)
-calc_rho(s::AM, height)
-calc_wind_factor(am::AM, height, profile_law::Int64=am.set.profile_law)
-```
-## Wind profile
-
-<p align="center"><img src="./docs/src/wind_profile.png" width="500" /></p>
-
-The EXPLOG profile law is the fitted linear combination of the exponential and the log law.
-
 ## Running the tests
 Launch Julia using this project and run the tests:
 ```julia
@@ -98,6 +80,28 @@ vx, vy, vz = get_wind(wf, am, x, y, z, t)
 It is suggested to check out the code using git before executing this example,
 because it requires that a data directory with the correct files `system.yaml`
 and `settings.yaml` exists. See below how to do that.
+
+## Plot a wind profile
+```julia
+using AtmosphericModels, KiteUtils, ControlPlots
+am = AtmosphericModel(se())
+
+heights = 6:1000
+wf = [calc_wind_factor(am, height, Int(EXPLOG)) for height in heights]
+
+plot(heights, wf, xlabel="height [m]", ylabel="wind factor", fig="Nearshore")
+```
+![Wind profile nearshore](nearshore.png)
+```julia
+using AtmosphericModels, ControlPlots, KiteUtils
+am = AtmosphericModel(se())
+AtmosphericModels.se().alpha = 0.234  # set the exponent of the power law
+
+heights = 6:200
+wf = [calc_wind_factor(am, height, Int(EXP)) for height in heights]
+
+plot(heights, wf, xlabel="height [m]", ylabel="wind factor", fig="Onshore")
+```
 
 ## Air density
 ```julia
