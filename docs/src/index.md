@@ -5,10 +5,19 @@ CurrentModule = AtmosphericModels
 This package provides functions for modelling the influence of the atmosphere on wind energy systems. It models the air density, the vertical wind profile and the wind turbulence. Further functions to import measured data are planned. 
 
 ## Installation
-Install [Julia 1.10](http://www.julialang.org) or later, if you haven't already. You can add AtmosphericModels from  Julia's package manager, by typing 
+Install [Julia 1.10](http://www.julialang.org) or later, if you haven't already. 
+
+First, create a new Julia project:
+```bash
+mkdir test
+cd test
+julia --project=.
+```
+
+You can now add AtmosphericModels from  Julia's package manager, by typing 
 ```julia
-using Pkg
-pkg"add AtmosphericModels"
+julia> using Pkg
+julia> pkg"add AtmosphericModels"
 ``` 
 at the Julia prompt.
 
@@ -16,8 +25,8 @@ at the Julia prompt.
 Launch Julia using this project and run the tests:
 ```julia
 julia --project
-using Pkg
-Pkg.test("AtmosphericModels")
+julia> using Pkg
+julia> Pkg.test("AtmosphericModels")
 ```
 
 ### Running the examples
@@ -29,26 +38,28 @@ cd AtmosphericModels.jl
 Launch Julia using this project and run the example menu:
 ```julia
 julia --project
-include("examples/menu.jl")
+julia> include("examples/menu.jl")
 ```
 The first time will take some time, because the graphic libraries will get installed, the second time it is fast.
 
 ## Usage
 ### Calculate the height dependant wind speed
-```julia
-using AtmosphericModels
-am = AtmosphericModel()
+Make sure that the folder `data` exist and contains the files `system_nearshore.yaml` and `settings_nearshore.yaml`.
+These configuration files contain the wind profile parameters, fitted to the near shore location Maasvlakte, NL
+on a specific day.
 
-const profile_law = Int(EXPLOG)
+```julia
+using AtmosphericModels, KiteUtils
+set_data_path("data")
+set = load_settings("system.yaml"; relax=true)
+am = AtmosphericModel(set)
+
 height = 100.0
-wf = calc_wind_factor(am, height, profile_law)
+wf = calc_wind_factor(am, height)
 ```
 The result is the factor with which the ground wind speed needs to be multiplied
 to get the wind speed at the given height.
 
-![Wind Profile](wind_profile.png)
-
-The `EXPLOG` profile law is the fitted linear combination of the exponential and the log law.
 
 ### Using the turbulent wind field
 You can get a wind vector as function of x,y,z and time using the following code:
@@ -81,9 +92,9 @@ am = AtmosphericModel(se())
 heights = 6:1000
 wf = [calc_wind_factor(am, height, Int(EXPLOG)) for height in heights]
 
-plot(heights, wf, xlabel="height [m]", ylabel="wind factor")
+plot(heights, wf, xlabel="height [m]", ylabel="wind factor", fig="Nearshore")
 ```
-
+![Wind profile nearshore](nearshore.png)
 ```julia
 using AtmosphericModels, ControlPlots, KiteUtils
 am = AtmosphericModel(se())
@@ -92,7 +103,7 @@ AtmosphericModels.se().alpha = 0.234  # set the exponent of the power law
 heights = 6:200
 wf = [calc_wind_factor(am, height, Int(EXP)) for height in heights]
 
-plot(heights, wf, xlabel="height [m]", ylabel="wind factor")
+plot(heights, wf, xlabel="height [m]", ylabel="wind factor", fig="Onshore")
 ```
 
 ### Air density
