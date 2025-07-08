@@ -15,7 +15,23 @@ system:
 ```
 Often additional `yaml` files, for example for the controller settings are used.
 
-### Example for settings.yaml, scenario Cabauw, NL
+### Example settings_nearshore.yaml, scenario Maasvlakte, NL
+```yaml
+environment:
+    v_wind: 10.35            # wind speed at reference height          [m/s]
+    upwind_dir: -90.0        # upwind direction                        [deg]
+    temp_ref: 15.0           # temperature at reference height         [°C]
+    height_gnd: 0.0          # height of groundstation above see level [m]
+    h_ref:  6.0              # reference height for the wind speed     [m]
+
+    rho_0:  1.225            # air density at zero height and 15 °C    [kg/m³]
+    alpha:  0.08163          # exponent of the wind profile law
+    z0:     0.0002           # surface roughness                       [m]
+    profile_law: 3           # 1=EXP, 2=LOG, 3=EXPLOG
+    use_turbulence: 0.0      # turbulence intensity
+```
+
+### Example settings.yaml, scenario Cabauw, NL
 ```yaml
 environment:
     v_wind: 5.324            # wind speed at reference height          [m/s]
