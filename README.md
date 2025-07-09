@@ -121,7 +121,7 @@ plot(heights, rhos, legend=false, xlabel="height [m]", ylabel="air density [kg/m
 ## Further reading
 Please read the [documentation](https://OpenSourceAWE.github.io/AtmosphericModels.jl/dev). At the end of the documentation ([here](https://opensourceawe.github.io/AtmosphericModels.jl/dev/wind_field/#References)) you find references to the scientific literature.
 
-## Licence
+## License
 This project is licensed under the MIT License. Please see the below `Copyright notice` in association with the licenses that can be found in the file [LICENSE](LICENSE) in this folder.
 
 ## Copyright notice
