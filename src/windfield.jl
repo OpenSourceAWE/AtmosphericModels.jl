@@ -35,8 +35,9 @@ function WindField(am, speed; prn=true)
         z_max = maximum(z)
         z_min = minimum(z)
         return WindField(x_max, x_min, y_max, y_min, z_max, z_min, last_speed, valid, x, y, z, u, v, w, param)
-    catch
+    catch  e
         @error "Error reading wind field!"
+        println("Caught exception: ", e)
         return nothing
     end
 end
