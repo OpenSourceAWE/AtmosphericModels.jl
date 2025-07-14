@@ -105,7 +105,7 @@ function save(am, x, y, z, u, v, w, param; basename=calc_basename(am.set), v_win
 end
 
 function load(am::AtmosphericModel; basename=calc_basename(am.set), v_wind_gnd=8.0)
-    fullname = calc_full_name(v_wind_gnd, basename=basename)
+    fullname = calc_full_name(v_wind_gnd, basename=basename, rel_sigma=am.set.use_turbulence)
     if !isfile(fullname * ".npz")
         @warn "Wind field file not found: $fullname.npz"
         new_windfield(am::AtmosphericModel, v_wind_gnd; prn=true)
