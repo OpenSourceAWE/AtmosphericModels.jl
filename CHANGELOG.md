@@ -1,3 +1,7 @@
+## AtmosphericModels v0.3.2 2025-08-26
+### Added
+- add KiteUtils 0.11 compat
+
 ## AtmosphericModels v0.3.1 2025-07-14
 ### Fixed
 - when calculating the filename for the windfield to load, the `rel_sigma` parameter was ignored
