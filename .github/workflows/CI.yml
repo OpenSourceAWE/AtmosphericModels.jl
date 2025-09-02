@@ -70,14 +70,6 @@ jobs:
       - uses: julia-actions/setup-julia@v2
       - uses: julia-actions/cache@v2
       - uses: julia-actions/julia-buildpkg@v1
-      - name: Set up git credentials
-        run: git remote set-url upstream https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/OpenSourceAWE/AtmosphericModels.jl.git
-
-      - name: Push to GitHub Pages
-        run: git push upstream HEAD:gh-pages
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - uses: julia-actions/julia-docdeploy@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
