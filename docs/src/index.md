@@ -71,10 +71,9 @@ am::AtmosphericModel = AtmosphericModel(set)
 
 @info "Ground wind speed: $(am.set.v_wind) m/s"
 
-wf::WindField = WindField(am, am.set.v_wind)
 x, y, z = 20.0, 0.0, 200.0
 t = 0.0
-vx, vy, vz = get_wind(wf, am, x, y, z, t)
+vx, vy, vz = get_wind(am, x, y, z, t)
 @time get_wind(am, x, y, z, t)
 @info "Wind at x=$(x), y=$(y), z=$(z), t=$(t): v_x=$(vx), v_y=$(vy), v_z=$(vz)"
 @info "Wind speed: $(sqrt(vx^2 + vy^2 + vz^2)) m/s"
@@ -86,7 +85,10 @@ and `settings.yaml` exists. See below how to do that.
 ### Plot a wind profile
 ```julia
 using AtmosphericModels, KiteUtils, ControlPlots
-am = AtmosphericModel(se())
+set_data_path("data")
+set = load_settings("system.yaml"; relax=true)
+set.alpha = 0.08163
+am = AtmosphericModel(set)
 
 heights = 6:1000
 wf = [calc_wind_factor(am, height, Int(EXPLOG)) for height in heights]
@@ -96,8 +98,9 @@ plot(heights, wf, xlabel="height [m]", ylabel="wind factor", fig="Nearshore")
 ![Wind profile nearshore](nearshore.png)
 ```julia
 using AtmosphericModels, ControlPlots, KiteUtils
-am = AtmosphericModel(se())
-AtmosphericModels.se().alpha = 0.234  # set the exponent of the power law
+set_data_path("data")
+set = load_settings("system.yaml"; relax=true)
+am = AtmosphericModel(set)
 
 heights = 6:200
 wf = [calc_wind_factor(am, height, Int(EXP)) for height in heights]
@@ -107,15 +110,17 @@ plot(heights, wf, xlabel="height [m]", ylabel="wind factor", fig="Onshore")
 
 ### Air density
 ```julia
-using AtmosphericModels, BenchmarkTools, KiteUtils
-am = AtmosphericModel(se())
+using AtmosphericModels, BenchmarkTools, KiteUtils, ControlPlots
+set_data_path("data")
+set = load_settings("system.yaml"; relax=true)
+am = AtmosphericModel(set)
 @benchmark calc_rho(am, height) setup=(height=Float64((6.0+rand()*500.0)))
 ```
-This gives 4.85 ns as result. Plot the air density:
+Using a Ryzen 7840U CPU, this gives 3.1 ns as result. Plot the air density:
 ```julia
 heights = 6:1000
 rhos = [calc_rho(am, height) for height in heights]
-plot(heights, rhos, legend=false, xlabel="height [m]", ylabel="air density [kg/m³]")
+plot(heights, rhos, xlabel="height [m]", ylabel="air density [kg/m³]")
 ```
 ![Airdensity](airdensity.png)
 

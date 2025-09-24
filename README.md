@@ -100,7 +100,6 @@ using AtmosphericModels, ControlPlots, KiteUtils
 set_data_path("data")
 set = load_settings("system.yaml"; relax=true)
 am = AtmosphericModel(set)
-AtmosphericModels.se().alpha = 0.234  # set the exponent of the power law
 
 heights = 6:200
 wf = [calc_wind_factor(am, height, Int(EXP)) for height in heights]
@@ -110,15 +109,17 @@ plot(heights, wf, xlabel="height [m]", ylabel="wind factor", fig="Onshore")
 
 ## Air density
 ```julia
-using AtmosphericModels, BenchmarkTools, KiteUtils
-am = AtmosphericModel(se())
+using AtmosphericModels, BenchmarkTools, KiteUtils, ControlPlots
+set_data_path("data")
+set = load_settings("system.yaml"; relax=true)
+am = AtmosphericModel(set)
 @benchmark calc_rho(am, height) setup=(height=Float64((6.0+rand()*500.0)))
 ```
-This gives 4.85 ns as result. Plot the air density:
+Using a Ryzen 7840U CPU, this gives 3.1 ns as result. Plot the air density:
 ```julia
 heights = 6:1000
 rhos = [calc_rho(am, height) for height in heights]
-plot(heights, rhos, legend=false, xlabel="height [m]", ylabel="air density [kg/m³]")
+plot(heights, rhos, xlabel="height [m]", ylabel="air density [kg/m³]")
 ```
 <p align="center"><img src="./docs/src/airdensity.png" width="500" /></p>
 
