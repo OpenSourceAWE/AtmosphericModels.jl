@@ -84,7 +84,9 @@ and `settings.yaml` exists. See below how to do that.
 ## Plot a wind profile
 ```julia
 using AtmosphericModels, KiteUtils, ControlPlots
-am = AtmosphericModel(se())
+set_data_path("data")
+set = load_settings("system.yaml"; relax=true)
+am = AtmosphericModel(set)
 
 heights = 6:1000
 wf = [calc_wind_factor(am, height, Int(EXPLOG)) for height in heights]
