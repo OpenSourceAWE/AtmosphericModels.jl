@@ -5,7 +5,7 @@ using HypergeometricFunctions:_₂F₁
 using NPZ, Printf
 using FFTW, LinearAlgebra, Random, Statistics
 
-export AtmosphericModel, ProfileLaw, EXP, LOG, EXPLOG
+export AtmosphericModel, ProfileLaw, WindField, EXP, LOG, EXPLOG
 export clear, calc_rho, calc_wind_factor, rel_turbo
 
 export new_windfield, new_windfields, get_wind
