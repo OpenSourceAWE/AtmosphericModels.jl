@@ -86,6 +86,7 @@ and `settings.yaml` exists. See below how to do that.
 using AtmosphericModels, KiteUtils, ControlPlots
 set_data_path("data")
 set = load_settings("system.yaml"; relax=true)
+set.alpha = 0.08163
 am = AtmosphericModel(set)
 
 heights = 6:1000
@@ -96,7 +97,9 @@ plot(heights, wf, xlabel="height [m]", ylabel="wind factor", fig="Nearshore")
 ![Wind profile nearshore](docs/src/nearshore.png)
 ```julia
 using AtmosphericModels, ControlPlots, KiteUtils
-am = AtmosphericModel(se())
+set_data_path("data")
+set = load_settings("system.yaml"; relax=true)
+am = AtmosphericModel(set)
 AtmosphericModels.se().alpha = 0.234  # set the exponent of the power law
 
 heights = 6:200
