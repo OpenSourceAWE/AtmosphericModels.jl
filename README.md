@@ -6,7 +6,7 @@
 [![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.19071816-0A7BBB?style=flat-square)](https://doi.org/10.5281/zenodo.19071816)
 
 ## Installation
-Install [Julia 1.10](https://ufechner7.github.io/2024/08/09/installing-julia-with-juliaup.html) or later, if you haven't already. You can add AtmosphericModels from  Julia's package manager, by typing 
+Install [Julia 1.11](https://ufechner7.github.io/2024/08/09/installing-julia-with-juliaup.html) or later, if you haven't already. You can add AtmosphericModels from  Julia's package manager, by typing 
 
 First, create a new Julia project:
 ```bash
