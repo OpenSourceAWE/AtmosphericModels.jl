@@ -1,7 +1,7 @@
 name = "AtmosphericModels"
 uuid = "c59cac55-771d-4f45-b14d-1c681463a295"
 authors = ["Uwe Fechner <fechner@aenarete.eu> and contributors"]
-version = "0.3.2"
+version = "0.3.3"
 
 [deps]
 FFTW = "7a1cc6ca-52ef-59f5-83cd-3a7055c09341"
@@ -15,18 +15,18 @@ Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [compat]
-ControlPlots = "0.2.7"
+ControlPlots = "0.2.14"
 Documenter = "1.13.0"
 FFTW = "1.9.0"
 HypergeometricFunctions = "0.3"
 KiteUtils = "0.10, 0.11"
-LinearAlgebra = "1.10, 1.11"
+LinearAlgebra = "1.10, 1.11, 1.12"
 MeshGrid = "1.0.3"
 NPZ = "0.4.3"
-Printf = "1.10, 1.11"
-Random = "1.10, 1.11"
-Statistics = "1.10, 1.11"
-julia = "1.10, 1.11"
+Printf = "1.10, 1.11, 1.12"
+Random = "1.10, 1.11, 1.12"
+Statistics = "1.10, 1.11, 1.12"
+julia = "1.10, 1.11, 1.12"
 
 [extras]
 BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"

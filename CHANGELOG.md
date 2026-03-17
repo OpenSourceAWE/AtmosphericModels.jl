@@ -1,3 +1,9 @@
+## AtmosphericModels v0.3.3 2026-03-17
+### Added
+- the files `.zenodo.json` and `CITATION.cff`
+### Changed
+- support Julia 1.12
+
 ## AtmosphericModels v0.3.2 2025-08-26
 ### Added
 - add KiteUtils 0.11 compat
