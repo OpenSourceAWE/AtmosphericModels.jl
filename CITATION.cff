@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata from this file."
+title: "AtmosphericModels.jl"
+version: "0.3.2"
+type: software
+license: MIT
+authors:
+  - family-names: "Fechner"
+    given-names: "Uwe"
+    affiliation: "Delft University of Technology"
+repository-code: "https://github.com/OpenSourceAWE/AtmosphericModels.jl"
+url: "https://github.com/OpenSourceAWE/AtmosphericModels.jl"
+keywords:
+  - atmospheric modeling
+  - airborne wind energy
+  - wind profile
+  - turbulence
+  - julia
+abstract: "AtmosphericModels.jl provides atmospheric and wind field models for airborne wind energy simulations, including wind profile and air density calculations."

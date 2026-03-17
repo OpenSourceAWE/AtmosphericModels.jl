@@ -1,0 +1,20 @@
+{
+  "title": "AtmosphericModels.jl",
+  "description": "Atmospheric and wind field models for airborne wind energy simulations in Julia, including wind profile and air density calculations.",
+  "creators": [
+    {
+      "name": "Fechner, Uwe",
+      "affiliation": "Delft University of Technology"
+    }
+  ],
+  "license": "MIT",
+  "upload_type": "software",
+  "access_right": "open",
+  "keywords": [
+    "atmospheric modeling",
+    "airborne wind energy",
+    "wind profile",
+    "turbulence",
+    "julia"
+  ]
+}
