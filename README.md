@@ -3,6 +3,7 @@
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://OpenSourceAWE.github.io/AtmosphericModels.jl/dev)
 [![Build Status](https://github.com/OpenSourceAWE/AtmosphericModels.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/OpenSourceAWE/AtmosphericModels.jl/actions/workflows/CI.yml?query=branch%3Amain)
 [![Coverage](https://codecov.io/gh/OpenSourceAWE/AtmosphericModels.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/OpenSourceAWE/AtmosphericModels.jl)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19071816.svg)](https://doi.org/10.5281/zenodo.19071816)
 
 ## Installation
 Install [Julia 1.10](https://ufechner7.github.io/2024/08/09/installing-julia-with-juliaup.html) or later, if you haven't already. You can add AtmosphericModels from  Julia's package manager, by typing 
