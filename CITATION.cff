@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it using the metadata from this file."
 title: "AtmosphericModels.jl"
-version: "0.3.2"
+version: "0.3.3"
 type: software
 license: MIT
 authors:
