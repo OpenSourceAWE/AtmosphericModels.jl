@@ -92,34 +92,6 @@ echo "Detected Julia version: $julia_version (major: $julia_major)"
 
 export JULIA_PKG_SERVER_REGISTRY_PREFERENCE=eager
 
-if [[ "$(uname -s)" == "Linux" ]]; then
-    export FONTCONFIG_FILE=/etc/fonts/fonts.conf
-    # Preload Julia-bundled libraries to avoid version conflicts with older system libs.
-    _PRELOADS=()
-    _BUNDLED=$(find ~/.julia/artifacts -maxdepth 3 -name "libcrypto.so.3" -path "*/lib/*" 2>/dev/null | head -1); [[ -n "$_BUNDLED" ]] && _PRELOADS+=("$_BUNDLED")
-    _BUNDLED=$(find ~/.julia/artifacts -maxdepth 3 -name "libintl.so.8" -path "*/lib/*" 2>/dev/null | head -1); [[ -n "$_BUNDLED" ]] && _PRELOADS+=("$_BUNDLED")
-    _BUNDLED=$(find ~/.julia/artifacts -maxdepth 3 -name "libiconv.so.2" -path "*/lib/*" 2>/dev/null | head -1); [[ -n "$_BUNDLED" ]] && _PRELOADS+=("$_BUNDLED")
-    _BUNDLED=""
-    for _gl in $(find ~/.julia/artifacts -maxdepth 3 -name "libglib-2.0.so.0" -path "*/lib/*" 2>/dev/null); do
-        if nm -D "$_gl" 2>/dev/null | grep -q g_string_copy; then
-            _BUNDLED="$_gl"
-            break
-        fi
-    done
-    [[ -n "$_BUNDLED" ]] && _PRELOADS+=("$_BUNDLED")
-    _BUNDLED=""
-    for _fc in $(find ~/.julia/artifacts -maxdepth 3 -name "libfontconfig.so.1" -path "*/lib/*" 2>/dev/null); do
-        if nm -D "$_fc" 2>/dev/null | grep -q FcConfigSetDefaultSubstitute; then
-            _BUNDLED="$_fc"
-            break
-        fi
-    done
-    [[ -n "$_BUNDLED" ]] && _PRELOADS+=("$_BUNDLED")
-    if [[ ${#_PRELOADS[@]} -gt 0 ]]; then
-        export LD_PRELOAD=$(IFS=:; echo "${_PRELOADS[*]}")
-    fi
-    unset _PRELOADS _BUNDLED
-fi
 
 # Only accept Julia 1.10, 1.11, and 1.12
 if [[ $julia_major != "1.10" ]] && [[ $julia_major != "1.11" ]] && [[ $julia_major != "1.12" ]]; then
