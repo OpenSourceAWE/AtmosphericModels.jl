@@ -7,4 +7,10 @@ if [[ $(basename $(pwd)) == "bin" ]]; then
 fi
 export JULIA_PKG_SERVER_REGISTRY_PREFERANCE=eager
 
-LANG=en_US julia --project "$@"
+if [[ $# -gt 0 ]]; then
+    JULIA_ARGS=("$@")
+else
+    JULIA_ARGS=(-i -e 'using KiteUtils: menu')
+fi
+
+LANG=en_US julia --project "${JULIA_ARGS[@]}"
