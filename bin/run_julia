@@ -7,4 +7,4 @@ if [[ $(basename $(pwd)) == "bin" ]]; then
 fi
 export JULIA_PKG_SERVER_REGISTRY_PREFERANCE=eager
 
-LANG=en_US julia --project
+LANG=en_US julia --project "$@"
