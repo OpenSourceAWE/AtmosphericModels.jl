@@ -65,7 +65,7 @@ Find the closest relative turbulence value for a given ground wind speed.
 """
 function rel_turbo(am::AtmosphericModel, v_wind = am.set.v_wind)
     # Find the closest relative turbulence value for a given ground wind speed
-    min_dist, idx = findmin(abs.(am.set.v_wind_gnds .- v_wind))
+    _, idx = findmin(abs.(am.set.v_wind_gnds .- v_wind))
     return am.set.rel_turbs[idx]
 end
 
