@@ -21,7 +21,6 @@ if !("LiveServer" in globaldependencies())
 end
 
 if !("Documenter" ∈ keys(Pkg.project().dependencies))
-    using TestEnv
-    TestEnv.activate()
+    Pkg.activate(joinpath(@__DIR__, "..", "docs"))
 end
 using LiveServer; servedocs(launch_browser=true)

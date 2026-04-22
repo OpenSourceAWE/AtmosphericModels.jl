@@ -1,6 +1,6 @@
 using Pkg
 if ! ("ControlPlots" ∈ keys(Pkg.project().dependencies))
-    using TestEnv; TestEnv.activate()
+    Pkg.activate(joinpath(@__DIR__, "..", "examples"))
 end
 using ControlPlots
 

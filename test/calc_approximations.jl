@@ -1,7 +1,3 @@
-using Pkg
-if ! ("Remez" ∈ keys(Pkg.project().dependencies))
-    using TestEnv; TestEnv.activate()
-end
 using AtmosphericModels, BenchmarkTools, Remez, KiteUtils
 
 set_data_path()

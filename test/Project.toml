@@ -1,0 +1,12 @@
+[deps]
+AtmosphericModels = "c59cac55-771d-4f45-b14d-1c681463a295"
+BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
+KiteUtils = "90980105-b163-44e5-ba9f-8b1c83bb0533"
+Remez = "2e7db186-766a-50e7-8928-5c30181fb135"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[sources]
+AtmosphericModels = {path = ".."}
+
+[compat]
+julia = "1.10, 1.11, 1.12"
