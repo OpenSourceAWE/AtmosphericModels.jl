@@ -6,20 +6,6 @@
 
 using Pkg
 
-function globaldependencies()
-    projectpath = Pkg.project().path
-    basepath, _ = splitdir(projectpath)
-    Pkg.activate()
-    globaldependencies = keys(Pkg.project().dependencies)
-    Pkg.activate(basepath)
-    globaldependencies
-end
-
-if !("LiveServer" in globaldependencies())
-    println("Installing LiveServer globally!")
-    run(`julia -e 'using Pkg; Pkg.add("LiveServer")'`)
-end
-
 if !("Documenter" ∈ keys(Pkg.project().dependencies))
     Pkg.activate(joinpath(@__DIR__, "..", "docs"))
 end
