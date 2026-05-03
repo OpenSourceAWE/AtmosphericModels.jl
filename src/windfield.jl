@@ -308,7 +308,7 @@ The position is first rotated into the wind-aligned frame so that:
 - A tuple `(v_x, v_y, v_z)` representing the wind velocity in the wind-aligned frame [m/s],
   where `v_x` is the along-wind component (includes mean wind), `v_y` is cross-wind, `v_z` is vertical.
 """
-function get_wind(am::AtmosphericModel, x, y, z, t; upwind_dir=0.0, interpolate=false)
+function get_wind(am::AtmosphericModel, x, y, z, t; upwind_dir=-π/4, interpolate=false)
     @assert z >= 5.0 "Height must be at least 5 m"
     wf = am.wf
     @assert wf !== nothing "Wind field is not initialized"
