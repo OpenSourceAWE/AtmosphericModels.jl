@@ -284,22 +284,31 @@ function create_windfield(x, y, z; sigma1=nothing, gamma=3.9, ae=0.1, length_sca
 end
 
 """
-    get_wind(am::AtmosphericModel, x, y, z, t; interpolate=false)
+    get_wind(am::AtmosphericModel, x, y, z, t; upwind_dir=0.0, interpolate=false)
 
 Returns the wind vector at the specified position (`x`, `y`, `z`) and time `t` using the given 
 `AtmosphericModel` (`am`).
 
+Uses Taylor's frozen-turbulence hypothesis: the field is advected along the mean wind direction.
+The position is first rotated into the wind-aligned frame so that:
+- the **along-wind** component (+ time advection) maps to the **long** field dimension (y, e.g. 4050 m),
+  avoiding short-period repetition during long simulations.
+- the **cross-wind** component maps to the **short** field dimension (x, e.g. 100 m).
+
 # Arguments
 - `am::AtmosphericModel`: The atmospheric model providing environmental parameters.
-- `x`, `y`, `z`: Coordinates specifying the location where the wind is to be evaluated. [m]
-- `t`: Time at which the wind is to be evaluated. [s]
+- `x`, `y`, `z`: Position in the simulation (ENU) frame where the wind is evaluated. [m]
+- `t`: Current simulation time. [s]
+- `upwind_dir` (optional, default = `0.0`): Direction the wind is coming FROM [rad].
+  Zero is north, clockwise positive (same convention as in `calc_turbulent_wind`).
 - `interpolate` (optional, default = `false`): If `true`, interpolate wind values between grid points; 
-                                               otherwise, use nearest or direct values.
+                                               otherwise, use nearest-grid-point values.
 
 # Returns
-- A wind vector representing the wind at the specified location and time.
+- A tuple `(v_x, v_y, v_z)` representing the wind velocity in the wind-aligned frame [m/s],
+  where `v_x` is the along-wind component (includes mean wind), `v_y` is cross-wind, `v_z` is vertical.
 """
-function get_wind(am::AtmosphericModel, x, y, z, t; interpolate=false)
+function get_wind(am::AtmosphericModel, x, y, z, t; upwind_dir=0.0, interpolate=false)
     @assert z >= 5.0 "Height must be at least 5 m"
     wf = am.wf
     @assert wf !== nothing "Wind field is not initialized"
@@ -307,37 +316,46 @@ function get_wind(am::AtmosphericModel, x, y, z, t; interpolate=false)
         z = 10.0
     end
     @assert t >= 0.0 "Time must be non-negative"
-    rel_turb = rel_turbo(am)  
-    
-    # duplicate the wind field in x and y direction
-    while x < wf.x_min
-        x += wf.x_range
-    end
-    while y > wf.y_max
-        y -= wf.y_range
-    end
-    while y < wf.y_min
-        y += wf.y_range
-    end
-    
-    y1 = ((y + wf.y_range / 2) / am.set.grid_step)
+    rel_turb = rel_turbo(am)
+
+    # Rotate (x, y) from simulation (ENU) frame into wind-aligned frame.
+    # wind_dir: direction the wind is blowing TO, measured from +x (East) axis, CCW.
+    wind_dir = -upwind_dir - pi/2
+    along = x * cos(wind_dir) + y * sin(wind_dir)   # along-wind component
+    cross = -x * sin(wind_dir) + y * cos(wind_dir)  # cross-wind component
+
     v_wind_height = am.set.v_wind * calc_wind_factor(am, z, am.set.profile_law)
-    
-    x1 = (x + t * v_wind_height) / am.set.grid_step
-    while x1 > size(wf.u, 1) - 1
-        x1 -= size(wf.u, 1) - 1
+
+    # Along-wind + Taylor advection → field y (long dimension, avoids short-period repetition)
+    ny = size(wf.u, 2)
+    y1 = (along + t * v_wind_height) / am.set.grid_step
+    while y1 > ny - 1
+        y1 -= ny - 1
     end
-    x1 = Int(round(x1))+1
-    y1 = Int(round(y1))+1 
-    
+    while y1 < 0
+        y1 += ny - 1
+    end
+    y1 = Int(round(y1)) + 1
+
+    # Cross-wind → field x (short dimension, kite stays within spatial range)
+    nx = size(wf.u, 1)
+    x1 = cross / am.set.grid_step
+    while x1 > nx - 1
+        x1 -= nx - 1
+    end
+    while x1 < 0
+        x1 += nx - 1
+    end
+    x1 = Int(round(x1)) + 1
+
     z1 = z / am.set.height_step
     if z1 > size(wf.u, 3) - 1
         z1 = size(wf.u, 3) - 1
     elseif z1 < 0
         z1 = 0
     end
-    z1 = Int(round(z1))+1
-    
+    z1 = Int(round(z1)) + 1
+
     if interpolate
         # TODO: Implement interpolation using Interpolations.jl or similar
         # x_wind = ndimage.map_coordinates(wf.u, [[x1], [y1], [z1]], order=3, prefilter=false)
