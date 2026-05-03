@@ -326,25 +326,25 @@ function get_wind(am::AtmosphericModel, x, y, z, t; upwind_dir=-π/4, interpolat
 
     v_wind_height = am.set.v_wind * calc_wind_factor(am, z, am.set.profile_law)
 
-    # Along-wind + Taylor advection → field y (long dimension, avoids short-period repetition)
-    ny = size(wf.u, 2)
+    # Along-wind + Taylor advection → field x (long dimension, avoids short-period repetition)
+    nlong = size(wf.u, 1)
     y1 = (along + t * v_wind_height) / am.set.grid_step
-    while y1 > ny - 1
-        y1 -= ny - 1
+    while y1 > nlong - 1
+        y1 -= nlong - 1
     end
     while y1 < 0
-        y1 += ny - 1
+        y1 += nlong - 1
     end
     y1 = Int(round(y1)) + 1
 
-    # Cross-wind → field x (short dimension, kite stays within spatial range)
-    nx = size(wf.u, 1)
+    # Cross-wind → field y (short dimension, kite stays within spatial range)
+    nshort = size(wf.u, 2)
     x1 = cross / am.set.grid_step
-    while x1 > nx - 1
-        x1 -= nx - 1
+    while x1 > nshort - 1
+        x1 -= nshort - 1
     end
     while x1 < 0
-        x1 += nx - 1
+        x1 += nshort - 1
     end
     x1 = Int(round(x1)) + 1
 
@@ -365,9 +365,9 @@ function get_wind(am::AtmosphericModel, x, y, z, t; upwind_dir=-π/4, interpolat
         # v_y = y_wind[0] * rel_turb
         # v_z = z_wind[0] * rel_turb  
     else
-        v_x = wf.u[x1, y1, z1] * rel_turb + v_wind_height
-        v_y = wf.v[x1, y1, z1] * rel_turb
-        v_z = wf.w[x1, y1, z1] * rel_turb
+        v_x = wf.u[y1, x1, z1] * rel_turb + v_wind_height
+        v_y = wf.v[y1, x1, z1] * rel_turb
+        v_z = wf.w[y1, x1, z1] * rel_turb
         return v_x, v_y, v_z
     end
     return nothing
