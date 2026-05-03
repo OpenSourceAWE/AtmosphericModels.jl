@@ -1,3 +1,20 @@
+## AtmosphericModels v0.3.4 2026-05-03
+### Added
+- add `upwind_dir` to `get_wind`
+- add helper scripts `bin/install`, `bin/setup_env`, and `bin/jetls`
+- add `menu()` to `bin/run_julia`
+- add `.markdownlint.json`
+
+### Changed
+- improve `bin/run_julia`
+- update default manifests for Julia 1.11 and 1.12
+- update documentation and README
+- remove TestEnv usage from project tooling
+
+### Fixed
+- fix installation script behavior
+- fix warning in windfield code
+
 ## AtmosphericModels v0.3.3 2026-03-17
 ### Added
 - the files `.zenodo.json` and `CITATION.cff`
