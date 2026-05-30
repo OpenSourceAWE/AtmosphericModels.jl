@@ -142,7 +142,8 @@ calc_rho(s::AM, height) = s.rho_zero_temp * fastexp(-(height+s.set.height_gnd) /
 Enumeration to describe the wind profile low that is used.
 """ ProfileLaw
 
-@enum ProfileLaw begin 
+@enum ProfileLaw begin
+    CONSTANT=0
     EXP=1 
     LOG=2 
     EXPLOG=3 
@@ -152,6 +153,13 @@ end
     EXP::ProfileLaw
 
 Exponential wind profile.
+
+See also [`ProfileLaw`](@ref).
+""" CONSTANT
+@doc """
+    CONSTANT::ProfileLaw
+
+Constant wind profile.
 
 See also [`ProfileLaw`](@ref).
 """ EXP
@@ -173,6 +181,7 @@ See also [`ProfileLaw`](@ref).
 
 # Calculate the wind speed at a given height and reference height.
 @inline function calc_wind_factor1(s::AM, height);  exp(s.set.alpha * log(height/s.set.h_ref)); end
+@inline function calc_wind_factor(s::AM, height, ::Type{Val{0}}); 1.0; end
 @inline function calc_wind_factor(s::AM, height, ::Type{Val{1}})
     calc_wind_factor1(s, height)
 end 
@@ -205,7 +214,9 @@ Calculates the wind factor at a given `height` using the specified wind profile 
 - The wind factor at the specified height as determined by the chosen profile law.
 """
 @inline function calc_wind_factor(am::AM, height, profile_law::Int64=am.set.profile_law)
-    if profile_law == 1
+    if profile_law == 0
+        1.0
+    elseif profile_law == 1
         calc_wind_factor1(am, height)
     elseif profile_law == 2
         calc_wind_factor2(am, height)
