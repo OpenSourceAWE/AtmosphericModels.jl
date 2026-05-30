@@ -8,7 +8,7 @@ set_data_path("data")
 set = load_settings("system_nearshore.yaml"; relax=true)
 
 @info "Ground wind speed: $(set.v_wind) m/s"
-am::AtmosphericModel = AtmosphericModel(set)
+am::AtmosphericModel = AtmosphericModel(set=set)
 
 heights = 6:1000
 v_w = set.v_wind .* [calc_wind_factor(am, height) for height in heights]

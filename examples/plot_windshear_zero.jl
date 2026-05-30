@@ -5,11 +5,11 @@ end
 using AtmosphericModels, KiteUtils, ControlPlots
 
 set_data_path("data")
-set = load_settings("system_nearshore.yaml"; relax=true)
+set = load_settings("system.yaml"; relax=true)
 set.profile_law = 0
 
 @info "Ground wind speed: $(set.v_wind) m/s"
-am::AtmosphericModel = AtmosphericModel(set)
+am::AtmosphericModel = AtmosphericModel(set=set)
 
 heights = 6:1000
 v_w = set.v_wind .* [calc_wind_factor(am, height) for height in heights]
