@@ -11,6 +11,7 @@ include("test_windfield.jl")
 @testset "calc_wind_factor" begin
     @test calc_wind_factor(am, 6.0, Int(CONSTANT)) == 1.0
     @test calc_wind_factor(am, 100.0, Int(CONSTANT)) == 1.0
+    @test calc_wind_factor(am, 100.0, Val{Int(CONSTANT)}) == 1.0
     @test calc_wind_factor(am, 6.0, Val{Int(EXP)}) ≈ 1.0
     @test calc_wind_factor(am, 6.0, Val{Int(LOG)}) ≈ 1.0
     @test calc_wind_factor(am, 6.0, Val{Int(EXPLOG)}) ≈ 1.0
