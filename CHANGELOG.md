@@ -1,3 +1,11 @@
+## AtmosphericModels v0.3.5 2026-05-30
+### Added
+- add `CONSTANT` profile law (no wind shear, `profile_law = 0`)
+- add example `plot_windshear_zero.jl`
+
+### Fixed
+- fix typo in `bin/run_julia`: `JULIA_PKG_SERVER_REGISTRY_PREFERANCE` → `JULIA_PKG_SERVER_REGISTRY_PREFERENCE`
+
 ## AtmosphericModels v0.3.4 2026-05-03
 ### Added
 - add `upwind_dir` to `get_wind`
