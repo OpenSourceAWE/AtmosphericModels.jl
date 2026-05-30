@@ -9,7 +9,7 @@ KiteUtils = "90980105-b163-44e5-ba9f-8b1c83bb0533"
 
 [compat]
 HypergeometricFunctions = "0.3"
-KiteUtils = "0.6, 0.7, 0.8"
+KiteUtils = "0.6, 0.7, 0.8, 0.10, 0.11"
 julia = "1.10"
 
 [extras]
