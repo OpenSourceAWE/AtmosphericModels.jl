@@ -5,7 +5,7 @@ using HypergeometricFunctions:_₂F₁
 using NPZ, Printf
 using FFTW, LinearAlgebra, Random, Statistics
 
-export AtmosphericModel, ProfileLaw, WindField, EXP, LOG, EXPLOG
+export AtmosphericModel, ProfileLaw, WindField, EXP, LOG, EXPLOG, CONSTANT
 export clear, calc_rho, calc_wind_factor, rel_turbo
 
 export new_windfield, new_windfields, get_wind
@@ -150,16 +150,16 @@ Enumeration to describe the wind profile law that is used.
 end
 
 @doc """
-    EXP::ProfileLaw
+    CONSTANT::ProfileLaw
 
-Exponential wind profile.
+Constant wind profile.
 
 See also [`ProfileLaw`](@ref).
 """ CONSTANT
 @doc """
-    CONSTANT::ProfileLaw
+    EXP::ProfileLaw
 
-Constant wind profile.
+Exponential wind profile.
 
 See also [`ProfileLaw`](@ref).
 """ EXP
