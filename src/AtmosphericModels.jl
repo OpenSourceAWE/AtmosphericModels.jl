@@ -3,7 +3,7 @@ module AtmosphericModels
 using KiteUtils
 using HypergeometricFunctions:_₂F₁
 
-export AtmosphericModel, ProfileLaw, EXP, LOG, EXPLOG, FAST_EXP, FAST_LOG, FAST_EXPLOG
+export AtmosphericModel, ProfileLaw, EXP, LOG, EXPLOG, FAST_EXP, FAST_LOG, FAST_EXPLOG, CONSTANT
 export clear, calc_rho, calc_wind_factor
 
 const ABS_ZERO = -273.15
@@ -35,14 +35,54 @@ end
 calc_rho(s::AM, height) = s.rho_zero_temp * fastexp(-(height+s.set.height_gnd) / 8550.0)
 
 """
-    @enum ProfileLaw EXP=1 LOG=2 EXPLOG=3
+    @enum ProfileLaw CONSTANT=0 EXP=1 LOG=2 EXPLOG=3
 
-Enumeration to describe the wind profile low that is used.
-"""
-@enum ProfileLaw EXP=1 LOG=2 EXPLOG=3 FAST_EXP=4 FAST_LOG=5 FAST_EXPLOG=6
+Enumeration to describe the wind profile law that is used.
+""" ProfileLaw
+
+@enum ProfileLaw begin
+    CONSTANT=0
+    EXP=1
+    LOG=2
+    EXPLOG=3
+    FAST_EXP=4
+    FAST_LOG=5
+    FAST_EXPLOG=6
+end
+
+@doc """
+    CONSTANT::ProfileLaw
+
+Constant wind profile.
+
+See also [`ProfileLaw`](@ref).
+""" CONSTANT
+@doc """
+    EXP::ProfileLaw
+
+Exponential wind profile.
+
+See also [`ProfileLaw`](@ref).
+""" EXP
+@doc """
+    LOG::ProfileLaw
+
+Logarithmic wind profile.
+
+See also [`ProfileLaw`](@ref).
+""" LOG
+@doc """
+    EXPLOG::ProfileLaw
+
+A linear combination of exponential and logarithmic wind profile to match a specific site.
+
+See also [`ProfileLaw`](@ref).
+""" EXPLOG
+
 
 # Calculate the wind speed at a given height and reference height.
 @inline function calc_wind_factor1(s::AM, height);  exp(s.set.alpha * log(height/s.set.h_ref)); end
+@inline function calc_wind_factor(s::AM, height, ::Type{Val{0}}); 1.0; end
 @inline function calc_wind_factor(s::AM, height, ::Type{Val{1}})
     calc_wind_factor1(s, height)
 end 
@@ -82,7 +122,9 @@ function calc_wind_factor6(s::AM, height)
 end
 
 @inline function calc_wind_factor(am::AM, height, profile_law::Int64=am.set.profile_law)
-    if profile_law == 1
+    if profile_law == 0
+        1.0
+    elseif profile_law == 1
         calc_wind_factor1(am, height)
     elseif profile_law == 2
         calc_wind_factor2(am, height)
