@@ -18,7 +18,7 @@ Timers = "21f18d07-b854-4dab-86f0-c15a3821819a"
 AtmosphericModels = {path = ".."}
 
 [compat]
-ControlPlots = "0.2.7"
+ControlPlots = "0.2.7, 0.3"
 FFTW = "1.9.0"
 GLMakie = "0.13.2"
 HypergeometricFunctions = "0.3"
