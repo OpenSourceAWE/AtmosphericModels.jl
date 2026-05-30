@@ -137,9 +137,9 @@ Calculates the air density at a given height above ground level.
 calc_rho(s::AM, height) = s.rho_zero_temp * fastexp(-(height+s.set.height_gnd) / 8550.0)
 
 """
-    @enum ProfileLaw EXP=1 LOG=2 EXPLOG=3
+    @enum ProfileLaw CONSTANT=0 EXP=1 LOG=2 EXPLOG=3
 
-Enumeration to describe the wind profile low that is used.
+Enumeration to describe the wind profile law that is used.
 """ ProfileLaw
 
 @enum ProfileLaw begin
