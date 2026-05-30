@@ -1,7 +1,12 @@
+# Changelog
+
 ## AtmosphericModels v0.3.5 2026-05-30
 ### Added
 - add `CONSTANT` profile law (no wind shear, `profile_law = 0`)
 - add example `plot_windshear_zero.jl`
+
+### Changed
+- allow ControlPlots 0.3 in examples compat
 
 ### Fixed
 - fix typo in `bin/run_julia`: `JULIA_PKG_SERVER_REGISTRY_PREFERANCE` → `JULIA_PKG_SERVER_REGISTRY_PREFERENCE`
