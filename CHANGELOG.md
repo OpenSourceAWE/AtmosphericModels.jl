@@ -4,6 +4,10 @@
 ### Added
 - add `calc_turbulent_wind`, moved here from `KiteModels` (kite/tether wind vectors in the ENU
   frame, built on top of `get_wind`)
+- add `bin/release`, which posts the latest `CHANGELOG.md` release notes to
+  `OpenSourceAWE/AtmosphericModels.jl` issue #1 to trigger `JuliaRegistrator`, after checking that
+  the working tree is clean, `Project.toml`'s version matches the changelog entry, and
+  `Manifest-v1.12.toml.default` matches `Manifest-v1.12.toml`
 
 ### Fixed
 - fix `get_wind` docstring: the `upwind_dir` default is `-π/4`, not `0.0`
