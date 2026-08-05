@@ -1,8 +1,8 @@
 using Pkg
-if ! ("ControlPlots" ∈ keys(Pkg.project().dependencies))
+if ! ("GLMakie" ∈ keys(Pkg.project().dependencies))
     Pkg.activate(joinpath(@__DIR__, "..", "examples"))
 end
-using ControlPlots, AtmosphericModels, KiteUtils
+using AtmosphericModels, KiteUtils, GLMakie
 
 function meshgrid(x, y)
     X = [i for i in x, _ in y]
@@ -25,7 +25,8 @@ X = -10:1:9
 Y = -10:1:9
 U, V = meshgrid(X, Y)
 
-fig, ax = plt.subplots()
-# ax.quiver(X, Y, U, V)
-ax.quiver(x1, y1, u1, v1)
-plt.show()
+fig = Figure()
+ax = Axis(fig[1, 1])
+# arrows2d!(ax, vec(X), vec(Y), vec(U), vec(V))
+arrows2d!(ax, vec(x1), vec(y1), vec(u1), vec(v1))
+display(GLMakie.Screen(), fig)

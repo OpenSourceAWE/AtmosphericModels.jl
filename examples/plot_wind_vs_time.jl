@@ -1,9 +1,9 @@
 using Pkg
-if ! ("ControlPlots" ∈ keys(Pkg.project().dependencies))
+if ! ("MakieControlPlots" ∈ keys(Pkg.project().dependencies))
     Pkg.activate("examples")
 end
 
-using ControlPlots, Statistics, KiteUtils, AtmosphericModels
+using Statistics, KiteUtils, AtmosphericModels, MakieControlPlots
 
 set_data_path("data")
 set = load_settings("system.yaml"; relax=true)
@@ -29,12 +29,9 @@ function plot_wind_vs_time(am, x=0.0, y=0.0; z=197.3)
     mean_val = round(mean(v_wind_x), digits=1)
     turbulence_intensity = round(su / mean_val * 100.0, digits=1)
     println("Mean wind x: $(mean_val) m/s, turbulence intensity: $(turbulence_intensity) %")
-    fig = plt.figure("Wind speed at I = $(turbulence_intensity) %, z= $(z) m")
-    plt.plot(TIME, v_wind_x, label = "Abs. wind speed at $z m [m/s]", color="black")
-    plt.grid(true, color=(0.25, 0.25, 0.25), linestyle="--", linewidth=0.5)
-    plt.xlabel("Time [s]")
-    plt.ylabel("Abs. wind speed at $z m height [m/s]")
-    plt.legend(loc="upper right")
+    p = plot(TIME, v_wind_x; xlabel="Time [s]", ylabel="Abs. wind speed at $z m height [m/s]",
+             fig="Wind speed at I = $(turbulence_intensity) %, z= $(z) m")
+    display(p)
 end
 
 plot_wind_vs_time(am; z=197.3)

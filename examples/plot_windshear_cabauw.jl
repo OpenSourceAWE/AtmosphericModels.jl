@@ -1,8 +1,8 @@
 using Pkg
-if ! ("ControlPlots" ∈ keys(Pkg.project().dependencies))
+if ! ("MakieControlPlots" ∈ keys(Pkg.project().dependencies))
     Pkg.activate("examples")
 end
-using AtmosphericModels, KiteUtils, ControlPlots
+using AtmosphericModels, KiteUtils, MakieControlPlots
 
 set_data_path("data")
 set = load_settings("system.yaml"; relax=true)

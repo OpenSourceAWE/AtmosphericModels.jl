@@ -1,8 +1,8 @@
 using Pkg
-if ! ("ControlPlots" ∈ keys(Pkg.project().dependencies))
+if ! ("GLMakie" ∈ keys(Pkg.project().dependencies))
     Pkg.activate(joinpath(@__DIR__, "..", "examples"))
 end
-using ControlPlots
+using GLMakie
 
 function meshgrid(x, y)
     X = [i for i in x, _ in y]
@@ -14,8 +14,7 @@ X = -10:1:9
 Y = -10:1:9
 U, V = meshgrid(X, Y)
 
-fig, ax = plt.subplots()
-q = ax.quiver(X, Y, U, V)
-# ax.quiverkey(q, X=0.3, Y=1.1, U=10, label="Quiver key, length = 10", labelpos="E")
-
-plt.show()
+fig = Figure()
+ax = Axis(fig[1, 1])
+arrows2d!(ax, vec(X), vec(Y), vec(U), vec(V))
+display(GLMakie.Screen(), fig)

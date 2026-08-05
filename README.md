@@ -84,7 +84,7 @@ and `settings.yaml` exists. See below how to do that.
 
 ## Plot a wind profile
 ```julia
-using AtmosphericModels, KiteUtils, ControlPlots
+using AtmosphericModels, KiteUtils, MakieControlPlots
 set_data_path("data")
 set = load_settings("system.yaml"; relax=true)
 set.alpha = 0.08163
@@ -97,7 +97,7 @@ plot(heights, wf, xlabel="height [m]", ylabel="wind factor", fig="Nearshore")
 ```
 ![Wind profile nearshore](docs/src/nearshore.png)
 ```julia
-using AtmosphericModels, ControlPlots, KiteUtils
+using AtmosphericModels, KiteUtils, MakieControlPlots
 set_data_path("data")
 set = load_settings("system.yaml"; relax=true)
 am = AtmosphericModel(set)
@@ -110,7 +110,7 @@ plot(heights, wf, xlabel="height [m]", ylabel="wind factor", fig="Onshore")
 
 ## Air density
 ```julia
-using AtmosphericModels, BenchmarkTools, KiteUtils, ControlPlots
+using AtmosphericModels, BenchmarkTools, KiteUtils, MakieControlPlots
 set_data_path("data")
 set = load_settings("system.yaml"; relax=true)
 am = AtmosphericModel(set)

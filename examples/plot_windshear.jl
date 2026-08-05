@@ -1,8 +1,8 @@
 using Pkg
-if ! ("ControlPlots" ∈ keys(Pkg.project().dependencies))
+if ! ("MakieControlPlots" ∈ keys(Pkg.project().dependencies))
     Pkg.activate("examples")
 end
-using AtmosphericModels, KiteUtils, ControlPlots
+using AtmosphericModels, KiteUtils, MakieControlPlots
 
 set_data_path("data")
 set = load_settings("system_nearshore.yaml"; relax=true)
@@ -13,5 +13,5 @@ am::AtmosphericModel = AtmosphericModel(set)
 heights = 6:1000
 v_w = set.v_wind .* [calc_wind_factor(am, height) for height in heights]
 
-p=ControlPlots.plot(v_w, heights, xlabel="v_wind [m/s]", ylabel="height [m]", fig="Near shore, EXPLOG law")
+p=plot(v_w, heights, xlabel="v_wind [m/s]", ylabel="height [m]", fig="Near shore, EXPLOG law")
 display(p)
