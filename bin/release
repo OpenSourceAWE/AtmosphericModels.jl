@@ -66,7 +66,7 @@ if [ -z "$release_notes" ]; then
 fi
 
 # Get version string (e.g. "v0.3.6")
-version=$(awk '/^## AtmosphericModels v/ {print $2; exit}' "$CHANGELOG")
+version=$(awk '/^## AtmosphericModels v/ {print $3; exit}' "$CHANGELOG")
 
 # Check that the version in Project.toml matches the version in CHANGELOG.md
 project_version=$(awk -F'"' '/^version = / {print $2; exit}' Project.toml)
