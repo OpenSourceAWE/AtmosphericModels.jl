@@ -17,7 +17,7 @@ function show_grid(x, y, z)
     fig = Figure(size=(800, 600))
     ax = Axis3(fig[1, 1]; xlabel="X Label", ylabel="Y Label", zlabel="Height [m]",
                title="Show Grid")
-    scatter!(ax, vec(x), vec(y), vec(z); markersize=2, color=(:blue, 0.1))
+    scatter!(ax, vec(x), vec(y), vec(z); markersize=3, color=(:blue, 0.5))
     display(GLMakie.Screen(), fig)
 end
 ny=50; nx=100; nz=50; z_min=25
