@@ -1,6 +1,7 @@
 module AtmosphericModels
 
 using KiteUtils
+using KiteUtils: SVec3
 using HypergeometricFunctions:_₂F₁
 using NPZ, Printf
 using FFTW, LinearAlgebra, Random, Statistics
@@ -8,10 +9,12 @@ using FFTW, LinearAlgebra, Random, Statistics
 export AtmosphericModel, ProfileLaw, WindField, EXP, LOG, EXPLOG, CONSTANT
 export clear, calc_rho, calc_wind_factor, rel_turbo
 
-export new_windfield, new_windfields, get_wind
+export new_windfield, new_windfields, get_wind, calc_turbulent_wind
 
 const ABS_ZERO = -273.15
 const SRL = StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}, Int64}
+const MIN_KITE_HEIGHT = 6.0
+const MIN_TETHER_HEIGHT = 5.0
 
 """
     struct WindField

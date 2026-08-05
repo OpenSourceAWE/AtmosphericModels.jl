@@ -37,6 +37,7 @@ calc_wind_factor
 ### Wind turbulence calculation
 ```@docs
 get_wind
+calc_turbulent_wind
 rel_turbo
 new_windfield
 new_windfields

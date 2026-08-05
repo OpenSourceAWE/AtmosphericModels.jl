@@ -94,3 +94,30 @@ u, v, w = AtmosphericModels.create_windfield(x, y, z, sigma1=1.0)
     @test std(v) ≈ 0.7
     @test std(w) ≈ 0.5
 end
+
+@testset "calc_turbulent_wind" begin
+    # Reference values pinned against the pre-move KiteModels.calc_turbulent_wind
+    # implementation (same rotation, Taylor advection and nearest-grid lookup),
+    # captured before that implementation was deleted.
+    v_wind, v_wind_tether = AtmosphericModels.calc_turbulent_wind(am, [10.0, 20.0, 100.0], 12.5; upwind_dir=0.3)
+    @test v_wind ≈ [-2.144770095983673, -11.124313263469531, -0.6070299938532554]
+    @test v_wind_tether ≈ [-1.4502831306377473, -8.76678510107124, -0.3167369264079984]
+
+    v_wind2, v_wind_tether2 = AtmosphericModels.calc_turbulent_wind(am, [0.0, 0.0, 50.0], 0.0; upwind_dir=-pi/2)
+    @test v_wind2 ≈ [9.796027271006283, -0.34202755189268585, -0.3957750583820598]
+    @test v_wind_tether2 ≈ [8.678228770857402, 0.40297265466661003, -0.07675347144301002]
+
+    # use_turbulence == 0: deterministic mean wind, no wind field needed
+    set0 = deepcopy(am.set)
+    set0.use_turbulence = 0.0
+    am0 = AtmosphericModel(set0)
+    v_wind0, v_wind_tether0 = AtmosphericModels.calc_turbulent_wind(am0, [0.0, 0.0, 100.0], 5.0; upwind_dir=0.0)
+    v_height = set0.v_wind * calc_wind_factor(am0, 100.0)
+    v_height_half = set0.v_wind * calc_wind_factor(am0, 50.0)
+    @test v_wind0[1] ≈ 0.0 atol=1e-10
+    @test v_wind0[2] ≈ -v_height
+    @test v_wind0[3] == 0.0
+    @test v_wind_tether0[1] ≈ 0.0 atol=1e-10
+    @test v_wind_tether0[2] ≈ -v_height_half
+    @test v_wind_tether0[3] == 0.0
+end

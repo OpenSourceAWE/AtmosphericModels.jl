@@ -1,5 +1,17 @@
 # Changelog
 
+## AtmosphericModels v0.3.6 2026-08-05
+### Added
+- add `calc_turbulent_wind`, moved here from `KiteModels` (kite/tether wind vectors in the ENU
+  frame, built on top of `get_wind`)
+
+### Fixed
+- fix `get_wind` docstring: the `upwind_dir` default is `-π/4`, not `0.0`
+- fix `get_wind` to detect which of the field's first two dimensions is the long (along-wind) one
+  at runtime, instead of assuming dimension 1 is always long. That assumption broke any
+  `set.grid` with the short dimension first (e.g. KiteUtils' own default `[100, 4050, ...]`,
+  as opposed to this package's own `data/settings.yaml` default `[4050, 100, ...]`).
+
 ## AtmosphericModels v0.3.5 2026-05-30
 ### Added
 - add `CONSTANT` profile law (no wind shear, `profile_law = 0`)

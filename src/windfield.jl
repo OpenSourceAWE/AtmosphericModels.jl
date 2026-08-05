@@ -284,24 +284,30 @@ function create_windfield(x, y, z; sigma1=nothing, gamma=3.9, ae=0.1, length_sca
 end
 
 """
-    get_wind(am::AtmosphericModel, x, y, z, t; upwind_dir=0.0, interpolate=false)
+    get_wind(am::AtmosphericModel, x, y, z, t; upwind_dir=-π/4, interpolate=false)
 
-Returns the wind vector at the specified position (`x`, `y`, `z`) and time `t` using the given 
+Returns the wind vector at the specified position (`x`, `y`, `z`) and time `t` using the given
 `AtmosphericModel` (`am`).
 
 Uses Taylor's frozen-turbulence hypothesis: the field is advected along the mean wind direction.
 The position is first rotated into the wind-aligned frame so that:
-- the **along-wind** component (+ time advection) maps to the **long** field dimension (y, e.g. 4050 m),
-  avoiding short-period repetition during long simulations.
-- the **cross-wind** component maps to the **short** field dimension (x, e.g. 100 m).
+- the **along-wind** component (+ time advection) maps to whichever of the field's first two
+  dimensions is **long** (the larger of `am.set.grid[1]`, `am.set.grid[2]`), avoiding short-period
+  repetition during long simulations.
+- the **cross-wind** component maps to the **short** dimension, so the kite stays within the
+  spatial range of the field.
+
+The long/short axis is detected from the actual array size at each call, since which of `x`/`y`
+is longer depends on `am.set.grid` and differs between configurations (e.g. `[4050, 100, ...]`
+vs. the `[100, 4050, ...]` default).
 
 # Arguments
 - `am::AtmosphericModel`: The atmospheric model providing environmental parameters.
 - `x`, `y`, `z`: Position in the simulation (ENU) frame where the wind is evaluated. [m]
 - `t`: Current simulation time. [s]
-- `upwind_dir` (optional, default = `0.0`): Direction the wind is coming FROM [rad].
+- `upwind_dir` (optional, default = `-π/4`): Direction the wind is coming FROM [rad].
   Zero is north, clockwise positive (same convention as in `calc_turbulent_wind`).
-- `interpolate` (optional, default = `false`): If `true`, interpolate wind values between grid points; 
+- `interpolate` (optional, default = `false`): If `true`, interpolate wind values between grid points;
                                                otherwise, use nearest-grid-point values.
 
 # Returns
@@ -326,27 +332,31 @@ function get_wind(am::AtmosphericModel, x, y, z, t; upwind_dir=-π/4, interpolat
 
     v_wind_height = am.set.v_wind * calc_wind_factor(am, z, am.set.profile_law)
 
-    # Along-wind + Taylor advection → field x (long dimension, avoids short-period repetition)
-    nlong = size(wf.u, 1)
-    y1 = (along + t * v_wind_height) / am.set.grid_step
-    while y1 > nlong - 1
-        y1 -= nlong - 1
-    end
-    while y1 < 0
-        y1 += nlong - 1
-    end
-    y1 = Int(round(y1)) + 1
+    n1 = size(wf.u, 1)
+    n2 = size(wf.u, 2)
+    dim1_is_long = n1 >= n2
+    nlong = dim1_is_long ? n1 : n2
+    nshort = dim1_is_long ? n2 : n1
 
-    # Cross-wind → field y (short dimension, kite stays within spatial range)
-    nshort = size(wf.u, 2)
-    x1 = cross / am.set.grid_step
-    while x1 > nshort - 1
-        x1 -= nshort - 1
+    # Along-wind + Taylor advection → long field dimension (avoids short-period repetition)
+    along_idx = (along + t * v_wind_height) / am.set.grid_step
+    while along_idx > nlong - 1
+        along_idx -= nlong - 1
     end
-    while x1 < 0
-        x1 += nshort - 1
+    while along_idx < 0
+        along_idx += nlong - 1
     end
-    x1 = Int(round(x1)) + 1
+    along_idx = Int(round(along_idx)) + 1
+
+    # Cross-wind → short field dimension (kite stays within spatial range)
+    cross_idx = cross / am.set.grid_step
+    while cross_idx > nshort - 1
+        cross_idx -= nshort - 1
+    end
+    while cross_idx < 0
+        cross_idx += nshort - 1
+    end
+    cross_idx = Int(round(cross_idx)) + 1
 
     z1 = z / am.set.height_step
     if z1 > size(wf.u, 3) - 1
@@ -356,21 +366,66 @@ function get_wind(am::AtmosphericModel, x, y, z, t; upwind_dir=-π/4, interpolat
     end
     z1 = Int(round(z1)) + 1
 
+    i = dim1_is_long ? along_idx : cross_idx
+    j = dim1_is_long ? cross_idx : along_idx
+
     if interpolate
         # TODO: Implement interpolation using Interpolations.jl or similar
-        # x_wind = ndimage.map_coordinates(wf.u, [[x1], [y1], [z1]], order=3, prefilter=false)
-        # y_wind = ndimage.map_coordinates(wf.v, [[x1], [y1], [z1]], order=3, prefilter=false)
-        # z_wind = ndimage.map_coordinates(wf.w, [[x1], [y1], [z1]], order=3, prefilter=false)
+        # x_wind = ndimage.map_coordinates(wf.u, [[i], [j], [z1]], order=3, prefilter=false)
+        # y_wind = ndimage.map_coordinates(wf.v, [[i], [j], [z1]], order=3, prefilter=false)
+        # z_wind = ndimage.map_coordinates(wf.w, [[i], [j], [z1]], order=3, prefilter=false)
         # v_x = x_wind[0] * rel_turb + v_wind_height
         # v_y = y_wind[0] * rel_turb
-        # v_z = z_wind[0] * rel_turb  
+        # v_z = z_wind[0] * rel_turb
     else
-        v_x = wf.u[y1, x1, z1] * rel_turb + v_wind_height
-        v_y = wf.v[y1, x1, z1] * rel_turb
-        v_z = wf.w[y1, x1, z1] * rel_turb
+        v_x = wf.u[i, j, z1] * rel_turb + v_wind_height
+        v_y = wf.v[i, j, z1] * rel_turb
+        v_z = wf.w[i, j, z1] * rel_turb
         return v_x, v_y, v_z
     end
     return nothing
+end
+
+"""
+    calc_turbulent_wind(am::AtmosphericModel, pos, t; upwind_dir=-π/4)
+
+Calculate the wind velocity vectors at the kite and at the mid-tether point, in the ENU
+simulation frame.
+
+When `am.set.use_turbulence == 0`, the mean wind for the configured `am.set.profile_law` is
+returned. Otherwise the turbulent wind vectors are looked up from the pre-computed wind field
+via [`get_wind`](@ref) and rotated from the wind-aligned frame into the simulation frame.
+
+# Arguments
+- `am::AtmosphericModel`: atmospheric model; the settings are read from `am.set`.
+- `pos`: 3D position of the kite [m]; `pos[3]` is the height, clamped to $(MIN_KITE_HEIGHT) m minimum.
+- `t`: current simulation time [s].
+- `upwind_dir` (optional, default = `-π/4`): direction the wind is coming FROM [rad].
+  Zero is north, clockwise positive (same convention as in [`get_wind`](@ref)).
+
+# Returns
+A tuple `(v_wind, v_wind_tether)` of `SVec3` in the ENU frame [m/s]:
+- `v_wind`: wind velocity at the kite position.
+- `v_wind_tether`: wind velocity at half the kite position `(0.5x, 0.5y, 0.5z)`, with the height
+  clamped to $(MIN_TETHER_HEIGHT) m minimum.
+"""
+function calc_turbulent_wind(am::AtmosphericModel, pos, t; upwind_dir=-π/4)
+    wind_dir = -upwind_dir - pi/2
+    height = max(pos[3], MIN_KITE_HEIGHT)
+    rotate_wind(wx, wy, wz) = SVec3(wx * cos(wind_dir) - wy * sin(wind_dir),
+                                    wx * sin(wind_dir) + wy * cos(wind_dir),
+                                    wz)
+    if am.set.use_turbulence == 0
+        v_wind_gnd = am.set.v_wind
+        mean_wind(h) = SVec3(v_wind_gnd * calc_wind_factor(am, h) * cos(wind_dir),
+                             v_wind_gnd * calc_wind_factor(am, h) * sin(wind_dir),
+                             0.0)
+        return mean_wind(height), mean_wind(height / 2.0)
+    end
+    v_wind = rotate_wind(get_wind(am, pos[1], pos[2], height, t; upwind_dir)...)
+    tether_height = max(0.5 * height, MIN_TETHER_HEIGHT)
+    v_wind_tether = rotate_wind(get_wind(am, 0.5 * pos[1], 0.5 * pos[2], tether_height, t; upwind_dir)...)
+    return v_wind, v_wind_tether
 end
 
 """
