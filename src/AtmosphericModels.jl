@@ -284,8 +284,8 @@ jet_model(z, p) = p[1] * z^p[2] + p[3] * exp(-(z - p[4])^2 / (2 * p[5]^2))
 
 function jet_jacobian_residual(heights, speeds, p)
     c, a, U_J, z_c, sigma = p
+    sigma = max(abs(sigma), eps(Float64))
     n = length(heights)
-    R = zeros(Float64, n)
     J = zeros(Float64, n, 5)
     for i in 1:n
         z = heights[i]
