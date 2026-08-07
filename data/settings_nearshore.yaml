@@ -8,5 +8,9 @@ environment:
     rho_0:  1.225            # air density at zero height and 15 °C    [kg/m³]
     alpha:  0.08163          # exponent of the wind profile law
     z0:     0.0002           # surface roughness                       [m]
-    profile_law: 3           # 0=CONST, 1=EXP, 2=LOG, 3=EXPLOG
+    profile_law: 3           # 0=CONST, 1=EXP, 2=LOG, 3=EXPLOG, 4=CUSTOM_LOG, 5=CUSTOM_EXP, 6=CUSTOM_JET
+    # heights and speeds are only used for the CUSTOM_* profile laws, which fit
+    # a profile to these height/speed pairs instead of using alpha or z0
+    heights: [6.0]            # heights at which the wind speed is given         [m]
+    speeds:  [10.35]          # wind speeds at the given heights                 [m/s]
     use_turbulence: 0.0      # turbulence intensity

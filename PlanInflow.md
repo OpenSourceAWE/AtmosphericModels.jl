@@ -19,5 +19,29 @@ Base.@kwdef struct InflowConditions
 end
 ```
 
-## Step 1: Add missing fields to Settings
-In KiteUtils, 
+## Step 1: Add missing fields to settings.yaml in the section environment
+In KiteUtils,
+- add the missing comments to profile_law
+- add the fields heights and speeds
+- add the missing fields to the Settings struct in settings.jl
+- add tests
+- run the tests using Kaimon
+- an invalid integer value for profile_law must be detected and must result in an error message when loading the yaml file
+
+## Step 2a: Add two missing functions to AtmosphericModels
+- add functions for 4=CUSTOM_LOG, 5=CUSTOM_EXP, 6=CUSTOM_JET
+- custom_log and custom_exp should apply the log and the exp law; the coefficient shall be derived by minimizing
+  the mean square error from the heights and speeds vectors
+- add the example plot_custom_exp_log that shows two curves and dots to visualize that the approximation works
+- add tests
+
+## Step 2b: Add custom_jet function
+Use the following formula:
+    # CUSTOM_JET: u(z) = u_bg(z) + U_J * exp(-(z - z_c)^2 / (2*sigma^2))
+and determine the coefficients with a least square fit.
+
+- add an example
+- add a test
+
+Please note: a low level jet might be at 200m height. From 200 to 300m height the 
+speed must drop.

@@ -2,12 +2,10 @@
 .vscode/settings.json
 data/*.npz
 examples/Manifest.toml
-examples/Manifest-v1.10.toml
 examples/Manifest-v1.11.toml
 docs/build
 docs/Manifest.toml
 Manifest-v1.11.toml
-Manifest-v1.10.toml
 cspell.json
 Manifest-v1.12.toml
 .JETLSConfig.toml

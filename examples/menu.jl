@@ -7,11 +7,14 @@ if ! isfile("examples/Manifest.toml")
 end
 
 options = ["bench_get_wind = include(\"bench_get_wind.jl\")",
+           "bench_profile_law = include(\"bench_profile_law.jl\")",
            "get_wind_ = include(\"get_wind.jl\")",
            "load_windfield = include(\"load_windfield.jl\")",
            "plot_windshear = include(\"plot_windshear.jl\")",
            "plot_windshear_zero = include(\"plot_windshear_zero.jl\")",
            "plot_windshear_cabauw = include(\"plot_windshear_cabauw.jl\")",
+           "plot_custom_exp_log = include(\"plot_custom_exp_log.jl\")",
+           "plot_custom_jet = include(\"plot_custom_jet.jl\")",
            "plot_wind_vs_time_ = include(\"plot_wind_vs_time.jl\")",
            "plot_windfield_ = include(\"plot_windfield.jl\")",
            "new_windfields_ = include(\"new_windfields.jl\")",

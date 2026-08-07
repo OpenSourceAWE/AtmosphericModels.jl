@@ -96,16 +96,14 @@ u, v, w = AtmosphericModels.create_windfield(x, y, z, sigma1=1.0)
 end
 
 @testset "calc_turbulent_wind" begin
-    # Reference values pinned against the pre-move KiteModels.calc_turbulent_wind
-    # implementation (same rotation, Taylor advection and nearest-grid lookup),
-    # captured before that implementation was deleted.
+    # Reference values depend on `am`'s wind field, generated with a StableRNG(1234) seed so they stay identical across Julia versions.
     v_wind, v_wind_tether = AtmosphericModels.calc_turbulent_wind(am, [10.0, 20.0, 100.0], 12.5; upwind_dir=0.3)
-    @test v_wind ≈ [-2.144770095983673, -11.124313263469531, -0.6070299938532554]
-    @test v_wind_tether ≈ [-1.4502831306377473, -8.76678510107124, -0.3167369264079984]
+    @test v_wind ≈ [-2.727005993324385, -9.252554084036728, -0.5271022045469396]
+    @test v_wind_tether ≈ [-1.8852836939363489, -8.086856626440875, -0.0910792704705225]
 
     v_wind2, v_wind_tether2 = AtmosphericModels.calc_turbulent_wind(am, [0.0, 0.0, 50.0], 0.0; upwind_dir=-pi/2)
-    @test v_wind2 ≈ [9.796027271006283, -0.34202755189268585, -0.3957750583820598]
-    @test v_wind_tether2 ≈ [8.678228770857402, 0.40297265466661003, -0.07675347144301002]
+    @test v_wind2 ≈ [9.605009115623051, 0.14230156648318207, -0.19371077258749492]
+    @test v_wind_tether2 ≈ [8.959240704788714, 0.27915918858840116, -0.41309428536554527]
 
     # use_turbulence == 0: deterministic mean wind, no wind field needed
     set0 = deepcopy(am.set)
@@ -121,3 +119,4 @@ end
     @test v_wind_tether0[2] ≈ -v_height_half
     @test v_wind_tether0[3] == 0.0
 end
+nothing

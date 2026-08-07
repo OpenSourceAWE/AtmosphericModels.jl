@@ -7,6 +7,7 @@ set = load_settings("system.yaml"; relax=true)
 am = AtmosphericModel(set)
 
 include("test_windfield.jl")
+include("test_custom_profiles.jl")
 
 @testset "calc_wind_factor" begin
     @test calc_wind_factor(am, 6.0, Int(CONSTANT)) == 1.0
@@ -25,5 +26,6 @@ end
     am.set.temp_ref = 15
     clear(am)
 end
+nothing
 
 

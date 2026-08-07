@@ -43,35 +43,28 @@ unset _required_kb _available_kb _available_gb
 # Ask which Julia version to use
 # Default to the highest installed version that has a matching default manifest
 if juliaup status 2>/dev/null | grep '^\s*\*' | grep -q '1\.12'; then
-    _default_choice=3
-    _default_julia="1.12"
-elif juliaup status 2>/dev/null | grep '^\s*\*' | grep -q '1\.11'; then
     _default_choice=2
-    _default_julia="1.11"
+    _default_julia="1.12"
 else
     _default_choice=1
-    _default_julia="1.10"
+    _default_julia="1.11"
 fi
 echo "Which Julia version do you want to use?"
-echo "  1) Julia 1.10"
-echo "  2) Julia 1.11"
-echo "  3) Julia 1.12"
-read -rp "Enter 1, 2, or 3 [default: ${_default_choice}]: " _julia_choice
+echo "  1) Julia 1.11"
+echo "  2) Julia 1.12"
+read -rp "Enter 1 or 2 [default: ${_default_choice}]: " _julia_choice
 case "${_julia_choice}" in
     1)
-        _desired_julia="1.10"
-        ;;
-    2)
         _desired_julia="1.11"
         ;;
-    3)
+    2)
         _desired_julia="1.12"
         ;;
     "")
         _desired_julia="${_default_julia}"
         ;;
     *)
-        echo "Invalid choice: '${_julia_choice}'. Please enter 1, 2, or 3."
+        echo "Invalid choice: '${_julia_choice}'. Please enter 1 or 2."
         exit 1
         ;;
 esac
@@ -93,9 +86,9 @@ echo "Detected Julia version: $julia_version (major: $julia_major)"
 export JULIA_PKG_SERVER_REGISTRY_PREFERENCE=eager
 
 
-# Only accept Julia 1.10, 1.11, and 1.12
-if [[ $julia_major != "1.10" ]] && [[ $julia_major != "1.11" ]] && [[ $julia_major != "1.12" ]]; then
-    echo "Error: Julia $julia_major is not supported. Only Julia 1.10, 1.11, and 1.12 are supported."
+# Only accept Julia 1.11 and 1.12
+if [[ $julia_major != "1.11" ]] && [[ $julia_major != "1.12" ]]; then
+    echo "Error: Julia $julia_major is not supported. Only Julia 1.11 and 1.12 are supported."
     exit 1
 fi
 

@@ -165,7 +165,7 @@ function meshgrid(x, y, z)
     return (X, Y, Z)
 end
 
-function create_windfield(x, y, z; sigma1=nothing, gamma=3.9, ae=0.1, length_scale=33.6)
+function create_windfield(x, y, z; sigma1=nothing, gamma=3.9, ae=0.1, length_scale=33.6, rng=Random.default_rng())
     # Validate sigma1
     if sigma1 !== nothing
         if !(isa(sigma1, Number) || (isa(sigma1, AbstractVector) && length(sigma1) == 3))
@@ -254,8 +254,8 @@ function create_windfield(x, y, z; sigma1=nothing, gamma=3.9, ae=0.1, length_sca
     # C[3,3,:,:,:] remains zero
 
     # Generate white noise vector n with shape (3, 1, nx, ny, nz)
-    n_real = randn(3, 1, nx, ny, nz)
-    n_imag = randn(3, 1, nx, ny, nz)
+    n_real = randn(rng, 3, 1, nx, ny, nz)
+    n_imag = randn(rng, 3, 1, nx, ny, nz)
     n = complex.(n_real, n_imag)
 
     # Compute stochastic field dZ (3, nx, ny, nz)
@@ -442,11 +442,10 @@ Create a new wind field file using the given, scalar ground wind velocity `v_win
 - nothing
 """
 function new_windfield(am::AtmosphericModel, v_wind_gnd; prn=true)
-    Random.seed!(1234) 
     prn && @info "Creating wind field for $v_wind_gnd m/s. This might take 30s or more..."
     y, x, z = create_grid(am)
     sigma1 = am.set.use_turbulence * calc_sigma1(am, v_wind_gnd)
-    u, v, w = create_windfield(x, y, z, sigma1=sigma1)
+    u, v, w = create_windfield(x, y, z, sigma1=sigma1, rng=StableRNG(1234))
     param = [am.set.alpha, v_wind_gnd]
     # TODO calculate the basename based on am.set.grid
     save(am, x, y, z, u, v, w, param; basename=calc_basename(am.set), v_wind_gnd)
