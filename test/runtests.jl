@@ -26,5 +26,6 @@ end
     am.set.temp_ref = 15
     clear(am)
 end
+nothing
 
 

@@ -34,3 +34,14 @@ In KiteUtils,
   the mean square error from the heights and speeds vectors
 - add the example plot_custom_exp_log that shows two curves and dots to visualize that the approximation works
 - add tests
+
+## Step 2b: Add custom_jet function
+Use the following formula:
+    # CUSTOM_JET: u(z) = u_bg(z) + U_J * exp(-(z - z_c)^2 / (2*sigma^2))
+and determine the coefficients with a least square fit.
+
+- add an example
+- add a test
+
+Please note: a low level jet might be at 200m height. From 200 to 300m height the 
+speed must drop.

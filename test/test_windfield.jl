@@ -121,3 +121,4 @@ end
     @test v_wind_tether0[2] ≈ -v_height_half
     @test v_wind_tether0[3] == 0.0
 end
+nothing
