@@ -19,5 +19,11 @@ Base.@kwdef struct InflowConditions
 end
 ```
 
-## Step 1: Add missing fields to Settings
-In KiteUtils, 
+## Step 1: Add missing fields to settings.yaml in the section environment
+In KiteUtils,
+- add the missing comments to profile_law
+- add the fields heights and speeds
+- add the missing fields to the Settings struct in settings.jl
+- add tests
+- run the tests using Kaimon
+- an invalid integer value for profile_law must be detected and must result in an error message when loading the yaml file
