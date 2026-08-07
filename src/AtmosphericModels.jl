@@ -7,7 +7,8 @@ using NPZ, Printf
 using FFTW, LinearAlgebra, Random, Statistics
 
 export AtmosphericModel, ProfileLaw, WindField, EXP, LOG, EXPLOG, CONSTANT
-export clear, calc_rho, calc_wind_factor, rel_turbo
+export CUSTOM_LOG, CUSTOM_EXP, CUSTOM_JET
+export clear, calc_rho, calc_wind_factor, rel_turbo, custom_log, custom_exp
 
 export new_windfield, new_windfields, get_wind, calc_turbulent_wind
 
@@ -140,16 +141,19 @@ Calculates the air density at a given height above ground level.
 calc_rho(s::AM, height) = s.rho_zero_temp * fastexp(-(height+s.set.height_gnd) / 8550.0)
 
 """
-    @enum ProfileLaw CONSTANT=0 EXP=1 LOG=2 EXPLOG=3
+    @enum ProfileLaw CONSTANT=0 EXP=1 LOG=2 EXPLOG=3 CUSTOM_LOG=4 CUSTOM_EXP=5 CUSTOM_JET=6
 
 Enumeration to describe the wind profile law that is used.
 """ ProfileLaw
 
 @enum ProfileLaw begin
     CONSTANT=0
-    EXP=1 
-    LOG=2 
-    EXPLOG=3 
+    EXP=1
+    LOG=2
+    EXPLOG=3
+    CUSTOM_LOG=4
+    CUSTOM_EXP=5
+    CUSTOM_JET=6
 end
 
 @doc """
@@ -180,6 +184,29 @@ A linear combination of exponential and logarithmic wind profile to match a spec
 
 See also [`ProfileLaw`](@ref).
 """ EXPLOG
+@doc """
+    CUSTOM_LOG::ProfileLaw
+
+Logarithmic wind profile fitted to `am.set.heights`/`am.set.speeds` by least squares, see
+[`custom_log`](@ref).
+
+See also [`ProfileLaw`](@ref).
+""" CUSTOM_LOG
+@doc """
+    CUSTOM_EXP::ProfileLaw
+
+Power-law wind profile fitted to `am.set.heights`/`am.set.speeds` by least squares, see
+[`custom_exp`](@ref).
+
+See also [`ProfileLaw`](@ref).
+""" CUSTOM_EXP
+@doc """
+    CUSTOM_JET::ProfileLaw
+
+Low-level jet wind profile. Not implemented yet.
+
+See also [`ProfileLaw`](@ref).
+""" CUSTOM_JET
 
 
 # Calculate the wind speed at a given height and reference height.
@@ -201,6 +228,53 @@ end
     exp1 = exp(s.set.alpha * log(height/s.set.h_ref))
     log1 +  K * (log1 - exp1)
 end
+
+# Ordinary least squares fit of y = slope*x + intercept, returns (slope, intercept).
+function linreg(x::AbstractVector, y::AbstractVector)
+    xm = sum(x) / length(x)
+    ym = sum(y) / length(y)
+    sxx = sum((x .- xm) .^ 2)
+    sxy = sum((x .- xm) .* (y .- ym))
+    slope = sxy / sxx
+    slope, ym - slope * xm
+end
+
+function check_heights_speeds(heights, speeds)
+    length(heights) == length(speeds) ||
+        throw(ArgumentError("heights and speeds must have the same length"))
+    length(heights) >= 2 ||
+        throw(ArgumentError("need at least two height/speed pairs to fit a profile"))
+end
+
+"""
+    custom_log(heights, speeds, height)
+
+Evaluate a logarithmic wind profile `u(z) = a * log(z) + b` at `height`, with `a` and `b`
+fitted to `heights`/`speeds` by ordinary least squares.
+"""
+function custom_log(heights::AbstractVector, speeds::AbstractVector, height)
+    check_heights_speeds(heights, speeds)
+    slope, intercept = linreg(log.(heights), speeds)
+    slope * log(height) + intercept
+end
+
+"""
+    custom_exp(heights, speeds, height)
+
+Evaluate a power-law wind profile `u(z) = c * z^a` at `height`, with `a` and `c` fitted to
+`heights`/`speeds` by ordinary least squares in log-log space.
+"""
+function custom_exp(heights::AbstractVector, speeds::AbstractVector, height)
+    check_heights_speeds(heights, speeds)
+    slope, intercept = linreg(log.(heights), log.(speeds))
+    exp(intercept) * height^slope
+end
+
+@inline function calc_wind_factor4(s::AM, height); custom_log(s.set.heights, s.set.speeds, height) / s.set.v_wind; end
+@inline function calc_wind_factor(s::AM, height, ::Type{Val{4}}); calc_wind_factor4(s, height); end
+
+@inline function calc_wind_factor5(s::AM, height); custom_exp(s.set.heights, s.set.speeds, height) / s.set.v_wind; end
+@inline function calc_wind_factor(s::AM, height, ::Type{Val{5}}); calc_wind_factor5(s, height); end
 
 """
     calc_wind_factor(am::AM, height; profile_law::Int64=am.set.profile_law)
@@ -224,7 +298,13 @@ Calculates the wind factor at a given `height` using the specified wind profile 
     elseif profile_law == 2
         calc_wind_factor2(am, height)
     elseif profile_law == 3
-        calc_wind_factor3(am, height)   
+        calc_wind_factor3(am, height)
+    elseif profile_law == 4
+        calc_wind_factor4(am, height)
+    elseif profile_law == 5
+        calc_wind_factor5(am, height)
+    elseif profile_law == 6
+        throw(ErrorException("profile_law CUSTOM_JET is not implemented yet"))
     else
         throw(DomainError(profile_law, "invalid profile_law"))
     end

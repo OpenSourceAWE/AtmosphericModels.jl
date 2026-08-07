@@ -27,3 +27,10 @@ In KiteUtils,
 - add tests
 - run the tests using Kaimon
 - an invalid integer value for profile_law must be detected and must result in an error message when loading the yaml file
+
+## Step 2a: Add two missing functions to AtmosphericModels
+- add functions for 4=CUSTOM_LOG, 5=CUSTOM_EXP, 6=CUSTOM_JET
+- custom_log and custom_exp should apply the log and the exp law; the coefficient shall be derived by minimizing
+  the mean square error from the heights and speeds vectors
+- add the example plot_custom_exp_log that shows two curves and dots to visualize that the approximation works
+- add tests
