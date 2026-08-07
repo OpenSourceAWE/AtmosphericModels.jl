@@ -10,7 +10,11 @@
     rho_0:  1.225            # air density at zero height and 15 °C    [kg/m³]
     alpha:  0.08163          # exponent of the wind profile law
     z0:     0.0002           # surface roughness                       [m]
-    profile_law: 3           # 1=EXP, 2=LOG, 3=EXPLOG
+    profile_law: 3           # 0=CONST, 1=EXP, 2=LOG, 3=EXPLOG, 4=CUSTOM_LOG, 5=CUSTOM_EXP, 6=CUSTOM_JET
+    # heights and speeds are only used for the CUSTOM_* profile laws, which
+    # fit a profile to these height/speed pairs instead of using alpha or z0
+    heights: [6.0]            # heights at which the wind speed is given  [m]
+    speeds:  [10.35]          # wind speeds at the given heights        [m/s]
     use_turbulence: 0.0      # turbulence intensity</code></pre><h3 id="Example-settings.yaml,-scenario-Cabauw,-NL"><a class="docs-heading-anchor" href="#Example-settings.yaml,-scenario-Cabauw,-NL">Example settings.yaml, scenario Cabauw, NL</a><a id="Example-settings.yaml,-scenario-Cabauw,-NL-1"></a><a class="docs-heading-anchor-permalink" href="#Example-settings.yaml,-scenario-Cabauw,-NL" title="Permalink"></a></h3><pre><code class="language-yaml hljs">environment:
     v_wind: 5.324            # wind speed at reference height          [m/s]
     upwind_dir: -90.0        # upwind direction                        [deg]
@@ -21,15 +25,19 @@
     rho_0:  1.225            # air density at zero height and 15 °C    [kg/m³]
     alpha:  0.234            # exponent of the wind profile law
     z0:     0.0002           # surface roughness                       [m]
-    profile_law: 1           # 1=EXP, 2=LOG, 3=EXPLOG
+    profile_law: 1           # 0=CONST, 1=EXP, 2=LOG, 3=EXPLOG, 4=CUSTOM_LOG, 5=CUSTOM_EXP, 6=CUSTOM_JET
+    # heights and speeds are only used for the CUSTOM_* profile laws, which fit
+    # a profile to these height/speed pairs instead of using alpha or z0
+    heights: [6.0]            # heights at which the wind speed is given         [m]
+    speeds:  [5.324]          # wind speeds at the given heights                 [m/s]
     # the following parameters are for calculating the turbulent wind field using the Mann model
     use_turbulence: 1.0      # turbulence intensity relative to Cabauw, NL
     v_wind_gnds: [3.483, 5.324, 8.163] # wind speeds at ref height for calculating the turbulent wind field [m/s]
-    avg_height: 200.0        # average height during reel out          [m]
+    avg_height: 200.0        # average height during reel out                    [m]
     rel_turbs:   [0.342, 0.465, 0.583] # relative turbulence at the v_wind_gnds
     i_ref: 0.14              # is the expected value of the turbulence intensity at 15 m/s.
     v_ref: 42.9              # five times the average wind speed in m/s at hub height over the full year    [m/s]
                              # Cabauw: 8.5863 m/s * 5.0 = 42.9 m/s
-    grid: [4050, 100, 500, 70] # grid size nx, ny, nz and minimal height z_min                              [m]
-    height_step: 2.0         # use a grid with 2m resolution in z direction                                 [m]
-    grid_step:   2.0         # grid resolution in x and y direction    [m]</code></pre><h2 id="Remarks"><a class="docs-heading-anchor" href="#Remarks">Remarks</a><a id="Remarks-1"></a><a class="docs-heading-anchor-permalink" href="#Remarks" title="Permalink"></a></h2><ul><li>If the parameter <code>use_turbulence</code> is zero, no windfield is loaded.</li></ul></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../api/">« API</a><a class="docs-footer-nextpage" href="../wind_field/">3D Wind Fields »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Friday 7 August 2026 13:40">Friday 7 August 2026</span>. Using Julia version 1.12.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+    grid: [4050, 100, 500, 70] # grid size nx, ny, nz and minimal height z_min   [m]
+    height_step: 2.0         # use a grid with 2m resolution in z direction      [m]
+    grid_step:   2.0         # grid resolution in x and y direction              [m]</code></pre><h2 id="Remarks"><a class="docs-heading-anchor" href="#Remarks">Remarks</a><a id="Remarks-1"></a><a class="docs-heading-anchor-permalink" href="#Remarks" title="Permalink"></a></h2><ul><li>If the parameter <code>use_turbulence</code> is zero, no windfield is loaded.</li></ul></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../api/">« API</a><a class="docs-footer-nextpage" href="../wind_field/">3D Wind Fields »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Friday 7 August 2026 17:29">Friday 7 August 2026</span>. Using Julia version 1.12.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
