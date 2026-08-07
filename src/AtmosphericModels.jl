@@ -287,6 +287,7 @@ function jet_jacobian_residual(heights, speeds, p)
     sigma = max(abs(sigma), eps(Float64))
     n = length(heights)
     J = zeros(Float64, n, 5)
+    R = zeros(Float64, n)
     for i in 1:n
         z = heights[i]
         za = z^a
