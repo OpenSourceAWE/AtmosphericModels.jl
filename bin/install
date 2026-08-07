@@ -6,8 +6,6 @@ if [[ $(basename $(pwd)) == "bin" ]]; then
     cd ..
 fi
 
-. ./bin/setup_env
-
 # Check if juliaup is installed
 if ! command -v juliaup &> /dev/null; then
     echo "Error: juliaup is not installed. Please install it first."

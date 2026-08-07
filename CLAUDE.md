@@ -67,7 +67,7 @@ come from `KiteUtils`, not this package — load with `set_data_path(...)` +
 Workspace-based like the sibling packages: `Project.toml` declares
 `[workspace] projects = ["examples", "test", "docs"]`.
 
-- **Install/setup**: `cd bin && ./install` (juliaup + `setup_env`); `./install --update` to refresh.
+- **Install/setup**: `cd bin && ./install` (juliaup); `./install --update` to refresh.
 - **Launch a dev REPL**: `./bin/run_julia` (defaults to `using KiteUtils: menu`; forwards script args
   if given).
 - **Run the test suite** (project = `test/`):
