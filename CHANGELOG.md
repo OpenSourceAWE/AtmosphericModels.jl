@@ -1,5 +1,17 @@
 # Changelog
 
+## AtmosphericModels v0.3.7 2026-08-07
+### Added
+- add `CUSTOM_LOG`, `CUSTOM_EXP` and `CUSTOM_JET` profile laws (`profile_law` 4/5/6), fitting a
+  wind profile to `set.heights`/`set.speeds` instead of a fixed `alpha`/`z0`
+- add `custom_log`/`custom_exp`, ordinary least squares fits of a logarithmic/power-law profile
+- add `custom_jet`, a nonlinear least squares (Levenberg-Marquardt) fit of a power-law
+  background plus a superimposed Gaussian jet, `u(z) = c*z^a + U_J*exp(-(z-z_c)^2/(2*sigma^2))`
+- cache the `CUSTOM_JET` fit in `AtmosphericModel.jet_cache`, reused while
+  `set.heights`/`set.speeds` are unchanged (~200x faster on a cache hit than refitting)
+- add examples `plot_custom_exp_log.jl` and `plot_custom_jet.jl`
+- add `bench_profile_law.jl`, benchmarking all profile laws, including cold vs. cached `CUSTOM_JET`
+
 ## AtmosphericModels v0.3.6 2026-08-05
 ### Added
 - add `calc_turbulent_wind`, moved here from `KiteModels` (kite/tether wind vectors in the ENU

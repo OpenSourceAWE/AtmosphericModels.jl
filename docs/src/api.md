@@ -34,6 +34,12 @@ WindField
 calc_rho
 calc_wind_factor
 ```
+### Custom profile laws
+```@docs
+custom_log
+custom_exp
+custom_jet
+```
 ### Wind turbulence calculation
 ```@docs
 get_wind
