@@ -12,6 +12,9 @@
 - add examples `plot_custom_exp_log.jl` and `plot_custom_jet.jl`
 - add `bench_profile_law.jl`, benchmarking all profile laws, including cold vs. cached `CUSTOM_JET`
 
+### Changed
+- Dropped support for Julia 1.10
+
 ### Fixed
 - fix `new_windfield` generating a different wind field per Julia version: it seeded the global
   RNG (`Random.seed!(1234)`), but `randn`'s array-filling algorithm isn't guaranteed stable across
