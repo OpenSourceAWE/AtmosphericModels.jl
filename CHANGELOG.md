@@ -12,6 +12,12 @@
 - add examples `plot_custom_exp_log.jl` and `plot_custom_jet.jl`
 - add `bench_profile_law.jl`, benchmarking all profile laws, including cold vs. cached `CUSTOM_JET`
 
+### Fixed
+- fix `new_windfield` generating a different wind field per Julia version: it seeded the global
+  RNG (`Random.seed!(1234)`), but `randn`'s array-filling algorithm isn't guaranteed stable across
+  Julia versions, which broke the `calc_turbulent_wind` reference values on Julia 1.10. Now uses a
+  `StableRNG(1234)` instead, so the wind field is byte-identical everywhere.
+
 ## AtmosphericModels v0.3.6 2026-08-05
 ### Added
 - add `calc_turbulent_wind`, moved here from `KiteModels` (kite/tether wind vectors in the ENU

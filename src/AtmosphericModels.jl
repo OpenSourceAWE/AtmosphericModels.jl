@@ -5,6 +5,7 @@ using KiteUtils: SVec3
 using HypergeometricFunctions:_₂F₁
 using NPZ, Printf
 using FFTW, LinearAlgebra, Random, Statistics
+using StableRNGs: StableRNG
 
 export AtmosphericModel, ProfileLaw, WindField, EXP, LOG, EXPLOG, CONSTANT
 export CUSTOM_LOG, CUSTOM_EXP, CUSTOM_JET
