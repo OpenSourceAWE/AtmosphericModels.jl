@@ -237,6 +237,7 @@ function linreg(x::AbstractVector, y::AbstractVector)
     xm = sum(x) / length(x)
     ym = sum(y) / length(y)
     sxx = sum((x .- xm) .^ 2)
+    sxx > 0 || throw(ArgumentError("cannot fit profile: heights are not distinct"))
     sxy = sum((x .- xm) .* (y .- ym))
     slope = sxy / sxx
     slope, ym - slope * xm
