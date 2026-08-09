@@ -8,6 +8,10 @@ is a bug report to file upstream.
 
 ## 1. `use_turbulence` is baked into the stored field instead of applied at lookup
 
+**Addressed in v0.3.8.** `new_windfield` stores the field at the reference intensity, `get_wind`
+scales by `use_turbulence * rel_turbo(...)`, and the factor is gone from the filename. `load` falls
+back to the old `..._1.0_<speed>.npz` name, so a file generated at 1.0 only needs renaming.
+
 `new_windfield` scales the Mann field before saving:
 
 ```julia
@@ -35,6 +39,10 @@ factor is applied.
 
 ## 2. `rel_turbo` is indexed by `set.v_wind`, not by the speed the field was built for
 
+**Addressed in v0.3.8.** `WindField` carries a `v_wind_gnd` field, set from the grid speed
+`load_windfield` selected, and `get_wind` takes `rel_turbo(am, wf.v_wind_gnd)`. The same fix was
+applied to `KiteModels.calc_turbulent_wind`, which has its own copy of the lookup.
+
 The field is chosen by the argument to `WindField(am, speed)`:
 
 ```julia
@@ -56,6 +64,11 @@ the loaded field was actually built with; storing that index (or the speed) on t
 
 ## 3. The `.npz` files belong in a scratchspace, not in `get_data_path()`
 
+**Addressed in v0.3.8.** New fields are written to `windfield_path()`, a `Scratch.jl` scratchspace,
+overridable with `set_windfield_path!`. `find_windfield` still reads the files sitting in
+`get_data_path()`, so nothing has to be regenerated; they can be moved into the scratchspace to be
+shared between repos.
+
 ```julia
 path = get_data_path() * "/"   # calc_full_name, :86
 ```
@@ -75,6 +88,11 @@ carry a hash of every relevant parameter without the filename becoming unreadabl
 
 ## 4. Half of every file is a coordinate meshgrid that is never used
 
+**Addressed in v0.3.8.** `save` writes only `u`, `v`, `w` and `param`; `grid_axes(am)` rebuilds the
+axes from the settings, and `WindField` takes its `x`/`y`/`z` and the six scalars from there. `load`
+names the variables it reads, so pre-0.3.8 files skip their coordinates too — measured 1.5 s → 0.8 s
+on the 1.16 GiB file.
+
 `create_grid` returns full 3D arrays from `ndgrid` (`:144-158`) and `save` writes `x`,
 `y`, `z` alongside `u`, `v`, `w` (`:96-104`). For the default grid that is
 51 × 2026 × 251 = 25.9 M points, so three redundant `Float64` arrays of 207 MB each:
@@ -89,6 +107,13 @@ time and peak RAM.
 
 ## 5. The filename covers only 3 of the ~9 parameters that determine the field
 
+**Addressed in v0.3.8.** `calc_basename` appends `param_digest(set)`, eight hex digits of a
+SHA-256 over `grid_step`, `height_step`, `i_ref`, `alpha`, `avg_height` and `h_ref`, so changing
+any of them names a different file. `profile_law` and `z0` are not in it and do not need to be:
+neither reaches the generator, since `calc_sigma1` evaluates the profile as `EXP` whatever the
+setting says. Files under the older names still load, with a log line saying they cannot be checked
+against the settings. The "Known limitation" section of `docs/src/wind_field.md` is gone.
+
 Already flagged as a "Known limitation" at the end of `docs/src/wind_field.md`, with
 "delete all `*.npz` files by hand" as the workaround. `height_step`, `grid_step`, `i_ref`,
 `alpha`, `avg_height`, `h_ref`, `profile_law` and `z0` all change the field but not its
@@ -97,6 +122,12 @@ A content hash over the full parameter set turns this from a documented footgun 
 non-issue, and is natural to do at the same time as issue 3.
 
 ## 6. A failure to build the field is swallowed and resurfaces much later
+
+**Addressed in v0.3.8.** `WindField` no longer returns `nothing` on failure: it validates the
+settings first with `check_windfield_settings`, which throws an `ArgumentError` naming the
+offending `environment.*` key, and lets anything later propagate after one context line. The case
+below now reads `ArgumentError: environment.grid must be [nx, ny, nz, z_min], got Int64[]`, raised
+where the field is asked for. Callers testing the result for `nothing` have to catch instead.
 
 ```julia
 catch e
@@ -125,6 +156,13 @@ with a message naming the missing key, would have made it a one-line diagnosis.
 declared in all three `data/settings_fig8_*.yaml`.)
 
 ## 7. `new_windfield` reseeds the global RNG
+
+**Already fixed in v0.3.7**, before this report was written: `create_windfield` takes an `rng`
+keyword and `new_windfield` passes `StableRNG(1234)`, so the global stream is untouched. Stable
+rather than the `Xoshiro(1234)` suggested below, because `randn`'s array filling is not guaranteed
+identical across Julia versions — that had broken the `calc_turbulent_wind` reference values on
+1.10. It is also why a field generated before 2026-08-07 is a different realization from one
+regenerated today, though a statistically equivalent one.
 
 ```julia
 Random.seed!(1234)   # :445

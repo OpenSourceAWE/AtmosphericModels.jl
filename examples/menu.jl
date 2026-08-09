@@ -6,6 +6,8 @@ if ! isfile("examples/Manifest.toml")
     Pkg.instantiate()
 end
 
+using AtmosphericModels: windfield_path
+
 options = ["bench_get_wind = include(\"bench_get_wind.jl\")",
            "bench_profile_law = include(\"bench_profile_law.jl\")",
            "get_wind_ = include(\"get_wind.jl\")",
@@ -20,7 +22,7 @@ options = ["bench_get_wind = include(\"bench_get_wind.jl\")",
            "new_windfields_ = include(\"new_windfields.jl\")",
            "show_grid_ = include(\"show_grid.jl\")",
            "test_all = include(\"test_all.jl\")",
-           "delete_windfields = foreach(rm, filter(endswith(\".npz\"), readdir(\"data\",join=true)))",
+           "delete_windfields = foreach(rm, filter(endswith(\".npz\"), readdir(windfield_path(), join=true)))",
            "quit"]
 
 function example_menu()

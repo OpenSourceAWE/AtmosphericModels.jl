@@ -103,10 +103,22 @@ set_data_path("data")
 set = load_settings("system.yaml"; relax=true)
 am::AtmosphericModel = AtmosphericModel(set)
 ```
-If the file `windfield_4050_100_500_70_1.0_5.3.npz`, which contains the required wind field does not exist it will be created automatically. This might take 30s, but is required only once.
+If the file `windfield_4050_100_500_70_<digest>_5.3.npz`, which contains the required wind field does not exist it will be created automatically. This might take 30s, but is required only once. The name is the grid, then a digest of every other setting the field depends on (`grid_step`, `height_step`, `i_ref`, `alpha`, `avg_height`, `h_ref`), then the ground wind speed.
 
-**Known limitation:** Only three of the parameters that determine the wind field
-are encoded in the filename. Therefore, if you change one of the other parameters the wrong file might be loaded. Workaround: Delete all `*.npz` files in the data folder before changing another parameter than `grid`, `use_turbulence` or `v_wind_gnds`.
+These files are ~1.2 GB each and live in a `Scratch.jl` scratchspace, shared by every package that
+uses `AtmosphericModels` and removed when the package is; `windfield_path()` returns the directory,
+`set_windfield_path!(path)` moves it, e.g. onto a disk with more room. Files written by versions
+before v0.3.8, which kept them in `get_data_path()`, are still found there and can be moved into
+the scratchspace to be shared.
+
+The stored field has the reference intensity of the IEC model; `use_turbulence` and `rel_turbs` are
+applied when the field is read, so one file per ground wind speed serves all turbulence intensities
+and changing `use_turbulence` does not require a new file.
+
+Changing any of those parameters therefore names a different file, which is generated on the next
+run instead of the wrong one being loaded silently. Files written before the digest existed keep
+their old name and are still used, but cannot be checked against the current settings — delete them
+to have a checked one generated.
 
 ## References
 

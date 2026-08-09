@@ -1,5 +1,69 @@
 # Changelog
 
+## AtmosphericModels v0.3.8 (unreleased)
+### Added
+- The `interpolate` keyword of `get_wind` is implemented. It used to be a documented keyword that
+  returned `nothing` (a `TODO` left over from the Python original, which used
+  `ndimage.map_coordinates`). With `interpolate=true` the turbulence is now interpolated trilinearly
+  between the eight surrounding grid points instead of read at the nearest one, which removes the
+  steps a kite flying through the field sees, at about 1.8x the cost of the lookup (29 ns → 51 ns
+  per position for the vector method). The horizontal axes wrap with the same period the
+  nearest-grid-point lookup uses, the vertical one is clamped at the top layer. The keyword is
+  available on all `get_wind` methods and on `calc_turbulent_wind`; the default stays `false`, so
+  nothing changes for existing callers.
+- `get_wind(am, positions, t; upwind_dir)`, a method that takes a vector of 3D positions and returns
+  a `Vector{SVec3}` of wind vectors, plus the in-place `get_wind!(res, am, positions, t; upwind_dir)`.
+  Everything that does not depend on the position — `rel_turbo` (which allocates), the sine/cosine of
+  the wind direction and the `am.set` lookups — is computed once per call instead of once per
+  position, which makes it about 2.4x faster than the scalar `get_wind` in a loop (100 positions:
+  7.2 µs and 203 allocations → 3.0 µs and 5, or 2 with `get_wind!`). The results are bit-identical
+  to the scalar method; the scalar path is unchanged in speed.
+- `windfield_path` and `set_windfield_path!`. The `.npz` wind fields are now written to a
+  `Scratch.jl` scratchspace instead of `get_data_path()`: they are derived artifacts of ~1.2 GB
+  apiece, and writing them next to version-controlled settings made every downstream repo
+  accumulate its own copies (7.0 GB in `KiteControllers.jl/data`, 4.7 GB in `V3Kite/data`, ... none
+  of them shared) and need its own `.gitignore` rule. The scratchspace is shared by all consumers
+  and is removed with the package. `set_windfield_path!(path)` overrides it, `""` restores the
+  default. Files in `get_data_path()` are still found and used, so nothing has to be regenerated —
+  see `find_windfield`.
+
+### Changed
+- `WindField(am, speed)` no longer catches every exception, logs it and returns `nothing`. That
+  turned any failure into a `nothing` wind field, which surfaced much later as the
+  `wf !== nothing` assertion in `get_wind` with a stack trace nowhere near the cause. It now
+  validates the settings up front (`check_windfield_settings`, which names the offending
+  `environment.*` key) and lets anything else propagate. Callers testing the result for `nothing`
+  need to catch instead.
+- The wind field file name now carries `param_digest(set)`, eight hex digits of a SHA-256 over
+  `grid_step`, `height_step`, `i_ref`, `alpha`, `avg_height` and `h_ref`. Before, only `grid` and
+  the ground wind speed were in the name, so changing any of the other six silently loaded a stale
+  file and produced plausible, wrong numbers — the "known limitation" in `docs/src/wind_field.md`,
+  whose workaround was deleting every `.npz` by hand. Files under the older names are still found
+  and used (`find_windfield`), with a log line saying they cannot be checked against the settings.
+  `calc_basename(set)` gained the digest, `grid_basename(set)` is the name without it, and `load`
+  lost its `basename` keyword.
+- The `.npz` files no longer store the `x`, `y`, `z` coordinate meshgrids, which were half of
+  every file (622 MB of 1.24 GB for the default grid) and were used only to derive six scalars
+  nothing reads. `grid_axes(am)` rebuilds the axes from `set.grid`/`grid_step`/`height_step`
+  instead, so a new file is half the size and loads in half the time. Older files still load, and
+  faster than before, because `load` now names the variables it wants instead of reading the whole
+  archive. `save` and `load` no longer take or return `x`, `y`, `z`, and `WindField`'s `x`/`y`/`z`
+  are the 1D axes rather than 3D meshgrids.
+- `use_turbulence` is now applied when the wind field is read (`get_wind`) instead of being baked
+  into the stored field, and it is no longer part of the `.npz` filename. One file per ground wind
+  speed therefore serves all turbulence intensities, and changing `use_turbulence` no longer
+  requires regenerating a ~1.2 GB file. The wind vectors returned are unchanged:
+  `sigma = use_turbulence * rel_turbs[idx] * sigma_IEC(v)` as before.
+- `WindField` gained a `v_wind_gnd` field, the `set.v_wind_gnds` entry the loaded field was
+  generated for, and `load_windfield` returns it as an eighth element. `get_wind` takes the
+  `rel_turbs` correction for that speed instead of for `set.v_wind`: the two agreed only because
+  `AtmosphericModel(set)` happens to load the field at `set.v_wind`, so any caller constructing
+  `WindField(am, speed)` with another speed silently paired one scenario's field with another
+  scenario's turbulence intensity.
+- **Migration**: existing `windfield_<grid>_1.0_<speed>.npz` files are still valid, just renamed —
+  drop the `_1.0` from the name (`load` falls back to the old name and tells you). Files generated
+  with any other `use_turbulence` are pre-scaled and should be deleted.
+
 ## AtmosphericModels v0.3.7 2026-08-07
 ### Added
 - add `CUSTOM_LOG`, `CUSTOM_EXP` and `CUSTOM_JET` profile laws (`profile_law` 4/5/6), fitting a
