@@ -23,8 +23,7 @@ end
     datapath = get_data_path()
     tmpdir = joinpath(mktempdir(cleanup=true), "data")
     mkpath(tmpdir)
-    olddir = pwd()
-    cd(dirname(tmpdir))
+    # Both paths below are absolute, so the working directory is left alone.
     set_data_path(tmpdir)
     # Without this the dummy field below would overwrite the real one in the scratchspace.
     set_windfield_path!(tmpdir)
@@ -66,9 +65,8 @@ end
     @test y[1, :, 1] == collect(y_range)
     @test z[1, 1, :] == collect(z_range)
 
-    set_data_path(olddir)
+    set_data_path(datapath)
     set_windfield_path!("")
-    cd(olddir)
 end
 
 @testset "windfield_path  " begin
@@ -233,5 +231,54 @@ end
     @test buf == ref
     @test_throws DimensionMismatch get_wind!(buf, am, positions[1:end-1], t)
     @test_throws AssertionError get_wind(am, [KiteUtils.SVec3(0.0, 0.0, 4.0)], t)
+end
+
+@testset "get_wind interpolate" begin
+    grid_step = am.set.grid_step
+    height_step = am.set.height_step
+    # On a grid point interpolation must reproduce the nearest-grid-point lookup exactly. With
+    # upwind_dir = -π/2 the wind blows along +x, so along-wind = x and cross-wind = y.
+    t = 0.0
+    for (x, y, z) in ((0.0, 0.0, 10height_step), (3grid_step, 2grid_step, 27height_step))
+        @test all(get_wind(am, x, y, z, t; upwind_dir=-π/2, interpolate=true) .≈
+                  get_wind(am, x, y, z, t; upwind_dir=-π/2))
+    end
+
+    # Halfway between two grid points along y, the result is the mean of both neighbours.
+    x, z = 0.0, 40height_step
+    lo = get_wind(am, x, 2grid_step, z, t; upwind_dir=-π/2)
+    hi = get_wind(am, x, 3grid_step, z, t; upwind_dir=-π/2)
+    mid = get_wind(am, x, 2.5grid_step, z, t; upwind_dir=-π/2, interpolate=true)
+    @test all(mid .≈ (lo .+ hi) ./ 2)
+    # ... and it really differs from the nearest-grid-point value (the field is not that smooth)
+    @test !all(mid .≈ get_wind(am, x, 2.5grid_step, z, t; upwind_dir=-π/2))
+
+    # Interpolation is continuous: a small step in the position gives a small step in the wind.
+    steps = [maximum(abs.(get_wind(am, x, y + 0.01, z, t; upwind_dir=-π/2, interpolate=true) .-
+                          get_wind(am, x, y, z, t; upwind_dir=-π/2, interpolate=true)))
+             for y in range(0, 5grid_step, 200)]
+    @test maximum(steps) < 0.01
+
+    # The vector methods pass the keyword through.
+    positions = [KiteUtils.SVec3(10.0 + 3i, 20.0 - 2i, 50.0 + i) for i in 1:20]
+    ref = [KiteUtils.SVec3(get_wind(am, p[1], p[2], p[3], 12.5; upwind_dir=0.3, interpolate=true))
+           for p in positions]
+    @test get_wind(am, positions, 12.5; upwind_dir=0.3, interpolate=true) == ref
+    buf = Vector{KiteUtils.SVec3}(undef, length(positions))
+    get_wind!(buf, am, positions, 12.5; upwind_dir=0.3, interpolate=true)
+    @test buf == ref
+    @test buf != get_wind(am, positions, 12.5; upwind_dir=0.3)
+
+    # calc_turbulent_wind, too.
+    pos = KiteUtils.SVec3(30.0, 40.0, 120.0)
+    @test collect(calc_turbulent_wind(am, pos, 5.0; interpolate=true)[1]) !=
+          collect(calc_turbulent_wind(am, pos, 5.0)[1])
+
+    # Wrapping at the seam of the periodic horizontal axes stays in bounds.
+    nshort = min(size(am.wf.u, 1), size(am.wf.u, 2))
+    @test all(isfinite, get_wind(am, 0.0, (nshort - 1) * grid_step, 100.0, 0.0;
+                                 upwind_dir=-π/2, interpolate=true))
+    @test all(isfinite, get_wind(am, 0.0, 0.0, size(am.wf.u, 3) * height_step, 1e5;
+                                 upwind_dir=-π/2, interpolate=true))
 end
 nothing

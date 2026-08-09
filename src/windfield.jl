@@ -454,8 +454,10 @@ for, not for `am.set.v_wind`, so a field loaded at any other speed keeps its own
 - `t`: Current simulation time. [s]
 - `upwind_dir` (optional, default = `-π/4`): Direction the wind is coming FROM [rad].
   Zero is north, clockwise positive (same convention as in `calc_turbulent_wind`).
-- `interpolate` (optional, default = `false`): If `true`, interpolate wind values between grid points;
-                                               otherwise, use nearest-grid-point values.
+- `interpolate` (optional, default = `false`): If `true`, interpolate the turbulence trilinearly
+  between the eight surrounding grid points; otherwise, use nearest-grid-point values. Interpolation
+  removes the steps a kite flying through the field sees, at about 1.8x the cost of the lookup
+  itself (29 ns → 51 ns per position for the vector method).
 
 # Returns
 - A tuple `(v_x, v_y, v_z)` representing the wind velocity in the wind-aligned frame [m/s],
@@ -465,14 +467,7 @@ function get_wind(am::AtmosphericModel, x, y, z, t; upwind_dir=-π/4, interpolat
     @assert z >= 5.0 "Height must be at least 5 m"
     wf = am.wf
     @assert wf !== nothing "No wind field: AtmosphericModel(set) only loads one when set.use_turbulence > 0"
-    if interpolate
-        # TODO: Implement interpolation using Interpolations.jl or similar
-        # x_wind = ndimage.map_coordinates(wf.u, [[i], [j], [z1]], order=3, prefilter=false)
-        # y_wind = ndimage.map_coordinates(wf.v, [[i], [j], [z1]], order=3, prefilter=false)
-        # z_wind = ndimage.map_coordinates(wf.w, [[i], [j], [z1]], order=3, prefilter=false)
-        return nothing
-    end
-    wind_at(am, wf, x, y, z, t, wind_context(am, wf, upwind_dir)...)
+    wind_at(am, wf, x, y, z, t, wind_context(am, wf, upwind_dir)...; interpolate)
 end
 
 """
@@ -493,15 +488,64 @@ instead of once per position — `rel_turbo` in particular allocates.
 end
 
 """
+    interp_bounds_periodic(idx, n)
+
+Split the fractional grid index `idx`, already reduced into `[0, n-1]`, into the pair of neighbouring
+one-based indices and the weight of the upper one. The upper neighbour wraps around with the same
+period of `n - 1` grid steps that the nearest-grid-point lookup uses.
+"""
+@inline function interp_bounds_periodic(idx, n)
+    lower = floor(idx)
+    i_lo = Int(lower) + 1
+    i_hi = i_lo + 1
+    if i_hi > n
+        i_hi -= n - 1
+    end
+    return i_lo, i_hi, idx - lower
+end
+
+"""
+    interp_bounds_clamped(idx, n)
+
+As [`interp_bounds_periodic`](@ref), but for the vertical axis, which is not periodic: at the top of
+the grid the upper neighbour is clamped to the last layer.
+"""
+@inline function interp_bounds_clamped(idx, n)
+    lower = floor(idx)
+    i_lo = Int(lower) + 1
+    return i_lo, min(i_lo + 1, n), idx - lower
+end
+
+"""
+    trilinear(a, i_lo, i_hi, j_lo, j_hi, k_lo, k_hi, fi, fj, fk)
+
+Trilinear interpolation of the 3D array `a` between the eight grid points given by the index pairs,
+with `fi`, `fj`, `fk` the weights of the upper index in each dimension.
+"""
+@inline function trilinear(a, i_lo, i_hi, j_lo, j_hi, k_lo, k_hi, fi, fj, fk)
+    a00 = a[i_lo, j_lo, k_lo] * (1 - fi) + a[i_hi, j_lo, k_lo] * fi
+    a10 = a[i_lo, j_hi, k_lo] * (1 - fi) + a[i_hi, j_hi, k_lo] * fi
+    a01 = a[i_lo, j_lo, k_hi] * (1 - fi) + a[i_hi, j_lo, k_hi] * fi
+    a11 = a[i_lo, j_hi, k_hi] * (1 - fi) + a[i_hi, j_hi, k_hi] * fi
+    a0 = a00 * (1 - fj) + a10 * fj
+    a1 = a01 * (1 - fj) + a11 * fj
+    return a0 * (1 - fk) + a1 * fk
+end
+
+"""
     wind_at(am, wf, x, y, z, t, cos_dir, sin_dir, rel_turb, profile_law, v_wind, grid_step,
-            height_step)
+            height_step; interpolate=false)
 
 Look up the wind vector at one position; the trailing arguments come from [`wind_context`](@ref).
+
+With `interpolate=false` the turbulence is read at the nearest grid point, with `interpolate=true` it
+is interpolated trilinearly between the eight surrounding ones. The mean wind is a smooth function of
+the height either way, so only the turbulence is affected.
 
 Returns the tuple `(v_x, v_y, v_z)` in the wind-aligned frame, see [`get_wind`](@ref).
 """
 @inline function wind_at(am::AtmosphericModel, wf::WindField, x, y, z, t, cos_dir, sin_dir, rel_turb,
-                         profile_law, v_wind, grid_step, height_step)
+                         profile_law, v_wind, grid_step, height_step; interpolate=false)
     @assert z >= 5.0 "Height must be at least 5 m"
     @assert t >= 0.0 "Time must be non-negative"
     if z < 10.0
@@ -516,6 +560,7 @@ Returns the tuple `(v_x, v_y, v_z)` in the wind-aligned frame, see [`get_wind`](
 
     n1 = size(wf.u, 1)
     n2 = size(wf.u, 2)
+    nz = size(wf.u, 3)
     dim1_is_long = n1 >= n2
     nlong = dim1_is_long ? n1 : n2
     nshort = dim1_is_long ? n2 : n1
@@ -528,7 +573,6 @@ Returns the tuple `(v_x, v_y, v_z)` in the wind-aligned frame, see [`get_wind`](
     while along_idx < 0
         along_idx += nlong - 1
     end
-    along_idx = Int(round(along_idx)) + 1
 
     # Cross-wind → short field dimension (kite stays within spatial range)
     cross_idx = cross / grid_step
@@ -538,27 +582,41 @@ Returns the tuple `(v_x, v_y, v_z)` in the wind-aligned frame, see [`get_wind`](
     while cross_idx < 0
         cross_idx += nshort - 1
     end
-    cross_idx = Int(round(cross_idx)) + 1
 
     z1 = z / height_step
-    if z1 > size(wf.u, 3) - 1
-        z1 = size(wf.u, 3) - 1
+    if z1 > nz - 1
+        z1 = nz - 1
     elseif z1 < 0
         z1 = 0
     end
-    z1 = Int(round(z1)) + 1
 
-    i = dim1_is_long ? along_idx : cross_idx
-    j = dim1_is_long ? cross_idx : along_idx
+    if interpolate
+        long_lo, long_hi, f_long = interp_bounds_periodic(along_idx, nlong)
+        short_lo, short_hi, f_short = interp_bounds_periodic(cross_idx, nshort)
+        k_lo, k_hi, f_z = interp_bounds_clamped(z1, nz)
+        i_lo, i_hi, f_i = dim1_is_long ? (long_lo, long_hi, f_long) : (short_lo, short_hi, f_short)
+        j_lo, j_hi, f_j = dim1_is_long ? (short_lo, short_hi, f_short) : (long_lo, long_hi, f_long)
+        v_x = trilinear(wf.u, i_lo, i_hi, j_lo, j_hi, k_lo, k_hi, f_i, f_j, f_z) * rel_turb + v_wind_height
+        v_y = trilinear(wf.v, i_lo, i_hi, j_lo, j_hi, k_lo, k_hi, f_i, f_j, f_z) * rel_turb
+        v_z = trilinear(wf.w, i_lo, i_hi, j_lo, j_hi, k_lo, k_hi, f_i, f_j, f_z) * rel_turb
+        return v_x, v_y, v_z
+    end
 
-    v_x = wf.u[i, j, z1] * rel_turb + v_wind_height
-    v_y = wf.v[i, j, z1] * rel_turb
-    v_z = wf.w[i, j, z1] * rel_turb
+    i_long = Int(round(along_idx)) + 1
+    i_short = Int(round(cross_idx)) + 1
+    k = Int(round(z1)) + 1
+
+    i = dim1_is_long ? i_long : i_short
+    j = dim1_is_long ? i_short : i_long
+
+    v_x = wf.u[i, j, k] * rel_turb + v_wind_height
+    v_y = wf.v[i, j, k] * rel_turb
+    v_z = wf.w[i, j, k] * rel_turb
     return v_x, v_y, v_z
 end
 
 """
-    get_wind(am::AtmosphericModel, positions::AbstractVector, t; upwind_dir=-π/4)
+    get_wind(am::AtmosphericModel, positions::AbstractVector, t; upwind_dir=-π/4, interpolate=false)
 
 Return the wind vectors at all `positions` at time `t` as a `Vector{SVec3}`.
 
@@ -572,6 +630,8 @@ computed once per call instead of once per position.
   vector of indexable, 3-element positions works. The height `positions[i][3]` must be >= 5 m.
 - `t`: Current simulation time. [s]
 - `upwind_dir` (optional, default = `-π/4`): Direction the wind is coming FROM [rad].
+- `interpolate` (optional, default = `false`): Interpolate between grid points, see the scalar
+  method of [`get_wind`](@ref).
 
 # Returns
 - A `Vector{SVec3}` of wind velocities in the wind-aligned frame [m/s], one per position; the
@@ -579,20 +639,20 @@ computed once per call instead of once per position.
 
 See also [`get_wind!`](@ref), which writes into a pre-allocated result vector.
 """
-function get_wind(am::AtmosphericModel, positions::AbstractVector, t; upwind_dir=-π/4)
+function get_wind(am::AtmosphericModel, positions::AbstractVector, t; upwind_dir=-π/4, interpolate=false)
     res = Vector{SVec3}(undef, length(positions))
-    get_wind!(res, am, positions, t; upwind_dir)
+    get_wind!(res, am, positions, t; upwind_dir, interpolate)
 end
 
 """
     get_wind!(res::AbstractVector{SVec3}, am::AtmosphericModel, positions::AbstractVector, t;
-              upwind_dir=-π/4)
+              upwind_dir=-π/4, interpolate=false)
 
 In-place version of the vector method of [`get_wind`](@ref): write the wind vectors at `positions`
 into `res` and return `res`. `res` must have the same length as `positions`.
 """
 function get_wind!(res::AbstractVector{SVec3}, am::AtmosphericModel, positions::AbstractVector, t;
-                   upwind_dir=-π/4)
+                   upwind_dir=-π/4, interpolate=false)
     length(res) == length(positions) ||
         throw(DimensionMismatch("res has $(length(res)) entries, positions $(length(positions))"))
     wf = am.wf
@@ -601,13 +661,13 @@ function get_wind!(res::AbstractVector{SVec3}, am::AtmosphericModel, positions::
     # No @inbounds: the field lookup in wind_at keeps the same bounds checks as the scalar method.
     for i in eachindex(positions, res)
         pos = positions[i]
-        res[i] = SVec3(wind_at(am, wf, pos[1], pos[2], pos[3], t, ctx...))
+        res[i] = SVec3(wind_at(am, wf, pos[1], pos[2], pos[3], t, ctx...; interpolate))
     end
     return res
 end
 
 """
-    calc_turbulent_wind(am::AtmosphericModel, pos, t; upwind_dir=-π/4)
+    calc_turbulent_wind(am::AtmosphericModel, pos, t; upwind_dir=-π/4, interpolate=false)
 
 Calculate the wind velocity vectors at the kite and at the mid-tether point, in the ENU
 simulation frame.
@@ -622,6 +682,7 @@ via [`get_wind`](@ref) and rotated from the wind-aligned frame into the simulati
 - `t`: current simulation time [s].
 - `upwind_dir` (optional, default = `-π/4`): direction the wind is coming FROM [rad].
   Zero is north, clockwise positive (same convention as in [`get_wind`](@ref)).
+- `interpolate` (optional, default = `false`): interpolate between grid points, see [`get_wind`](@ref).
 
 # Returns
 A tuple `(v_wind, v_wind_tether)` of `SVec3` in the ENU frame [m/s]:
@@ -629,7 +690,7 @@ A tuple `(v_wind, v_wind_tether)` of `SVec3` in the ENU frame [m/s]:
 - `v_wind_tether`: wind velocity at half the kite position `(0.5x, 0.5y, 0.5z)`, with the height
   clamped to $(MIN_TETHER_HEIGHT) m minimum.
 """
-function calc_turbulent_wind(am::AtmosphericModel, pos, t; upwind_dir=-π/4)
+function calc_turbulent_wind(am::AtmosphericModel, pos, t; upwind_dir=-π/4, interpolate=false)
     wind_dir = -upwind_dir - pi/2
     height = max(pos[3], MIN_KITE_HEIGHT)
     rotate_wind(wx, wy, wz) = SVec3(wx * cos(wind_dir) - wy * sin(wind_dir),
@@ -642,9 +703,10 @@ function calc_turbulent_wind(am::AtmosphericModel, pos, t; upwind_dir=-π/4)
                              0.0)
         return mean_wind(height), mean_wind(height / 2.0)
     end
-    v_wind = rotate_wind(get_wind(am, pos[1], pos[2], height, t; upwind_dir)...)
+    v_wind = rotate_wind(get_wind(am, pos[1], pos[2], height, t; upwind_dir, interpolate)...)
     tether_height = max(0.5 * height, MIN_TETHER_HEIGHT)
-    v_wind_tether = rotate_wind(get_wind(am, 0.5 * pos[1], 0.5 * pos[2], tether_height, t; upwind_dir)...)
+    v_wind_tether = rotate_wind(get_wind(am, 0.5 * pos[1], 0.5 * pos[2], tether_height, t;
+                                         upwind_dir, interpolate)...)
     return v_wind, v_wind_tether
 end
 

@@ -1,8 +1,9 @@
 using AtmosphericModels, KiteUtils, BenchmarkTools
 using Test
 
-cd("..")
-KiteUtils.set_data_path("data") 
+# Absolute, so that the suite can be included from anywhere; nothing here depends on the
+# working directory.
+KiteUtils.set_data_path(normpath(joinpath(@__DIR__, "..", "data")))
 set = load_settings("system.yaml"; relax=true)
 am = AtmosphericModel(set)
 

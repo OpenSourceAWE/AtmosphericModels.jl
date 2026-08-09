@@ -2,6 +2,15 @@
 
 ## AtmosphericModels v0.3.8 (unreleased)
 ### Added
+- The `interpolate` keyword of `get_wind` is implemented. It used to be a documented keyword that
+  returned `nothing` (a `TODO` left over from the Python original, which used
+  `ndimage.map_coordinates`). With `interpolate=true` the turbulence is now interpolated trilinearly
+  between the eight surrounding grid points instead of read at the nearest one, which removes the
+  steps a kite flying through the field sees, at about 1.8x the cost of the lookup (29 ns → 51 ns
+  per position for the vector method). The horizontal axes wrap with the same period the
+  nearest-grid-point lookup uses, the vertical one is clamped at the top layer. The keyword is
+  available on all `get_wind` methods and on `calc_turbulent_wind`; the default stays `false`, so
+  nothing changes for existing callers.
 - `get_wind(am, positions, t; upwind_dir)`, a method that takes a vector of 3D positions and returns
   a `Vector{SVec3}` of wind vectors, plus the in-place `get_wind!(res, am, positions, t; upwind_dir)`.
   Everything that does not depend on the position — `rel_turbo` (which allocates), the sine/cosine of
