@@ -6,12 +6,15 @@ using HypergeometricFunctions:_₂F₁
 using NPZ, Printf
 using FFTW, LinearAlgebra, Random, Statistics
 using StableRNGs: StableRNG
+using Scratch: @get_scratch!
+using SHA: sha256
 
 export AtmosphericModel, ProfileLaw, WindField, EXP, LOG, EXPLOG, CONSTANT
 export CUSTOM_LOG, CUSTOM_EXP, CUSTOM_JET
 export clear, calc_rho, calc_wind_factor, rel_turbo, custom_log, custom_exp, custom_jet
 
 export new_windfield, new_windfields, get_wind, calc_turbulent_wind
+export windfield_path, set_windfield_path!
 
 const ABS_ZERO = -273.15
 const SRL = StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}, Int64}
@@ -21,9 +24,9 @@ const MIN_TETHER_HEIGHT = 5.0
 """
     struct WindField
 
-Struct that is storing a 3D model of wind vectors of the atmosphere. The Fields
-x, y and z store the grid coordinates, the fields u, v and w the wind turbulence
-vectors. 
+Struct that is storing a 3D model of wind vectors of the atmosphere. The fields
+u, v and w store the wind turbulence vectors; x, y and z are the grid axes, rebuilt
+from the settings by `grid_axes` rather than read from the `.npz` file.
 
 # Fields
 - x_max::Float64 = NaN
@@ -41,6 +44,8 @@ vectors.
 - v::Array{Float64, 3}
 - w::Array{Float64, 3}
 - param::Vector{Float64} = [0, 0] # [alpha, `v_wind_gnd`]
+- `v_wind_gnd`::Float64: the `set.v_wind_gnds` entry this field was generated for, which selects
+  the matching `set.rel_turbs` correction in `get_wind`
 """
 Base.@kwdef struct WindField
     x_max::Float64 = NaN
@@ -58,6 +63,7 @@ Base.@kwdef struct WindField
     v::Array{Float64, 3}
     w::Array{Float64, 3}
     param::Vector{Float64} = [0, 0] # [alpha, v_wind_gnd]
+    v_wind_gnd::Float64
 end
 
 """

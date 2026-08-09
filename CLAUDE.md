@@ -25,7 +25,8 @@ René Bos), itself based on Mann (1994) and Mann (1998) — see the file's modul
 paper citations. When touching `create_windfield`/`create_grid`, keep in mind the code intentionally
 mirrors Python/Matlab array conventions in a few places (e.g. `create_grid` returns `(Y, X, Z)`, not
 `(X, Y, Z)`, "to match the Python (y, x, z) order" — the comment in the code is load-bearing, not a
-mistake to "fix").
+mistake to "fix"). Both build on `grid_axes(am)`, the single definition of the grid's coordinate
+axes; the `.npz` stores only `u`, `v`, `w` and `param`, so the axes are rebuilt, never read back.
 
 ## Architecture
 
@@ -39,18 +40,27 @@ There is no submodule split — both files contribute to the same `AtmosphericMo
 
 - `AtmosphericModel(set::Settings; nowindfield=false)` — the constructor. If
   `set.use_turbulence > 0` and `nowindfield=false`, it eagerly loads (or generates, if missing) a
-  `WindField` for `set.v_wind`. Precomputes `rho_zero_temp` from `set.temp_ref`/`set.rho_0`; call
+  `WindField` for `set.v_wind`. That throws if it cannot: `check_windfield_settings` validates the
+  `environment.*` keys a field needs first, and nothing is swallowed. Precomputes `rho_zero_temp` from `set.temp_ref`/`set.rho_0`; call
   `clear(am)` after mutating `set.temp_ref` to recompute it (see `test/runtests.jl` for the pattern).
 - `WindField` — an immutable `@kwdef struct` holding the turbulence grid (`u`,`v`,`w` 3D arrays,
   `x`,`y`,`z` axes) plus a custom `Base.getproperty` that synthesizes `x_range`/`y_range` from the
-  stored min/max fields.
+  stored min/max fields. Its `v_wind_gnd` records which `set.v_wind_gnds` entry the field was
+  generated for; `get_wind` reads it back to pick the matching `rel_turbs`, so a field loaded for
+  a speed other than `set.v_wind` keeps its own turbulence intensity.
 - `calc_wind_factor(am, height, profile_law)` dispatches on `Val{Int(profile_law)}` for the hot path
   (`calc_wind_factor1/2/3` per law); there's also a non-`Val` `Int64`-dispatched overload with a
   runtime `if`/`elseif` for callers that don't know the law at compile time.
-- Wind field `.npz` files live in `data/` and are named via `calc_basename(set)` (from
-  `set.grid`) + ground wind speed + `rel_sigma` — see `calc_full_name`/`load_windfield`. If a needed
-  file is missing, `load` transparently calls `new_windfield` to generate it (can take ~30s+;
-  `Random.seed!(1234)` makes generation deterministic).
+- Wind field `.npz` files live in a `Scratch.jl` scratchspace (`windfield_path()`, redirectable
+  with `set_windfield_path!`) and are named via `calc_basename(set)` (`set.grid` + a digest of
+  every other setting the field depends on) + ground wind speed — see
+  `calc_full_name`/`param_digest`/`find_windfield`/`load_windfield`. Files
+  written before v0.3.8 sat in `get_data_path()` under a name without the digest; `find_windfield`
+  still finds them, preferring the digested name. They store the field at
+  the reference intensity; `set.use_turbulence` and `rel_turbs` are applied in `get_wind`, so one
+  file serves every intensity. If a needed file is missing, `load` transparently calls
+  `new_windfield` to generate it (can take ~30s+; the `StableRNG(1234)` seed makes generation
+  deterministic), falling back to the pre-0.3.8 `..._1.0_<speed>.npz` name if that file exists.
 
 ### Configuration
 

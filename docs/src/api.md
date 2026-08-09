@@ -47,4 +47,18 @@ calc_turbulent_wind
 rel_turbo
 new_windfield
 new_windfields
+windfield_path
+set_windfield_path!
+```
+### Private functions
+```@docs
+WindField(am, speed; prn=true)
+check_windfield_settings
+load_windfield
+find_windfield
+grid_basename
+param_digest
+calc_basename
+grid_axes
+create_grid
 ```
