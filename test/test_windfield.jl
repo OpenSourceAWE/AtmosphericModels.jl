@@ -212,4 +212,26 @@ end
     am.set.v_wind = v_wind
     @test rel_turbo(am, am.wf.v_wind_gnd) == 0.465
 end
+
+@testset "get_wind vector " begin
+    # The vector method only hoists the position-independent work out of the loop, so it must
+    # return exactly what the scalar method does, not just approximately.
+    positions = [KiteUtils.SVec3(10.0 + 3i, 20.0 - 2i, 50.0 + i) for i in 1:20]
+    t = 12.5
+    ref = [KiteUtils.SVec3(get_wind(am, p[1], p[2], p[3], t; upwind_dir=0.3)) for p in positions]
+
+    res = get_wind(am, positions, t; upwind_dir=0.3)
+    @test res isa Vector{KiteUtils.SVec3}
+    @test res == ref
+
+    # default upwind_dir, and positions that are plain vectors rather than SVec3
+    @test get_wind(am, [collect(p) for p in positions], t) ==
+          [KiteUtils.SVec3(get_wind(am, p[1], p[2], p[3], t)) for p in positions]
+
+    buf = Vector{KiteUtils.SVec3}(undef, length(positions))
+    @test get_wind!(buf, am, positions, t; upwind_dir=0.3) === buf
+    @test buf == ref
+    @test_throws DimensionMismatch get_wind!(buf, am, positions[1:end-1], t)
+    @test_throws AssertionError get_wind(am, [KiteUtils.SVec3(0.0, 0.0, 4.0)], t)
+end
 nothing

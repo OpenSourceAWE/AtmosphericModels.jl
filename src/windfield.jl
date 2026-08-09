@@ -203,6 +203,22 @@ function save(am, u, v, w, param; basename=calc_basename(am.set), v_wind_gnd)
     ))
 end
 
+"""
+    load(am::AtmosphericModel; v_wind_gnd=8.0)
+
+Read the stored wind field for the ground wind speed `v_wind_gnd` and return `(u, v, w, param)`.
+
+The file is located with [`find_windfield`](@ref), which also accepts the two names used before
+v0.3.8. Which one was found is logged, because a name without the [`param_digest`](@ref) cannot be
+checked against `am.set`. If there is no file at all, [`new_windfield`](@ref) generates one under
+the current name, which takes ~30 s or more.
+
+The `x`, `y` and `z` meshgrids are not read back even when an old file still stores them (622 MB of
+1.24 GB for the default grid); the axes are rebuilt from the settings by [`grid_axes`](@ref).
+
+Callers normally want [`load_windfield`](@ref), which picks `v_wind_gnd` from `am.set.v_wind_gnds`
+and reports back which entry it used.
+"""
 function load(am::AtmosphericModel; v_wind_gnd=8.0)
     current = calc_full_name(v_wind_gnd; basename=calc_basename(am.set))
     fullname = find_windfield(am.set, v_wind_gnd)
@@ -449,19 +465,54 @@ function get_wind(am::AtmosphericModel, x, y, z, t; upwind_dir=-π/4, interpolat
     @assert z >= 5.0 "Height must be at least 5 m"
     wf = am.wf
     @assert wf !== nothing "No wind field: AtmosphericModel(set) only loads one when set.use_turbulence > 0"
+    if interpolate
+        # TODO: Implement interpolation using Interpolations.jl or similar
+        # x_wind = ndimage.map_coordinates(wf.u, [[i], [j], [z1]], order=3, prefilter=false)
+        # y_wind = ndimage.map_coordinates(wf.v, [[i], [j], [z1]], order=3, prefilter=false)
+        # z_wind = ndimage.map_coordinates(wf.w, [[i], [j], [z1]], order=3, prefilter=false)
+        return nothing
+    end
+    wind_at(am, wf, x, y, z, t, wind_context(am, wf, upwind_dir)...)
+end
+
+"""
+    wind_context(am::AtmosphericModel, wf::WindField, upwind_dir)
+
+Compute everything [`wind_at`](@ref) needs that does not depend on the position: the sine/cosine of
+the wind direction, the turbulence scaling and the settings read out of `am.set`.
+
+Hoisted out of the lookup so that the vector method of [`get_wind`](@ref) pays for it once per call
+instead of once per position — `rel_turbo` in particular allocates.
+"""
+@inline function wind_context(am::AtmosphericModel, wf::WindField, upwind_dir)
+    rel_turb = am.set.use_turbulence * rel_turbo(am, wf.v_wind_gnd)
+    # wind_dir: direction the wind is blowing TO, measured from +x (East) axis, CCW.
+    wind_dir = -upwind_dir - pi/2
+    return (cos(wind_dir), sin(wind_dir), rel_turb, Int64(am.set.profile_law), am.set.v_wind,
+            am.set.grid_step, am.set.height_step)
+end
+
+"""
+    wind_at(am, wf, x, y, z, t, cos_dir, sin_dir, rel_turb, profile_law, v_wind, grid_step,
+            height_step)
+
+Look up the wind vector at one position; the trailing arguments come from [`wind_context`](@ref).
+
+Returns the tuple `(v_x, v_y, v_z)` in the wind-aligned frame, see [`get_wind`](@ref).
+"""
+@inline function wind_at(am::AtmosphericModel, wf::WindField, x, y, z, t, cos_dir, sin_dir, rel_turb,
+                         profile_law, v_wind, grid_step, height_step)
+    @assert z >= 5.0 "Height must be at least 5 m"
+    @assert t >= 0.0 "Time must be non-negative"
     if z < 10.0
         z = 10.0
     end
-    @assert t >= 0.0 "Time must be non-negative"
-    rel_turb = am.set.use_turbulence * rel_turbo(am, wf.v_wind_gnd)
 
     # Rotate (x, y) from simulation (ENU) frame into wind-aligned frame.
-    # wind_dir: direction the wind is blowing TO, measured from +x (East) axis, CCW.
-    wind_dir = -upwind_dir - pi/2
-    along = x * cos(wind_dir) + y * sin(wind_dir)   # along-wind component
-    cross = -x * sin(wind_dir) + y * cos(wind_dir)  # cross-wind component
+    along = x * cos_dir + y * sin_dir   # along-wind component
+    cross = -x * sin_dir + y * cos_dir  # cross-wind component
 
-    v_wind_height = am.set.v_wind * calc_wind_factor(am, z, am.set.profile_law)
+    v_wind_height = v_wind * calc_wind_factor(am, z, profile_law)
 
     n1 = size(wf.u, 1)
     n2 = size(wf.u, 2)
@@ -470,7 +521,7 @@ function get_wind(am::AtmosphericModel, x, y, z, t; upwind_dir=-π/4, interpolat
     nshort = dim1_is_long ? n2 : n1
 
     # Along-wind + Taylor advection → long field dimension (avoids short-period repetition)
-    along_idx = (along + t * v_wind_height) / am.set.grid_step
+    along_idx = (along + t * v_wind_height) / grid_step
     while along_idx > nlong - 1
         along_idx -= nlong - 1
     end
@@ -480,7 +531,7 @@ function get_wind(am::AtmosphericModel, x, y, z, t; upwind_dir=-π/4, interpolat
     along_idx = Int(round(along_idx)) + 1
 
     # Cross-wind → short field dimension (kite stays within spatial range)
-    cross_idx = cross / am.set.grid_step
+    cross_idx = cross / grid_step
     while cross_idx > nshort - 1
         cross_idx -= nshort - 1
     end
@@ -489,7 +540,7 @@ function get_wind(am::AtmosphericModel, x, y, z, t; upwind_dir=-π/4, interpolat
     end
     cross_idx = Int(round(cross_idx)) + 1
 
-    z1 = z / am.set.height_step
+    z1 = z / height_step
     if z1 > size(wf.u, 3) - 1
         z1 = size(wf.u, 3) - 1
     elseif z1 < 0
@@ -500,21 +551,59 @@ function get_wind(am::AtmosphericModel, x, y, z, t; upwind_dir=-π/4, interpolat
     i = dim1_is_long ? along_idx : cross_idx
     j = dim1_is_long ? cross_idx : along_idx
 
-    if interpolate
-        # TODO: Implement interpolation using Interpolations.jl or similar
-        # x_wind = ndimage.map_coordinates(wf.u, [[i], [j], [z1]], order=3, prefilter=false)
-        # y_wind = ndimage.map_coordinates(wf.v, [[i], [j], [z1]], order=3, prefilter=false)
-        # z_wind = ndimage.map_coordinates(wf.w, [[i], [j], [z1]], order=3, prefilter=false)
-        # v_x = x_wind[0] * rel_turb + v_wind_height
-        # v_y = y_wind[0] * rel_turb
-        # v_z = z_wind[0] * rel_turb
-    else
-        v_x = wf.u[i, j, z1] * rel_turb + v_wind_height
-        v_y = wf.v[i, j, z1] * rel_turb
-        v_z = wf.w[i, j, z1] * rel_turb
-        return v_x, v_y, v_z
+    v_x = wf.u[i, j, z1] * rel_turb + v_wind_height
+    v_y = wf.v[i, j, z1] * rel_turb
+    v_z = wf.w[i, j, z1] * rel_turb
+    return v_x, v_y, v_z
+end
+
+"""
+    get_wind(am::AtmosphericModel, positions::AbstractVector, t; upwind_dir=-π/4)
+
+Return the wind vectors at all `positions` at time `t` as a `Vector{SVec3}`.
+
+Faster than calling the scalar [`get_wind`](@ref) in a loop: the turbulence scaling
+(`rel_turbo`, which allocates), the sine/cosine of the wind direction and the settings lookups are
+computed once per call instead of once per position.
+
+# Arguments
+- `am::AtmosphericModel`: The atmospheric model providing environmental parameters.
+- `positions`: Vector of 3D positions in the simulation (ENU) frame, e.g. `Vector{SVec3}`; any
+  vector of indexable, 3-element positions works. The height `positions[i][3]` must be >= 5 m.
+- `t`: Current simulation time. [s]
+- `upwind_dir` (optional, default = `-π/4`): Direction the wind is coming FROM [rad].
+
+# Returns
+- A `Vector{SVec3}` of wind velocities in the wind-aligned frame [m/s], one per position; the
+  components are `(v_x, v_y, v_z)` as returned by the scalar method.
+
+See also [`get_wind!`](@ref), which writes into a pre-allocated result vector.
+"""
+function get_wind(am::AtmosphericModel, positions::AbstractVector, t; upwind_dir=-π/4)
+    res = Vector{SVec3}(undef, length(positions))
+    get_wind!(res, am, positions, t; upwind_dir)
+end
+
+"""
+    get_wind!(res::AbstractVector{SVec3}, am::AtmosphericModel, positions::AbstractVector, t;
+              upwind_dir=-π/4)
+
+In-place version of the vector method of [`get_wind`](@ref): write the wind vectors at `positions`
+into `res` and return `res`. `res` must have the same length as `positions`.
+"""
+function get_wind!(res::AbstractVector{SVec3}, am::AtmosphericModel, positions::AbstractVector, t;
+                   upwind_dir=-π/4)
+    length(res) == length(positions) ||
+        throw(DimensionMismatch("res has $(length(res)) entries, positions $(length(positions))"))
+    wf = am.wf
+    @assert wf !== nothing "No wind field: AtmosphericModel(set) only loads one when set.use_turbulence > 0"
+    ctx = wind_context(am, wf, upwind_dir)
+    # No @inbounds: the field lookup in wind_at keeps the same bounds checks as the scalar method.
+    for i in eachindex(positions, res)
+        pos = positions[i]
+        res[i] = SVec3(wind_at(am, wf, pos[1], pos[2], pos[3], t, ctx...))
     end
-    return nothing
+    return res
 end
 
 """

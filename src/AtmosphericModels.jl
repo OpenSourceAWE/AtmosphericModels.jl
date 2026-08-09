@@ -13,7 +13,7 @@ export AtmosphericModel, ProfileLaw, WindField, EXP, LOG, EXPLOG, CONSTANT
 export CUSTOM_LOG, CUSTOM_EXP, CUSTOM_JET
 export clear, calc_rho, calc_wind_factor, rel_turbo, custom_log, custom_exp, custom_jet
 
-export new_windfield, new_windfields, get_wind, calc_turbulent_wind
+export new_windfield, new_windfields, get_wind, get_wind!, calc_turbulent_wind
 export windfield_path, set_windfield_path!
 
 const ABS_ZERO = -273.15

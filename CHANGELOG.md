@@ -2,6 +2,13 @@
 
 ## AtmosphericModels v0.3.8 (unreleased)
 ### Added
+- `get_wind(am, positions, t; upwind_dir)`, a method that takes a vector of 3D positions and returns
+  a `Vector{SVec3}` of wind vectors, plus the in-place `get_wind!(res, am, positions, t; upwind_dir)`.
+  Everything that does not depend on the position — `rel_turbo` (which allocates), the sine/cosine of
+  the wind direction and the `am.set` lookups — is computed once per call instead of once per
+  position, which makes it about 2.4x faster than the scalar `get_wind` in a loop (100 positions:
+  7.2 µs and 203 allocations → 3.0 µs and 5, or 2 with `get_wind!`). The results are bit-identical
+  to the scalar method; the scalar path is unchanged in speed.
 - `windfield_path` and `set_windfield_path!`. The `.npz` wind fields are now written to a
   `Scratch.jl` scratchspace instead of `get_data_path()`: they are derived artifacts of ~1.2 GB
   apiece, and writing them next to version-controlled settings made every downstream repo
