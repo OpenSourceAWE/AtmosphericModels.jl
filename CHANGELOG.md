@@ -1,6 +1,6 @@
 # Changelog
 
-## AtmosphericModels v0.3.8 (unreleased)
+## AtmosphericModels v0.3.8 - 2026-08-09
 ### Added
 - The `interpolate` keyword of `get_wind` is implemented. It used to be a documented keyword that
   returned `nothing` (a `TODO` left over from the Python original, which used
