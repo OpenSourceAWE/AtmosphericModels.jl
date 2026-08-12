@@ -1,5 +1,9 @@
 # Changelog
 
+## AtmosphericModels v0.3.9 - 2026-08-12
+### Changed
+- Bump `KiteUtils` to 0.12.
+
 ## AtmosphericModels v0.3.8 - 2026-08-09
 ### Added
 - The `interpolate` keyword of `get_wind` is implemented. It used to be a documented keyword that
