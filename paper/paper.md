@@ -1,5 +1,5 @@
 ---
-title: 'AtmosphericModels.jl: Wind profiles, air density and turbulent wind fields for airborne wind energy simulations'
+title: 'AtmosphericModels.jl: Wind profiles, air density and turbulent wind fields for wind energy simulations'
 tags:
   - Julia
   - atmospheric boundary layer
@@ -39,7 +39,7 @@ package was written as the atmosphere component of a family of open-source tools
 simulation and control of kite power systems [@Fechner2015; @Fechner2016; @KiteModels],
 but it depends on none of them and can be used on its own.
 
-![The three built-in wind profile laws for a near-shore site: power law ($v_\mathrm{w,exp}$),
+![Three of the built-in wind profile laws for a near-shore site: power law ($v_\mathrm{w,exp}$),
 logarithmic law ($v_\mathrm{w,log}$) and their combination ($v_\mathrm{w,fit}$), fitted to
 wind speeds measured at three heights [@Fechner2015].\label{fig:profile}](wind_profile.png){ width=65% }
 
@@ -66,7 +66,12 @@ according to Taylor's frozen-turbulence hypothesis [@Taylor1938], so the positio
 kite is shifted along the wind direction by the product of time and mean wind speed before
 the lookup, and the field itself is never recomputed during a simulation. Because the
 inverse FFT makes the field periodic, the lookup wraps around in the two horizontal
-directions and a simulation can run for hours without leaving the box. The turbulent component is scaled
+directions and a simulation can run for hours without leaving the box. The wind direction
+is a parameter of the lookup: the query position is rotated into the frame of the stored
+field, so its long axis is always aligned with the mean wind. An asymmetric, rectangular
+field, long along the wind and narrow across it, is therefore sufficient to obtain the same
+long repetition period for any wind direction, without storing a square field that would be
+forty times larger. The turbulent component is scaled
 at read time by the turbulence intensity requested in the settings, so one stored field per
 ground wind speed serves every intensity.
 
