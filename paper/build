@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# SPDX-FileCopyrightText: 2026 Uwe Fechner
+# SPDX-License-Identifier: CC-BY-4.0
+#
+# Build paper.pdf from paper.md using the openbases-pdf Docker image.
+# Run this script from within the paper/ directory.
+set -euo pipefail
+
+docker run --rm -v "$PWD":/data openbases/openbases-pdf paper.md
