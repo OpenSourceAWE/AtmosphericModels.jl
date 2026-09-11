@@ -34,3 +34,8 @@ SPDX-License-Identifier = "MIT"
 path = ["mwes/*.*"]
 SPDX-FileCopyrightText = "2025 Uwe Fechner"
 SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = ["paper/*.*"]
+SPDX-FileCopyrightText = "2026 Uwe Fechner"
+SPDX-License-Identifier = "CC-BY-4.0"
