@@ -78,9 +78,10 @@ ground wind speed serves every intensity.
 For the mean wind, the package implements the power law and the logarithmic law
 [@Stull2000; @Burton2001], and the combination of both that was used in @Fechner2015 to fit
 a profile to wind speeds measured at three heights (\autoref{fig:profile}). Three further
-laws fit a profile directly to a list of height/speed pairs from the settings: a logarithmic
-and a power-law fit by linear least squares, and a low-level-jet profile, a power-law
-background plus a Gaussian bump, fitted by a Levenberg-Marquardt solve. The jet profile
+laws fit a profile directly to a list of measured height/speed pairs from the settings, e.g.
+from a met mast or lidar: a logarithmic and a power-law fit by linear least squares, and a
+low-level-jet profile, a power-law background plus a Gaussian bump, fitted by a
+Levenberg-Marquardt solve. The jet profile
 matters for AWE because the height range of 200 to 500 m that kites exploit is exactly
 where nocturnal low-level jets appear, and the wind resource at those heights differs
 markedly from what a power law extrapolated from 10 m would predict [@Bechtle2019]. The
