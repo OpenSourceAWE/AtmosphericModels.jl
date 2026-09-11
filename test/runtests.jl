@@ -17,6 +17,20 @@ include("test_custom_profiles.jl")
     @test calc_wind_factor(am, 6.0, Val{Int(EXP)}) ≈ 1.0
     @test calc_wind_factor(am, 6.0, Val{Int(LOG)}) ≈ 1.0
     @test calc_wind_factor(am, 6.0, Val{Int(EXPLOG)}) ≈ 1.0
+
+    # Int64-dispatched runtime overload: each branch must agree with its
+    # Val-dispatched counterpart at the reference height and at another height.
+    for law in (CONSTANT, EXP, LOG, EXPLOG)
+        @test calc_wind_factor(am, 6.0, Int(law)) ≈ calc_wind_factor(am, 6.0, Val{Int(law)})
+        @test calc_wind_factor(am, 100.0, Int(law)) ≈ calc_wind_factor(am, 100.0, Val{Int(law)})
+    end
+
+    # default profile_law argument falls back to am.set.profile_law
+    @test calc_wind_factor(am, 100.0) == calc_wind_factor(am, 100.0, am.set.profile_law)
+
+    # an out-of-range profile_law must raise a DomainError
+    @test_throws DomainError calc_wind_factor(am, 6.0, -1)
+    @test_throws DomainError calc_wind_factor(am, 6.0, 7)
 end
 
 @testset "calc_rho        " begin
