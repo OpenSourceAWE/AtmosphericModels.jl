@@ -40,7 +40,10 @@ unset _required_kb _available_kb _available_gb
 
 # Ask which Julia version to use
 # Default to the highest installed version that has a matching default manifest
-if juliaup status 2>/dev/null | grep '^\s*\*' | grep -q '1\.12'; then
+if juliaup status 2>/dev/null | grep '^\s*\*' | grep -q '1\.13'; then
+    _default_choice=3
+    _default_julia="1.13"
+elif juliaup status 2>/dev/null | grep '^\s*\*' | grep -q '1\.12'; then
     _default_choice=2
     _default_julia="1.12"
 else
@@ -50,7 +53,8 @@ fi
 echo "Which Julia version do you want to use?"
 echo "  1) Julia 1.11"
 echo "  2) Julia 1.12"
-read -rp "Enter 1 or 2 [default: ${_default_choice}]: " _julia_choice
+echo "  3) Julia 1.13"
+read -rp "Enter 1, 2 or 3 [default: ${_default_choice}]: " _julia_choice
 case "${_julia_choice}" in
     1)
         _desired_julia="1.11"
@@ -58,11 +62,14 @@ case "${_julia_choice}" in
     2)
         _desired_julia="1.12"
         ;;
+    3)
+        _desired_julia="1.13"
+        ;;
     "")
         _desired_julia="${_default_julia}"
         ;;
     *)
-        echo "Invalid choice: '${_julia_choice}'. Please enter 1 or 2."
+        echo "Invalid choice: '${_julia_choice}'. Please enter 1, 2 or 3."
         exit 1
         ;;
 esac
@@ -84,9 +91,9 @@ echo "Detected Julia version: $julia_version (major: $julia_major)"
 export JULIA_PKG_SERVER_REGISTRY_PREFERENCE=eager
 
 
-# Only accept Julia 1.11 and 1.12
-if [[ $julia_major != "1.11" ]] && [[ $julia_major != "1.12" ]]; then
-    echo "Error: Julia $julia_major is not supported. Only Julia 1.11 and 1.12 are supported."
+# Only accept Julia 1.11, 1.12 and 1.13
+if [[ $julia_major != "1.11" ]] && [[ $julia_major != "1.12" ]] && [[ $julia_major != "1.13" ]]; then
+    echo "Error: Julia $julia_major is not supported. Only Julia 1.11, 1.12 and 1.13 are supported."
     exit 1
 fi
 
@@ -265,10 +272,12 @@ fi
 echo
 printf "\033[1;32mInstallation complete!\033[0m\n"
 echo
-echo "You can now launch Julia by typing"
-echo "  bin/run_julia"
+echo "You can now launch Julia by typing:"
+echo "cd .."
+echo "./bin/run_julia"
+echo
 echo "or, if the alias is set up:"
-echo "  jl"
+echo "jl"
 
 # Add alias to shell configuration file
 if [[ "$(uname -s)" == "Linux" && -f ~/.bashrc ]]; then
