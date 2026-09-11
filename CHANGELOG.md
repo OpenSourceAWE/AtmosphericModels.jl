@@ -1,5 +1,24 @@
 # Changelog
 
+## AtmosphericModels v0.3.10 - 2026-09-11
+### Added
+- Support Julia 1.13: `bin/install` offers it as a version choice and accepts it as the detected
+  version, `Manifest-v1.13.toml.default` is the tracked default manifest for it, and
+  `Manifest-v1.13.toml` (already gitignored) now also ignores the `paper/paper.pdf` build output.
+  `Project.toml` compat bounds for `LinearAlgebra`, `Printf`, `Random`, `Statistics` and `julia`
+  gained `1.13`, and `SHA` widened to `0.7, 1.0`.
+- Add a JOSS paper draft (`paper/paper.md`, `paper/paper.bib`, `paper/wind_profile.png`,
+  `paper/build`) describing the package, and license it under CC-BY-4.0 (`LICENSES/CC-BY-4.0.txt`,
+  annotated for `paper/*.*` in `REUSE.toml`).
+- Add tests for the `Int64`-dispatched `calc_wind_factor` overload: each branch is checked against
+  its `Val`-dispatched counterpart at two heights, the default `profile_law` argument is checked to
+  fall back to `am.set.profile_law`, and an out-of-range `profile_law` is checked to raise a
+  `DomainError`.
+
+### Fixed
+- fix `docs/Project.toml`: add a `[sources]` entry pointing `AtmosphericModels` at `..`, so the docs
+  environment resolves the in-repo package instead of a registered release.
+
 ## AtmosphericModels v0.3.9 - 2026-08-12
 ### Changed
 - Bump `KiteUtils` to 0.12.
