@@ -59,7 +59,7 @@ fi
 # Pick a Julia for this shell only; changing the juliaup default is out of bounds.
 if [[ $assume_yes == false ]]; then
     if ! command -v juliaup &> /dev/null; then
-        echo "Error: juliaup is not installed; rerun with -y to use the installed Julia." >&2
+        echo "Error: juliaup is not installed; rerun with -y to use the julia on PATH." >&2
         exit 1
     fi
     echo "Which Julia version do you want to use?"
@@ -81,7 +81,7 @@ echo "Using Julia ${julia_version}."
 
 default_manifest="Manifest-v${julia_minor}.toml.default"
 if [[ ! -f $default_manifest ]]; then
-    echo "Error: this repo has no $default_manifest, so Julia $julia_minor is not supported." >&2
+    echo "Error: no $default_manifest; this repo does not support Julia $julia_minor." >&2
     exit 1
 fi
 
