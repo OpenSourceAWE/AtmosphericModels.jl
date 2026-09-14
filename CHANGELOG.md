@@ -20,6 +20,7 @@
 - `bin/install` takes `-y` (run without a terminal), `--update` (update the live manifest and leave
   the tracked `.default` alone) and `-h`. It installs the tracked manifest rather than re-resolving
   it, and no longer changes the juliaup default or appends a `jl` alias to the shell profile.
+- `LocalPreferences.toml` is gitignored.
 
 ### Fixed
 - fix `docs/Project.toml`: add a `[sources]` entry pointing `AtmosphericModels` at `..`, so the docs
