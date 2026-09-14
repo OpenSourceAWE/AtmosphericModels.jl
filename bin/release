@@ -35,7 +35,8 @@ fi
 
 # Check that the checked-in default manifest matches the active one, so a fresh
 # install (which copies the .default over) resolves to exactly what was tested
-MANIFEST="Manifest-v1.12.toml"
+julia_version=$(julia --version | awk '{print $3}')
+MANIFEST="Manifest-v${julia_version%.*}.toml"
 MANIFEST_DEFAULT="${MANIFEST}.default"
 if [ ! -f "$MANIFEST" ] || [ ! -f "$MANIFEST_DEFAULT" ]; then
     echo "Error: $MANIFEST and/or $MANIFEST_DEFAULT not found." >&2
