@@ -151,7 +151,7 @@ version = "1.11.0"
 deps = ["FFTW", "HypergeometricFunctions", "KiteUtils", "LinearAlgebra", "MeshGrid", "NPZ", "Printf", "Random", "SHA", "Scratch", "StableRNGs", "Statistics"]
 path = "."
 uuid = "c59cac55-771d-4f45-b14d-1c681463a295"
-version = "0.3.9"
+version = "0.3.10"
 
 [[deps.Automa]]
 deps = ["PrecompileTools", "TranscodingStreams"]
