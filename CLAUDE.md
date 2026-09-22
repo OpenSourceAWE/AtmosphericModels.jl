@@ -40,7 +40,7 @@ turbulence-related (`get_wind`, `get_wind!`, `calc_turbulent_wind`, `new_windfie
 `new_windfields`, `create_windfield`, `create_grid`, `load`/`save` of `.npz` wind-field files).
 There is no submodule split — all files contribute to the same `AtmosphericModels` module.
 `src/settings.jl` holds `AMSettings` (the `environment:` fields of `KiteUtils.Settings`, same names
-and defaults), `AMSettings(file)` (fills it through KiteUtils' internal `update_settings`) and the
+and defaults), `AMSettings(file)` (fills it through KiteUtils' `update_settings`) and the
 `AtmosphereSettings = Union{Settings, AMSettings}` alias every `set::` signature takes.
 `calc_turbulent_wind(am, pos, t; upwind_dir)` — which returns the wind vector at the kite plus the
 one at half its height for the tether — moved here from `KiteModels.jl` in Feb 2026; `KiteModels`'
