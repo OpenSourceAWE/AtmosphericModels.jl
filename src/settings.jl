@@ -54,10 +54,20 @@ StructTypes.StructType(::Type{AMSettings}) = StructTypes.Mutable()
 
 Load the `environment:` section of the yaml `file`, in the schema of KiteUtils'
 `settings.yaml`; other sections and keys are ignored, missing keys keep their defaults.
+With `use_wind_vec: true`, `v_wind` and `upwind_dir` come from `wind_vec`, as in
+`load_settings`. Throws an `ArgumentError` for a `profile_law` outside [`ProfileLaw`](@ref).
 """
 function AMSettings(file::AbstractString)
     set = AMSettings()
-    KiteUtils.update_settings(YAML.load_file(file), ["environment"], set)
+    dict = YAML.load_file(file)
+    KiteUtils.update_settings(dict, ["environment"], set)
+    environment = dict["environment"]
+    if get(environment, "use_wind_vec", false)
+        v_wind, upwind_dir, _ = angles_from_wind_vec(environment["wind_vec"])
+        set.v_wind = v_wind
+        set.upwind_dir = rad2deg(upwind_dir)
+    end
+    ProfileLaw(set.profile_law)
     set
 end
 

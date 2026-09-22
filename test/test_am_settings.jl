@@ -16,15 +16,36 @@ end
         amset = AMSettings(environment_file)
         @test same_fields(amset, reference)
         @test amset.grid isa Vector{Int64}
-        @test amset.upwind_dir == -90.0
     end
 
-    @testset "full KiteUtils settings.yaml loads, other sections ignored" begin
-        full_file = joinpath(pkgdir(KiteUtils), "data", "settings.yaml")
-        full_set = Settings()
-        full_dict = KiteUtils.YAML.load_file(full_file)
-        KiteUtils.update_settings(full_dict, ["environment"], full_set)
-        @test same_fields(AMSettings(full_file), full_set)
+    @testset "full KiteUtils settings.yaml loads as KiteUtils loads it" begin
+        kiteutils_data = joinpath(pkgdir(KiteUtils), "data")
+        full_set = Settings(joinpath(kiteutils_data, "system.yaml"))
+        @test same_fields(AMSettings(joinpath(kiteutils_data, "settings.yaml")), full_set)
+    end
+
+    @testset "environment-only yaml: wind_vec and profile_law as in load_settings" begin
+        mktempdir() do dir
+            file = joinpath(dir, "atmosphere_settings.yaml")
+            write(file, """
+                environment:
+                    v_wind: 9.0
+                    upwind_dir: -90.0
+                    wind_vec: [3.0, -4.0, 0.0]
+                    use_wind_vec: true
+                    profile_law: 1
+                """)
+            expected = Settings()
+            expected.use_wind_vec = true
+            expected.wind_vec = [3.0, -4.0, 0.0]
+            amset = AMSettings(file)
+            @test amset.v_wind ≈ expected.v_wind
+            @test amset.upwind_dir ≈ expected.upwind_dir
+            @test amset.profile_law == 1
+
+            write(file, "environment:\n    profile_law: 7\n")
+            @test_throws ArgumentError AMSettings(file)
+        end
     end
 
     @testset "AtmosphericModel from AMSettings matches the one from Settings" begin

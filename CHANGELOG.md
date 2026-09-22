@@ -3,7 +3,8 @@
 ## AtmosphericModels v0.3.10 - 2026-09-11
 ### Added
 - `AMSettings`, the `environment:` fields of `KiteUtils.Settings` on their own, and
-  `AMSettings(file)` to read them from the `environment:` section of any yaml file.
+  `AMSettings(file)` to read them from the `environment:` section of any yaml file, applying
+  `use_wind_vec` and rejecting an invalid `profile_law` as `load_settings` does.
   `AtmosphericModel` accepts an `AMSettings` as well as a `Settings`, so packages that only need
   the atmosphere no longer need a `system.yaml` and KiteUtils' project layout.
 - Support Julia 1.13: `bin/install` offers it as a version choice and accepts it as the detected

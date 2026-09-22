@@ -90,7 +90,7 @@ end
     AtmosphericModel(set::Union{Settings, AMSettings}; nowindfield::Bool=false)
 
 Constructs an `AtmosphericModel` from a `KiteUtils.Settings` or an [`AMSettings`](@ref),
-which it keeps as `am.set` rather than copying.
+which it stores as `am.set`.
 
 # Arguments
 - `nowindfield::Bool=false`: Optional keyword argument. If `true`, the wind field will not be loaded.
