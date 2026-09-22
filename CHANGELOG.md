@@ -2,6 +2,10 @@
 
 ## AtmosphericModels v0.3.10 - 2026-09-11
 ### Added
+- `AMSettings`, the `environment:` fields of `KiteUtils.Settings` on their own, and
+  `AMSettings(file)` to read them from the `environment:` section of any yaml file.
+  `AtmosphericModel` accepts an `AMSettings` as well as a `Settings`, so packages that only need
+  the atmosphere no longer need a `system.yaml` and KiteUtils' project layout.
 - Support Julia 1.13: `bin/install` offers it as a version choice and accepts it as the detected
   version, `Manifest-v1.13.toml.default` is the tracked default manifest for it, and
   `Manifest-v1.13.toml` (already gitignored) now also ignores the `paper/paper.pdf` build output.
@@ -16,6 +20,9 @@
   `DomainError`.
 
 ### Fixed
+- `bin/install -y` runs without a terminal: it skips the version menu and uses the Julia on
+  `PATH`. `--update` and `-h` are added, and the script no longer runs `juliaup default` or adds
+  an alias to the shell rc file.
 - fix `docs/Project.toml`: add a `[sources]` entry pointing `AtmosphericModels` at `..`, so the docs
   environment resolves the in-repo package instead of a registered release.
 
