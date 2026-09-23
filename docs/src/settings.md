@@ -8,6 +8,15 @@ The parameters af the atmospheric model can be configured in the section `enviro
 The file `system.yaml` specifies which `yaml` files are used to configure
 the current project.
 
+A package that needs only the atmosphere can skip `system.yaml` and KiteUtils' project layout:
+[`AMSettings`](@ref) reads the `environment` section of any yaml file, for example an
+`atmosphere_settings.yaml` holding just that section, or a complete `settings.yaml`.
+```julia
+using AtmosphericModels
+
+am = AtmosphericModel(AMSettings("data/settings.yaml"))
+```
+
 ### Example for system.yaml
 ```yaml
 system:

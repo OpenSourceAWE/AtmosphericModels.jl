@@ -30,7 +30,7 @@ axes; the `.npz` stores only `u`, `v`, `w` and `param`, so the axes are rebuilt,
 
 ## Architecture
 
-### Single small module, two files
+### Single small module, three files
 
 `src/AtmosphericModels.jl` defines the module, the `AtmosphericModel`/`WindField` structs, the
 `ProfileLaw` enum (`CONSTANT=0`/`EXP=1`/`LOG=2`/`EXPLOG=3`/`CUSTOM_LOG=4`/`CUSTOM_EXP=5`/
@@ -38,12 +38,16 @@ axes; the `.npz` stores only `u`, `v`, `w` and `param`, so the axes are rebuilt,
 (`custom_log`/`custom_exp`/`custom_jet`), then `include`s `src/windfield.jl` for everything
 turbulence-related (`get_wind`, `get_wind!`, `calc_turbulent_wind`, `new_windfield`,
 `new_windfields`, `create_windfield`, `create_grid`, `load`/`save` of `.npz` wind-field files).
-There is no submodule split — both files contribute to the same `AtmosphericModels` module.
+There is no submodule split — all files contribute to the same `AtmosphericModels` module.
+`src/settings.jl` holds `AMSettings` (the `environment:` fields of `KiteUtils.Settings`, same names
+and defaults), `AMSettings(file)` (fills it through KiteUtils' `update_settings`) and the
+`AtmosphereSettings = Union{Settings, AMSettings}` alias every `set::` signature takes.
 `calc_turbulent_wind(am, pos, t; upwind_dir)` — which returns the wind vector at the kite plus the
 one at half its height for the tether — moved here from `KiteModels.jl` in Feb 2026; `KiteModels`'
 `set_v_wind_ground!` is its only caller in the family.
 
-- `AtmosphericModel(set::Settings; nowindfield=false)` — the constructor. If
+- `AtmosphericModel(set; nowindfield=false)` — the constructor, for a `Settings` or an
+  `AMSettings`. It stores `set` itself, never a copy: KiteModels shares its `Settings` with `am`. If
   `set.use_turbulence > 0` and `nowindfield=false`, it eagerly loads (or generates, if missing) a
   `WindField` for `set.v_wind`. That throws if it cannot: `check_windfield_settings` validates the
   `environment.*` keys a field needs first, and nothing is swallowed. Precomputes `rho_zero_temp` from `set.temp_ref`/`set.rho_0`; call
@@ -85,8 +89,8 @@ latter is `data/settings_nearshore.yaml`, selected by `data/system_nearshore.yam
 `CUSTOM_*` profile laws. Turbulence-specific keys (`v_wind_gnds`,
 `avg_height`, `rel_turbs`, `i_ref`, `v_ref`, `grid`, `height_step`, `grid_step`) are only needed when
 `use_turbulence > 0`; with `use_turbulence == 0` no wind field is loaded at all. `Settings` objects
-come from `KiteUtils`, not this package — load with `set_data_path(...)` +
-`load_settings("system.yaml"; relax=true)`.
+come from `KiteUtils` — load with `set_data_path(...)` + `load_settings("system.yaml"; relax=true)`;
+`AMSettings("data/settings.yaml")` reads the same `environment:` section without `system.yaml`.
 
 ## Development commands
 
