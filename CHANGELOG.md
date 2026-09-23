@@ -1,6 +1,6 @@
 # Changelog
 
-## AtmosphericModels v0.3.11 (unreleased)
+## AtmosphericModels v0.3.11 - 2026-09-24
 ### Changed
 - Dropped support for Julia 1.11. CI tests 1.12 and 1.13, `Manifest-v1.11.toml.default` is no
   longer tracked, `bin/install` offers 1.12 and 1.13, and the README and docs ask for Julia 1.12 or
