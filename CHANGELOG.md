@@ -1,13 +1,24 @@
 # Changelog
 
+## AtmosphericModels v0.3.11 (unreleased)
+### Changed
+- Dropped support for Julia 1.11. CI tests 1.12 and 1.13, `Manifest-v1.11.toml.default` is no
+  longer tracked, `bin/install` offers 1.12 and 1.13, and the README and docs ask for Julia 1.12 or
+  later.
+- `KiteUtils` compat widens to `"0.12, 0.13"`. This package reads `Settings` and `SVec3` and
+  touches none of the `SysState` fields or frame helpers 0.13 renamed or removed.
+- `bin/install` takes `-y` (run without a terminal), `--update` (update the live manifest and leave
+  the tracked `.default` alone) and `-h`. It installs the tracked manifest rather than re-resolving
+  it, and no longer changes the juliaup default or appends a `jl` alias to the shell profile.
+- `LocalPreferences.toml` is gitignored.
+
 ## AtmosphericModels v0.3.10 - 2026-09-11
 ### Added
-- Support Julia 1.13, and move the development environment to 1.12/1.13. CI tests 1.12 and 1.13,
-  `Manifest-v1.13.toml.default` is tracked in place of `Manifest-v1.11.toml.default`, `bin/install`
-  offers 1.12 and 1.13, and the README and docs ask for Julia 1.12 or later. The compat bounds for
-  `LinearAlgebra`, `Printf`, `Random`, `Statistics` and `julia` gained `1.13` in `Project.toml`,
-  `test/Project.toml` and `examples/Project.toml`, and `SHA` widened to `0.7, 1.0`. The package
-  itself still supports Julia 1.11. `paper/paper.pdf` is gitignored.
+- Support Julia 1.13: `bin/install` offers it as a version choice and accepts it as the detected
+  version, `Manifest-v1.13.toml.default` is the tracked default manifest for it, and
+  `Manifest-v1.13.toml` (already gitignored) now also ignores the `paper/paper.pdf` build output.
+  `Project.toml` compat bounds for `LinearAlgebra`, `Printf`, `Random`, `Statistics` and `julia`
+  gained `1.13`, and `SHA` widened to `0.7, 1.0`.
 - Add a JOSS paper draft (`paper/paper.md`, `paper/paper.bib`, `paper/wind_profile.png`,
   `paper/build`) describing the package, and license it under CC-BY-4.0 (`LICENSES/CC-BY-4.0.txt`,
   annotated for `paper/*.*` in `REUSE.toml`).
@@ -15,14 +26,6 @@
   its `Val`-dispatched counterpart at two heights, the default `profile_law` argument is checked to
   fall back to `am.set.profile_law`, and an out-of-range `profile_law` is checked to raise a
   `DomainError`.
-
-### Changed
-- `KiteUtils` compat widens to `"0.12, 0.13"`. This package reads `Settings` and `SVec3` and
-  touches none of the `SysState` fields or frame helpers 0.13 renamed or removed.
-- `bin/install` takes `-y` (run without a terminal), `--update` (update the live manifest and leave
-  the tracked `.default` alone) and `-h`. It installs the tracked manifest rather than re-resolving
-  it, and no longer changes the juliaup default or appends a `jl` alias to the shell profile.
-- `LocalPreferences.toml` is gitignored.
 
 ### Fixed
 - fix `docs/Project.toml`: add a `[sources]` entry pointing `AtmosphericModels` at `..`, so the docs
