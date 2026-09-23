@@ -1,5 +1,15 @@
 # Changelog
 
+## AtmosphericModels v0.3.11 (unreleased)
+### Changed
+- Dropped support for Julia 1.11. CI tests 1.12 and 1.13, `Manifest-v1.11.toml.default` is no
+  longer tracked, `bin/install` offers 1.12 and 1.13, and the README and docs ask for Julia 1.12 or
+  later.
+- `KiteUtils` compat widens to `"0.12, 0.13"`.
+- `bin/install` takes `-y` (run without a terminal), `--update` (update the live manifest and leave
+  the tracked `.default` alone) and `-h`. It installs the tracked manifest rather than re-resolving
+  it, and no longer changes the juliaup default or appends a `jl` alias to the shell profile.
+
 ## AtmosphericModels v0.3.10 - 2026-09-11
 ### Added
 - Support Julia 1.13: `bin/install` offers it as a version choice and accepts it as the detected
