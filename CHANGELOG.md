@@ -17,6 +17,8 @@
   `DomainError`.
 
 ### Changed
+- `KiteUtils` compat widens to `"0.12, 0.13"`. This package reads `Settings` and `SVec3` and
+  touches none of the `SysState` fields or frame helpers 0.13 renamed or removed.
 - `bin/install` takes `-y` (run without a terminal), `--update` (update the live manifest and leave
   the tracked `.default` alone) and `-h`. It installs the tracked manifest rather than re-resolving
   it, and no longer changes the juliaup default or appends a `jl` alias to the shell profile.
