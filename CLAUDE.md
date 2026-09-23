@@ -93,8 +93,8 @@ come from `KiteUtils`, not this package — load with `set_data_path(...)` +
 Workspace-based like the sibling packages: `Project.toml` declares
 `[workspace] projects = ["examples", "test", "docs"]`.
 
-- **Install/setup**: `cd bin && ./install` (juliaup). It takes no options — unlike `KiteModels.jl`'s
-  installer there is no `--update` flag; just re-run it.
+- **Install/setup**: `./bin/install` (juliaup) installs the tracked `Manifest-v<major>.toml.default`;
+  `-y` runs it without a terminal, `--update` runs `Pkg.update` on the live manifest, `-h` lists these.
 - **Launch a dev REPL**: `./bin/run_julia` (defaults to `using KiteUtils: menu`; forwards script args
   if given).
 - **Run the test suite** (project = `test/`):

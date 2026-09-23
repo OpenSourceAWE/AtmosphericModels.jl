@@ -5,9 +5,8 @@ examples/Manifest.toml
 docs/build
 docs/Manifest.toml
 cspell.json
-Manifest-v1.12.toml
+Manifest-v*.toml
 .JETLSConfig.toml
 /LocalPreferences.toml
-Manifest-v1.13.toml
 paper/paper.pdf
 paper/AtmosphericModels_draft.pdf

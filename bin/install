@@ -55,7 +55,7 @@ if (( ${available_kb:-0} < required_kb )); then
     exit 1
 fi
 
-# JULIAUP_CHANNEL selects the channel for this script alone; the juliaup default stays put.
+# JULIAUP_CHANNEL selects the channel for this script alone.
 if [[ $assume_yes == false ]]; then
     if ! command -v juliaup &> /dev/null; then
         echo "Error: juliaup is not installed; rerun with -y to use the julia on PATH." >&2
