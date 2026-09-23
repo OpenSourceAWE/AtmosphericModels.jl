@@ -1,12 +1,14 @@
 # Changelog
 
-## AtmosphericModels v0.3.11 (unreleased)
+## AtmosphericModels v0.3.12 (unreleased)
 ### Added
 - `AMSettings`, the `environment:` fields of `KiteUtils.Settings` on their own, and
   `AMSettings(file)` to read them from the `environment:` section of any yaml file, applying
   `use_wind_vec` and rejecting an invalid `profile_law` as `load_settings` does.
   `AtmosphericModel` accepts an `AMSettings` as well as a `Settings`, so packages that only need
   the atmosphere no longer need a `system.yaml` and KiteUtils' project layout.
+
+## AtmosphericModels v0.3.11 - 2026-09-24
 ### Changed
 - Dropped support for Julia 1.11. CI tests 1.12 and 1.13, `Manifest-v1.11.toml.default` is no
   longer tracked, `bin/install` offers 1.12 and 1.13, and the README and docs ask for Julia 1.12 or
