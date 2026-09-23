@@ -97,8 +97,8 @@ come from `KiteUtils` — load with `set_data_path(...)` + `load_settings("syste
 Workspace-based like the sibling packages: `Project.toml` declares
 `[workspace] projects = ["examples", "test", "docs"]`.
 
-- **Install/setup**: `./bin/install` (juliaup). `-y` skips the version menu and uses the Julia on
-  `PATH`; `--update` updates the live manifest instead of installing the tracked `.default`.
+- **Install/setup**: `./bin/install` (juliaup) installs the tracked `Manifest-v<major>.toml.default`;
+  `-y` runs it without a terminal, `--update` runs `Pkg.update` on the live manifest, `-h` lists these.
 - **Launch a dev REPL**: `./bin/run_julia` (defaults to `using KiteUtils: menu`; forwards script args
   if given).
 - **Run the test suite** (project = `test/`):

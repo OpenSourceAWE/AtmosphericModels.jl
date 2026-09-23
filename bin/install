@@ -50,30 +50,24 @@ fi
 
 required_kb=$((5 * 1024 * 1024))
 available_kb=$(df -k "$HOME" | awk 'NR==2 {print $4}')
-if [[ -z $available_kb ]]; then
-    echo "Error: could not determine the free disk space in $HOME." >&2
-    exit 1
-fi
-if (( available_kb < required_kb )); then
+if (( ${available_kb:-0} < required_kb )); then
     echo "Error: $HOME has less than 5 GB free." >&2
     exit 1
 fi
 
-# JULIAUP_CHANNEL selects the channel for this script alone; the juliaup default stays put.
+# JULIAUP_CHANNEL selects the channel for this script alone.
 if [[ $assume_yes == false ]]; then
     if ! command -v juliaup &> /dev/null; then
         echo "Error: juliaup is not installed; rerun with -y to use the julia on PATH." >&2
         exit 1
     fi
     echo "Which Julia version do you want to use?"
-    echo "  1) Julia 1.11"
-    echo "  2) Julia 1.12"
-    echo "  3) Julia 1.13"
-    read -rp "Enter 1, 2 or 3 [default: 3]: " julia_choice
+    echo "  1) Julia 1.12"
+    echo "  2) Julia 1.13"
+    read -rp "Enter 1 or 2 [default: 2]: " julia_choice
     case "${julia_choice}" in
-        1)     channel="1.11" ;;
-        2)     channel="1.12" ;;
-        3|"")  channel="1.13" ;;
+        1)     channel="1.12" ;;
+        2|"")  channel="1.13" ;;
         *)     echo "Error: invalid choice '${julia_choice}'." >&2; exit 1 ;;
     esac
     juliaup add "${channel}"
