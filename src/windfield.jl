@@ -711,27 +711,32 @@ function calc_turbulent_wind(am::AtmosphericModel, pos, t; upwind_dir=-π/4, int
 end
 
 """
-    new_windfield(am::AtmosphericModel, v_wind_gnd; prn=true)
+    new_windfield(am::AtmosphericModel, v_wind_gnd; prn=true, rng=StableRNG(1234))
 
-Create a new wind field file using the given, scalar ground wind velocity `v_wind_gnd`.
+Create a new wind field file using the given, scalar ground wind velocity `v_wind_gnd`, drawing
+its random phases from `rng`.
 
 The field is stored at the reference intensity (`sigma1 = calc_sigma1(am, v_wind_gnd)`);
 `am.set.use_turbulence` and `rel_turbo(am)` are applied when it is read by [`get_wind`](@ref).
+The file name does not carry `rng`, so a field of another seed needs its own
+[`set_windfield_path!`](@ref).
 
 # Parameters
 - `am::AtmosphericModel`: The atmospheric model for which the wind field is created.
 - `v_wind_gnd`: A scalar representing the wind velocity at ground level.
 - `prn`: Optional boolean flag to control printing of progress messages (default is `true`).
+- `rng`: Random number generator of the field's phases; the default gives the same field on
+  every Julia version.
 
 # Returns
 - nothing
 """
-function new_windfield(am::AtmosphericModel, v_wind_gnd; prn=true)
+function new_windfield(am::AtmosphericModel, v_wind_gnd; prn=true, rng=StableRNG(1234))
     check_windfield_settings(am.set)
     prn && @info "Creating wind field for $v_wind_gnd m/s. This might take 30s or more..."
     y, x, z = create_grid(am)
     sigma1 = calc_sigma1(am, v_wind_gnd)
-    u, v, w = create_windfield(x, y, z, sigma1=sigma1, rng=StableRNG(1234))
+    u, v, w = create_windfield(x, y, z; sigma1, rng)
     param = [am.set.alpha, v_wind_gnd]
     save(am, u, v, w, param; basename=calc_basename(am.set), v_wind_gnd)
     prn && @info "Finished creating and saving wind field!"
