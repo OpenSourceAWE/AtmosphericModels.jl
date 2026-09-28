@@ -5,8 +5,8 @@ SPDX-License-Identifier: MIT
 
 # AGENTS.md
 
-An example of the guidance a coding agent (Claude Code, opencode, Codex, ...) needs when working
-with code in this repository.
+Guidance for coding agents (Claude Code, opencode, Codex, ...) working with code in this
+repository.
 
 ## What this package is
 
@@ -126,7 +126,7 @@ Workspace-based like the sibling packages: `Project.toml` declares
 
 ## Coding style
 
-Same conventions as the other Julia Kite Power Tools packages (see `KiteModels.jl`'s `CLAUDE.md` /
+Same conventions as the other Julia Kite Power Tools packages (see `KiteModels.jl`'s agent guide /
 `docs/src/advanced.md` for the full list): 120-char line limit, named constants over magic numbers,
 `\cdot` for dot products, space around binary operators, install `Revise` globally (never as a
 project dependency).
