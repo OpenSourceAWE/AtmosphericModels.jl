@@ -3,9 +3,10 @@ SPDX-FileCopyrightText: 2026 Uwe Fechner
 SPDX-License-Identifier: MIT
 -->
 
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+An example of the guidance a coding agent (Claude Code, opencode, Codex, ...) needs when working
+with code in this repository.
 
 ## What this package is
 
