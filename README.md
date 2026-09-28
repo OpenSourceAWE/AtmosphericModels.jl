@@ -82,6 +82,18 @@ It is suggested to check out the code using git before executing this example,
 because it requires that a data directory with the correct files `system.yaml`
 and `settings.yaml` exists. See below how to do that.
 
+### Plot the turbulent wind field
+```julia
+using AtmosphericModels, KiteUtils, MakieControlPlots
+set_data_path("data")
+set = load_settings("system.yaml"; relax=true)
+am = AtmosphericModel(set)
+plot(am)
+```
+![Turbulent wind field](docs/src/windfield_3d.png)
+
+The colour is the along-wind turbulence, on the faces of the first 500 m of the field.
+
 ## Plot a wind profile
 ```julia
 using AtmosphericModels, KiteUtils, MakieControlPlots
