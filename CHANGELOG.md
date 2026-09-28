@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+### Added
+- `calc_turbulent_wind!(res, am, positions, t; upwind_dir, upwind_elevation, interpolate)`: the wind
+  at each of a vector of positions in the ENU frame, turbulent or, with `use_turbulence == 0`, the
+  mean profile. `upwind_elevation` tilts the along-wind axis so the mean wind points along
+  `wind_vec_from_angles(1, upwind_dir, upwind_elevation)`.
+
 ## AtmosphericModels v0.3.12 - 2026-09-28
 ### Added
 - An Acknowledgements section in the README, crediting the MERIDIONAL project (EU Horizon Europe
