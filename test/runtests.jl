@@ -9,7 +9,8 @@ am = AtmosphericModel(set)
 
 include("test_windfield.jl")
 include("test_custom_profiles.jl")
-include("test_makie_ext.jl")
+# CI drops MakieControlPlots from the test project on runners without OpenGL.
+Base.find_package("MakieControlPlots") === nothing || include("test_makie_ext.jl")
 
 @testset "calc_wind_factor" begin
     @test calc_wind_factor(am, 6.0, Int(CONSTANT)) == 1.0
