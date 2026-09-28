@@ -55,6 +55,7 @@ set_windfield_path!
 ```@docs
 WindField(am, speed; prn=true)
 wind_context
+turbulence_scale
 wind_at
 check_windfield_settings
 load

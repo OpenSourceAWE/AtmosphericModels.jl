@@ -3,13 +3,13 @@ module AtmosphericModelsMakieExt
 using MakieControlPlots.Makie
 import MakieControlPlots
 using AtmosphericModels
-using AtmosphericModels: grid_axes
+using AtmosphericModels: grid_axes, turbulence_scale
 
 """
     plot(am::AtmosphericModel)
 
 Plot the turbulent wind field of `am` in 3D: the along-wind turbulence [m/s], scaled as
-[`get_wind`](@ref) applies it, on the three visible faces of the grid. The long horizontal
+`get_wind` applies it, on the three visible faces of the grid. The long horizontal
 axis is cut to the height of the grid. Returns the `Figure`; needs a field in `am.wf`.
 """
 function MakieControlPlots.plot(am::AtmosphericModel)
@@ -21,8 +21,7 @@ function MakieControlPlots.plot(am::AtmosphericModel)
     nx = findlast(<=(first(x) + height), x)
     ny = findlast(<=(first(y) + height), y)
     x, y = x[1:nx], y[1:ny]
-    rel_turb = am.set.use_turbulence * rel_turbo(am, wf.v_wind_gnd)
-    turbulence = wf.u[1:nx, 1:ny, :] .* rel_turb
+    turbulence = wf.u[1:nx, 1:ny, :] .* turbulence_scale(am, wf)
     limit = maximum(abs, turbulence)
 
     fig = Figure(; size=(900, 650))
