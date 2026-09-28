@@ -1,5 +1,10 @@
 # Changelog
 
+## AtmosphericModels v0.3.12 - 2026-09-28
+### Added
+- An Acknowledgements section in the README, crediting the MERIDIONAL project (EU Horizon Europe
+  grant agreement no. 101084216).
+
 ## AtmosphericModels v0.3.11 - 2026-09-24
 ### Changed
 - Dropped support for Julia 1.11. CI tests 1.12 and 1.13, `Manifest-v1.11.toml.default` is no
