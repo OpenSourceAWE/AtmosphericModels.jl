@@ -45,6 +45,7 @@ custom_jet
 get_wind
 get_wind!
 calc_turbulent_wind
+calc_turbulent_wind!
 rel_turbo
 new_windfield
 new_windfields
@@ -56,6 +57,7 @@ set_windfield_path!
 WindField(am, speed; prn=true)
 wind_context
 wind_at
+wind_frame_to_enu
 check_windfield_settings
 load
 load_windfield

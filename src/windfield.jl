@@ -667,6 +667,53 @@ function get_wind!(res::AbstractVector{SVec3}, am::AtmosphericModel, positions::
 end
 
 """
+    wind_frame_to_enu(upwind_dir, upwind_elevation)
+
+Rotation matrix from the wind-aligned frame of [`get_wind`](@ref) to the ENU frame. Its columns are
+the along-wind axis, parallel to `wind_vec_from_angles(1, upwind_dir, upwind_elevation)`, the
+horizontal cross-wind axis and the axis completing the right-handed frame. Angles in [rad].
+"""
+function wind_frame_to_enu(upwind_dir, upwind_elevation)
+    along = wind_vec_from_angles(1.0, upwind_dir, upwind_elevation)
+    wind_dir = -upwind_dir - pi/2
+    cross = SVec3(-sin(wind_dir), cos(wind_dir), 0.0)
+    return hcat(along, cross, along × cross)
+end
+
+"""
+    calc_turbulent_wind!(res::AbstractVector{SVec3}, am::AtmosphericModel,
+                         positions::AbstractVector, t; upwind_dir=-π/4,
+                         upwind_elevation=0.0, interpolate=false)
+
+Write the wind velocity at each of `positions` into `res`, in the ENU frame [m/s], and return `res`.
+
+With `am.set.use_turbulence == 0` this is the mean wind of `am.set.profile_law`, otherwise the
+turbulent wind of [`get_wind!`](@ref). Either way the mean wind points along
+`wind_vec_from_angles(1, upwind_dir, upwind_elevation)`; see [`wind_frame_to_enu`](@ref). The
+heights `positions[i][3]` must be at least $(MIN_TETHER_HEIGHT) m. Angles in [rad], `t` in [s].
+"""
+function calc_turbulent_wind!(res::AbstractVector{SVec3}, am::AtmosphericModel,
+                              positions::AbstractVector, t; upwind_dir=-π/4,
+                              upwind_elevation=0.0, interpolate=false)
+    if am.set.use_turbulence == 0
+        length(res) == length(positions) || throw(DimensionMismatch(
+            "res has $(length(res)) entries, positions $(length(positions))"))
+        for i in eachindex(positions, res)
+            height = positions[i][3]
+            @assert height >= MIN_TETHER_HEIGHT "Height must be at least $(MIN_TETHER_HEIGHT) m"
+            res[i] = SVec3(am.set.v_wind * calc_wind_factor(am, height), 0.0, 0.0)
+        end
+    else
+        get_wind!(res, am, positions, t; upwind_dir, interpolate)
+    end
+    rotation = wind_frame_to_enu(upwind_dir, upwind_elevation)
+    for i in eachindex(res)
+        res[i] = rotation * res[i]
+    end
+    return res
+end
+
+"""
     calc_turbulent_wind(am::AtmosphericModel, pos, t; upwind_dir=-π/4, interpolate=false)
 
 Calculate the wind velocity vectors at the kite and at the mid-tether point, in the ENU
@@ -691,16 +738,11 @@ A tuple `(v_wind, v_wind_tether)` of `SVec3` in the ENU frame [m/s]:
   clamped to $(MIN_TETHER_HEIGHT) m minimum.
 """
 function calc_turbulent_wind(am::AtmosphericModel, pos, t; upwind_dir=-π/4, interpolate=false)
-    wind_dir = -upwind_dir - pi/2
+    rotation = wind_frame_to_enu(upwind_dir, 0.0)
     height = max(pos[3], MIN_KITE_HEIGHT)
-    rotate_wind(wx, wy, wz) = SVec3(wx * cos(wind_dir) - wy * sin(wind_dir),
-                                    wx * sin(wind_dir) + wy * cos(wind_dir),
-                                    wz)
+    rotate_wind(wx, wy, wz) = rotation * SVec3(wx, wy, wz)
     if am.set.use_turbulence == 0
-        v_wind_gnd = am.set.v_wind
-        mean_wind(h) = SVec3(v_wind_gnd * calc_wind_factor(am, h) * cos(wind_dir),
-                             v_wind_gnd * calc_wind_factor(am, h) * sin(wind_dir),
-                             0.0)
+        mean_wind(h) = rotate_wind(am.set.v_wind * calc_wind_factor(am, h), 0.0, 0.0)
         return mean_wind(height), mean_wind(height / 2.0)
     end
     v_wind = rotate_wind(get_wind(am, pos[1], pos[2], height, t; upwind_dir, interpolate)...)

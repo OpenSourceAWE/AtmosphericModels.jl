@@ -196,6 +196,30 @@ end
     @test v_wind_tether0[3] == 0.0
 end
 
+@testset "calc_turbulent_wind!" begin
+    positions = [KiteUtils.SVec3(10.0 + 3i, 20.0 - 2i, 50.0 + i) for i in 1:20]
+    t = 12.5
+    res = Vector{KiteUtils.SVec3}(undef, length(positions))
+    @test calc_turbulent_wind!(res, am, positions, t; upwind_dir=0.3) === res
+    @test res ≈ [first(calc_turbulent_wind(am, p, t; upwind_dir=0.3)) for p in positions]
+
+    rotation = AtmosphericModels.wind_frame_to_enu(0.3, 0.2)
+    @test rotation' * rotation ≈ [1 0 0; 0 1 0; 0 0 1]
+    @test rotation[:, 1] ≈ wind_vec_from_angles(1.0, 0.3, 0.2)
+    @test rotation[3, 2] == 0.0
+    calc_turbulent_wind!(res, am, positions, t; upwind_dir=0.3, upwind_elevation=0.2)
+    @test res ≈ [rotation * wind for wind in get_wind(am, positions, t; upwind_dir=0.3)]
+
+    use_turbulence = am.set.use_turbulence
+    am.set.use_turbulence = 0.0
+    calc_turbulent_wind!(res, am, positions, t; upwind_dir=0.3, upwind_elevation=0.2)
+    @test res ≈ [am.set.v_wind * calc_wind_factor(am, p[3]) * wind_vec_from_angles(1.0, 0.3, 0.2)
+                 for p in positions]
+    @test_throws AssertionError calc_turbulent_wind!(res[1:1], am, [KiteUtils.SVec3(0.0, 0.0, 4.0)], t)
+    @test_throws DimensionMismatch calc_turbulent_wind!(res, am, positions[1:end-1], t)
+    am.set.use_turbulence = use_turbulence
+end
+
 @testset "rel_turb source " begin
     # Sampled at the origin at t = 0, so changing v_wind cannot move the sampled grid point.
     turbulence(am) = collect(AtmosphericModels.get_wind(am, 0.0, 0.0, 100.0, 0.0)) .-
