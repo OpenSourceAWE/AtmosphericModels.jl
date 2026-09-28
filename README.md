@@ -137,6 +137,10 @@ Prof.dr. H.G.C. (Henri) Werij, Dean of Aerospace Engineering, Technische Univers
 
 See the copyright notices in the source files, and the list of authors in [AUTHORS.md](AUTHORS.md).
 
+## Acknowledgements
+
+This work has been supported by the MERIDIONAL project, which receives funding from the European Union’s Horizon Europe Program under the grant agreement no. [101084216](https://doi.org/10.3030/101084216). The opinions expressed in this document reflect only the author’s view and reflects in no way the European Commission’s opinions. The European Commission is not responsible for any use that may be made of the information it contains.
+
 ## See also
 - [Research Fechner](https://research.tudelft.nl/en/publications/?search=Uwe+Fechner&pageSize=50&ordering=rating&descending=true)
 - The application [KiteViewer](https://github.com/ufechner7/KiteViewer)
