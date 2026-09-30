@@ -3,9 +3,10 @@ SPDX-FileCopyrightText: 2026 Uwe Fechner
 SPDX-License-Identifier: MIT
 -->
 
-# CLAUDE.md
+# Example AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+An example guide for coding agents (Claude Code, opencode, Codex, ...) working on this
+repository. No tool loads it under this name: copy it to `AGENTS.md` or `CLAUDE.md` to use it.
 
 ## What this package is
 
@@ -125,7 +126,7 @@ Workspace-based like the sibling packages: `Project.toml` declares
 
 ## Coding style
 
-Same conventions as the other Julia Kite Power Tools packages (see `KiteModels.jl`'s `CLAUDE.md` /
+Same conventions as the other Julia Kite Power Tools packages (see `KiteModels.jl`'s agent guide /
 `docs/src/advanced.md` for the full list): 120-char line limit, named constants over magic numbers,
 `\cdot` for dot products, space around binary operators, install `Revise` globally (never as a
 project dependency).

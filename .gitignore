@@ -10,3 +10,4 @@ Manifest-v*.toml
 /LocalPreferences.toml
 paper/paper.pdf
 paper/AtmosphericModels_draft.pdf
+/CLAUDE.md
