@@ -3,10 +3,10 @@ SPDX-FileCopyrightText: 2026 Uwe Fechner
 SPDX-License-Identifier: MIT
 -->
 
-# AGENTS.md
+# Example AGENTS.md
 
-Guidance for coding agents (Claude Code, opencode, Codex, ...) working with code in this
-repository.
+An example guide for coding agents (Claude Code, opencode, Codex, ...) working on this
+repository. No tool loads it under this name: copy it to `AGENTS.md` or `CLAUDE.md` to use it.
 
 ## What this package is
 
