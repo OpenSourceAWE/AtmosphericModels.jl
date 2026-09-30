@@ -52,6 +52,7 @@ new_windfield
 new_windfields
 windfield_path
 set_windfield_path!
+plot_interactive
 ```
 ### Private functions
 ```@docs

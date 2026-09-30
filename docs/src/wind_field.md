@@ -122,11 +122,15 @@ to have a checked one generated.
 
 To plot the field, load `MakieControlPlots`, which activates the package extension, and call
 `plot(am)`. It draws see-through isosurfaces of the along-wind turbulence, scaled as `get_wind`
-applies it, at ±2 standard deviations, so the gusts and lulls inside the grid show. The long
-horizontal axis is cut to the height of the grid. It returns the `Figure`:
+applies it: red around the gusts above the threshold, blue around the lulls below minus the
+threshold, so they show inside the grid. The threshold is 2 standard deviations unless
+`threshold` [m/s] is given. The long horizontal axis is cut to the height of the grid.
+[`plot_interactive`](@ref) is the same plot with a slider for the threshold, for the GLMakie
+window. Both return the `Figure`:
 ```julia
 using MakieControlPlots
-plot(am)
+plot(am; threshold=1.0)
+plot_interactive(am)
 ```
 <center><img src="https://raw.githubusercontent.com/OpenSourceAWE/AtmosphericModels.jl/refs/heads/main/docs/src/windfield_3d.png" width="600"/></center>
 

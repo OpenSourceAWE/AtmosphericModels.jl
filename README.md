@@ -92,7 +92,7 @@ plot(am)
 ```
 ![Turbulent wind field](docs/src/windfield_3d.png)
 
-The see-through surfaces enclose the gusts (red) and lulls (blue) of the along-wind turbulence, beyond ±2 standard deviations, in the first 500 m of the field.
+The see-through surfaces enclose the gusts (red) and lulls (blue) of the along-wind turbulence in the first 500 m of the field, beyond a threshold of ±2 standard deviations; `plot(am; threshold=1.0)` sets it in m/s. `plot_interactive(am)` adds a slider for the threshold to the GLMakie window.
 
 ## Plot a wind profile
 ```julia

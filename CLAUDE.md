@@ -44,8 +44,9 @@ one at half its height for the tether — moved here from `KiteModels.jl` in Feb
 `set_v_wind_ground!` is its only caller in the family.
 
 `ext/AtmosphericModelsMakieExt.jl` is a package extension, loaded with `MakieControlPlots` as in
-`SymbolicAWEModels`: it adds the method `MakieControlPlots.plot(am)`, a 3D plot of the wind field
-(the README figure `docs/src/windfield_3d.png`), scaled by the same `turbulence_scale` as `get_wind`.
+`SymbolicAWEModels`: it adds the method `MakieControlPlots.plot(am; threshold)`, a 3D plot of the wind field
+(the README figure `docs/src/windfield_3d.png`), scaled by the same `turbulence_scale` as `get_wind`,
+and the method of `plot_interactive(am)`, whose stub lives in `src/AtmosphericModels.jl`.
 
 - `AtmosphericModel(set::Settings; nowindfield=false)` — the constructor. If
   `set.use_turbulence > 0` and `nowindfield=false`, it eagerly loads (or generates, if missing) a
