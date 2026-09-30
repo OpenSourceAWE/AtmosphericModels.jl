@@ -1,8 +1,8 @@
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.13.1"
+julia_version = "1.13.0"
 manifest_format = "2.1"
-project_hash = "a0b17582ce04d5277f6ddb677f1dbdef32670c5e"
+project_hash = "85972b17737f8a6f6948d61ec4f4c116e7687fe6"
 
 [[deps.ANSIColoredPrinters]]
 git-tree-sha1 = "574baf8110975760d391c710b6341da1afa48d8c"
@@ -152,6 +152,10 @@ deps = ["FFTW", "HypergeometricFunctions", "KiteUtils", "LinearAlgebra", "MeshGr
 path = "."
 uuid = "c59cac55-771d-4f45-b14d-1c681463a295"
 version = "0.3.12"
+weakdeps = ["MakieControlPlots"]
+
+    [deps.AtmosphericModels.extensions]
+    AtmosphericModelsMakieExt = "MakieControlPlots"
 
 [[deps.Automa]]
 deps = ["PrecompileTools", "TranscodingStreams"]
@@ -1149,7 +1153,7 @@ version = "1.9.1+0"
 [[deps.LibSSH2_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl", "OpenSSL_jll", "Zlib_jll"]
 uuid = "29816b5a-b9ab-546f-933c-edad1886dfa8"
-version = "1.11.104+0"
+version = "1.11.103+0"
 
 [[deps.Libdl]]
 uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"

@@ -82,6 +82,18 @@ It is suggested to check out the code using git before executing this example,
 because it requires that a data directory with the correct files `system.yaml`
 and `settings.yaml` exists. See below how to do that.
 
+### Plot the turbulent wind field
+```julia
+using AtmosphericModels, KiteUtils, MakieControlPlots
+set_data_path("data")
+set = load_settings("system.yaml"; relax=true)
+am = AtmosphericModel(set)
+plot(am)
+```
+![Turbulent wind field](docs/src/windfield_3d.png)
+
+The see-through surfaces enclose the gusts (red) and lulls (blue) of the along-wind turbulence in the first 500 m of the field, beyond a threshold of ±2 standard deviations; `plot(am; threshold=1.0)` sets it in m/s. `plot_interactive(am)` adds a slider for the threshold to the GLMakie window.
+
 ## Plot a wind profile
 ```julia
 using AtmosphericModels, KiteUtils, MakieControlPlots
