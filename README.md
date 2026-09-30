@@ -92,7 +92,7 @@ plot(am)
 ```
 ![Turbulent wind field](docs/src/windfield_3d.png)
 
-The colour is the along-wind turbulence, on the faces of the first 500 m of the field.
+The see-through surfaces enclose the gusts (red) and lulls (blue) of the along-wind turbulence, beyond ±2 standard deviations, in the first 500 m of the field.
 
 ## Plot a wind profile
 ```julia

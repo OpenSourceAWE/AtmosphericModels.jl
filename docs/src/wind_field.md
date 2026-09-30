@@ -121,9 +121,9 @@ their old name and are still used, but cannot be checked against the current set
 to have a checked one generated.
 
 To plot the field, load `MakieControlPlots`, which activates the package extension, and call
-`plot(am)`. It draws the along-wind turbulence, scaled as `get_wind` applies it, on the three
-visible faces of the grid, with the long horizontal axis cut to the height of the grid, and
-returns the `Figure`:
+`plot(am)`. It draws see-through isosurfaces of the along-wind turbulence, scaled as `get_wind`
+applies it, at ±2 standard deviations, so the gusts and lulls inside the grid show. The long
+horizontal axis is cut to the height of the grid. It returns the `Figure`:
 ```julia
 using MakieControlPlots
 plot(am)
