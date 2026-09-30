@@ -1,7 +1,7 @@
 module AtmosphericModels
 
 using KiteUtils
-using KiteUtils: SVec3
+using KiteUtils: SVec3, StructTypes, YAML
 using HypergeometricFunctions:_₂F₁
 using NPZ, Printf
 using FFTW, LinearAlgebra, Random, Statistics
@@ -9,7 +9,7 @@ using StableRNGs: StableRNG
 using Scratch: @get_scratch!
 using SHA: sha256
 
-export AtmosphericModel, ProfileLaw, WindField, EXP, LOG, EXPLOG, CONSTANT
+export AMSettings, AtmosphericModel, ProfileLaw, WindField, EXP, LOG, EXPLOG, CONSTANT
 export CUSTOM_LOG, CUSTOM_EXP, CUSTOM_JET
 export clear, calc_rho, calc_wind_factor, rel_turbo, custom_log, custom_exp, custom_jet
 
@@ -20,6 +20,8 @@ const ABS_ZERO = -273.15
 const SRL = StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}, Int64}
 const MIN_KITE_HEIGHT = 6.0
 const MIN_TETHER_HEIGHT = 5.0
+
+include("settings.jl")
 
 """
     struct WindField
@@ -72,31 +74,31 @@ end
 Struct that is storing the settings and the state of the atmosphere.
 
 # Fields
-- set::Settings: The Settings struct
+- set: the `KiteUtils.Settings` or [`AMSettings`](@ref) it was constructed from
 - `rho_zero_temp`
 - wf::Union{WindField, Nothing}: The 3D [`WindField`](@ref) or `nothing`
 - `jet_cache`: cached `(heights, speeds, coeffs)` of the last [`custom_jet`](@ref) fit, or `nothing`
 """
 Base.@kwdef mutable struct AtmosphericModel
-    set::Settings
+    set::AtmosphereSettings
     rho_zero_temp::Float64 = (15.0 - ABS_ZERO) / (set.temp_ref - ABS_ZERO) * set.rho_0
     wf::Union{WindField, Nothing} = nothing
     jet_cache::Union{Nothing, Tuple{Vector{Float64}, Vector{Float64}, Vector{Float64}}} = nothing
 end
 
 """
-    AtmosphericModel(set::Settings; nowindfield::Bool=false)
+    AtmosphericModel(set::Union{Settings, AMSettings}; nowindfield::Bool=false)
 
-Constructs an `AtmosphericModel` using the provided `Settings`.
+Constructs an `AtmosphericModel` from a `KiteUtils.Settings` or an [`AMSettings`](@ref),
+which it stores as `am.set`.
 
 # Arguments
-- `set::Settings`: The settings object containing configuration parameters for the atmospheric model.
 - `nowindfield::Bool=false`: Optional keyword argument. If `true`, the wind field will not be loaded.
 
 # Returns
 - An instance of `AtmosphericModel` configured according to the provided settings.
 """
-function AtmosphericModel(set::Settings; nowindfield::Bool=false) 
+function AtmosphericModel(set::AtmosphereSettings; nowindfield::Bool=false)
     am = AtmosphericModel(set=set)
     if set.use_turbulence > 0 && !nowindfield
         am.wf = WindField(am, am.set.v_wind)

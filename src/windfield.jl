@@ -55,7 +55,7 @@ function WindField(am, speed; prn=true)
 end
 
 """
-    check_windfield_settings(set::Settings)
+    check_windfield_settings(set::AtmosphereSettings)
 
 Throw an `ArgumentError` naming the offending key if `set` cannot describe a wind field.
 
@@ -63,7 +63,7 @@ Runs before a field is loaded or generated, so a missing or inconsistent setting
 against the settings file rather than surfacing later and elsewhere. `set.grid` defaulting to
 `Int64[]` when the YAML does not declare it is the case that motivated this.
 """
-function check_windfield_settings(set::Settings)
+function check_windfield_settings(set::AtmosphereSettings)
     length(set.grid) == 4 ||
         throw(ArgumentError("environment.grid must be [nx, ny, nz, z_min], got $(set.grid)"))
     all(>(0), set.grid[1:3]) ||
@@ -169,7 +169,7 @@ function calc_full_name(v_wind_gnd; basename)
 end
 
 """
-    find_windfield(set::Settings, v_wind_gnd)
+    find_windfield(set::AtmosphereSettings, v_wind_gnd)
 
 Path of the stored wind field for `v_wind_gnd`, without the `.npz` suffix, or `nothing`.
 
@@ -178,7 +178,7 @@ matches `set` — over the two older ones, and [`windfield_path`](@ref) over `ge
 versions before v0.3.8 kept the files. A file found under an older name cannot be checked against
 `set`; [`load`](@ref) says so.
 """
-function find_windfield(set::Settings, v_wind_gnd)
+function find_windfield(set::AtmosphereSettings, v_wind_gnd)
     speed = @sprintf("%.1f", v_wind_gnd)
     grid_name = grid_basename(set)
     names = (calc_basename(set) * "_" * speed,
@@ -739,17 +739,17 @@ function new_windfield(am::AtmosphericModel, v_wind_gnd; prn=true)
 end
 
 """
-    grid_basename(set::Settings)
+    grid_basename(set::AtmosphereSettings)
 
 File name prefix of a wind field, from `set.grid` alone. The name a version before v0.3.8 gave the
 file; today [`calc_basename`](@ref) appends the [`param_digest`](@ref) to it.
 """
-function grid_basename(set::Settings)
+function grid_basename(set::AtmosphereSettings)
     "windfield_$(string(set.grid[1]))_$(string(set.grid[2]))_$(string(set.grid[3]))_$(string(set.grid[4]))"
 end
 
 """
-    param_digest(set::Settings)
+    param_digest(set::AtmosphereSettings)
 
 Eight hex digits of a SHA-256 over the settings that change the generated field but are not in its
 file name: `grid_step` and `height_step`, which resolve the grid, and `i_ref`, `alpha`, `avg_height`
@@ -759,7 +759,7 @@ and `h_ref`, which enter `calc_sigma1`. `grid` and the ground wind speed are in 
 `calc_sigma1` evaluates the wind profile as `EXP` whatever the setting says. `use_turbulence` is
 not either — it scales the field at lookup, see [`get_wind`](@ref).
 """
-function param_digest(set::Settings)
+function param_digest(set::AtmosphereSettings)
     key = string("grid_step=", set.grid_step, ";height_step=", set.height_step,
                  ";i_ref=", set.i_ref, ";alpha=", set.alpha,
                  ";avg_height=", set.avg_height, ";h_ref=", set.h_ref)
@@ -767,13 +767,13 @@ function param_digest(set::Settings)
 end
 
 """
-    calc_basename(set::Settings)
+    calc_basename(set::AtmosphereSettings)
 
 File name prefix of a wind field: [`grid_basename`](@ref) plus the [`param_digest`](@ref), so that
 changing any setting the field depends on names a different file instead of silently loading the
 old one.
 """
-calc_basename(set::Settings) = grid_basename(set) * "_" * param_digest(set)
+calc_basename(set::AtmosphereSettings) = grid_basename(set) * "_" * param_digest(set)
 
 """
     new_windfields(am::AtmosphericModel; prn=true)
