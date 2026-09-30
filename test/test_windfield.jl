@@ -69,6 +69,24 @@ end
     set_windfield_path!("")
 end
 
+@testset "new_windfield rng" begin
+    small = deepcopy(set)
+    small.grid = [20, 10, 10, 5]
+    am_small = AtmosphericModel(small; nowindfield=true)
+    set_windfield_path!(mktempdir(cleanup=true))
+    try
+        function generated_u(; kwargs...)
+            new_windfield(am_small, 5.324; prn=false, kwargs...)
+            return first(AtmosphericModels.load(am_small; v_wind_gnd=5.324))
+        end
+        default_u = generated_u()
+        @test generated_u(rng=AtmosphericModels.StableRNG(1234)) == default_u
+        @test generated_u(rng=AtmosphericModels.StableRNG(1235)) != default_u
+    finally
+        set_windfield_path!("")
+    end
+end
+
 @testset "windfield_path  " begin
     @test isdir(windfield_path())
     @test basename(windfield_path()) == "windfields"
