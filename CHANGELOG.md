@@ -1,6 +1,6 @@
 # Changelog
 
-## AtmosphericModels v0.3.13 (unreleased)
+## Unreleased
 ### Added
 - `AMSettings`, the `environment:` fields of `KiteUtils.Settings` on their own, and
   `AMSettings(file)` to read them from the `environment:` section of any yaml file, applying
@@ -8,12 +8,12 @@
   `AtmosphericModel` accepts an `AMSettings` as well as a `Settings`, so packages that only need
   the atmosphere no longer need a `system.yaml` and KiteUtils' project layout.
 
-## AtmosphericModels v0.3.12 - 2026-09-28
+## AtmosphericModels v0.3.12 2026-09-28
 ### Added
 - An Acknowledgements section in the README, crediting the MERIDIONAL project (EU Horizon Europe
   grant agreement no. 101084216).
 
-## AtmosphericModels v0.3.11 - 2026-09-24
+## AtmosphericModels v0.3.11 2026-09-24
 ### Changed
 - Dropped support for Julia 1.11. CI tests 1.12 and 1.13, `Manifest-v1.11.toml.default` is no
   longer tracked, `bin/install` offers 1.12 and 1.13, and the README and docs ask for Julia 1.12 or
@@ -23,7 +23,7 @@
   the tracked `.default` alone) and `-h`. It installs the tracked manifest rather than re-resolving
   it, and no longer changes the juliaup default or appends a `jl` alias to the shell profile.
 
-## AtmosphericModels v0.3.10 - 2026-09-11
+## AtmosphericModels v0.3.10 2026-09-11
 ### Added
 - Support Julia 1.13: `bin/install` offers it as a version choice and accepts it as the detected
   version, `Manifest-v1.13.toml.default` is the tracked default manifest for it, and
@@ -42,11 +42,11 @@
 - fix `docs/Project.toml`: add a `[sources]` entry pointing `AtmosphericModels` at `..`, so the docs
   environment resolves the in-repo package instead of a registered release.
 
-## AtmosphericModels v0.3.9 - 2026-08-12
+## AtmosphericModels v0.3.9 2026-08-12
 ### Changed
 - Bump `KiteUtils` to 0.12.
 
-## AtmosphericModels v0.3.8 - 2026-08-09
+## AtmosphericModels v0.3.8 2026-08-09
 ### Added
 - The `interpolate` keyword of `get_wind` is implemented. It used to be a documented keyword that
   returned `nothing` (a `TODO` left over from the Python original, which used
