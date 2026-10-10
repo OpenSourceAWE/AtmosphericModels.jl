@@ -8,12 +8,12 @@
   `AtmosphericModel` accepts an `AMSettings` as well as a `Settings`, so packages that only need
   the atmosphere no longer need a `system.yaml` and KiteUtils' project layout.
 
-## AtmosphericModels v0.3.12 28-09-2026
+## AtmosphericModels v0.3.12 2026-09-28
 ### Added
 - An Acknowledgements section in the README, crediting the MERIDIONAL project (EU Horizon Europe
   grant agreement no. 101084216).
 
-## AtmosphericModels v0.3.11 24-09-2026
+## AtmosphericModels v0.3.11 2026-09-24
 ### Changed
 - Dropped support for Julia 1.11. CI tests 1.12 and 1.13, `Manifest-v1.11.toml.default` is no
   longer tracked, `bin/install` offers 1.12 and 1.13, and the README and docs ask for Julia 1.12 or
@@ -23,7 +23,7 @@
   the tracked `.default` alone) and `-h`. It installs the tracked manifest rather than re-resolving
   it, and no longer changes the juliaup default or appends a `jl` alias to the shell profile.
 
-## AtmosphericModels v0.3.10 11-09-2026
+## AtmosphericModels v0.3.10 2026-09-11
 ### Added
 - Support Julia 1.13: `bin/install` offers it as a version choice and accepts it as the detected
   version, `Manifest-v1.13.toml.default` is the tracked default manifest for it, and
@@ -42,11 +42,11 @@
 - fix `docs/Project.toml`: add a `[sources]` entry pointing `AtmosphericModels` at `..`, so the docs
   environment resolves the in-repo package instead of a registered release.
 
-## AtmosphericModels v0.3.9 12-08-2026
+## AtmosphericModels v0.3.9 2026-08-12
 ### Changed
 - Bump `KiteUtils` to 0.12.
 
-## AtmosphericModels v0.3.8 09-08-2026
+## AtmosphericModels v0.3.8 2026-08-09
 ### Added
 - The `interpolate` keyword of `get_wind` is implemented. It used to be a documented keyword that
   returned `nothing` (a `TODO` left over from the Python original, which used
@@ -110,7 +110,7 @@
   drop the `_1.0` from the name (`load` falls back to the old name and tells you). Files generated
   with any other `use_turbulence` are pre-scaled and should be deleted.
 
-## AtmosphericModels v0.3.7 07-08-2026
+## AtmosphericModels v0.3.7 2026-08-07
 ### Added
 - add `CUSTOM_LOG`, `CUSTOM_EXP` and `CUSTOM_JET` profile laws (`profile_law` 4/5/6), fitting a
   wind profile to `set.heights`/`set.speeds` instead of a fixed `alpha`/`z0`
@@ -131,7 +131,7 @@
   Julia versions, which broke the `calc_turbulent_wind` reference values on Julia 1.10. Now uses a
   `StableRNG(1234)` instead, so the wind field is byte-identical everywhere.
 
-## AtmosphericModels v0.3.6 05-08-2026
+## AtmosphericModels v0.3.6 2026-08-05
 ### Added
 - add `calc_turbulent_wind`, moved here from `KiteModels` (kite/tether wind vectors in the ENU
   frame, built on top of `get_wind`)
@@ -147,7 +147,7 @@
   `set.grid` with the short dimension first (e.g. KiteUtils' own default `[100, 4050, ...]`,
   as opposed to this package's own `data/settings.yaml` default `[4050, 100, ...]`).
 
-## AtmosphericModels v0.3.5 30-05-2026
+## AtmosphericModels v0.3.5 2026-05-30
 ### Added
 - add `CONSTANT` profile law (no wind shear, `profile_law = 0`)
 - add example `plot_windshear_zero.jl`
@@ -158,7 +158,7 @@
 ### Fixed
 - fix typo in `bin/run_julia`: `JULIA_PKG_SERVER_REGISTRY_PREFERANCE` → `JULIA_PKG_SERVER_REGISTRY_PREFERENCE`
 
-## AtmosphericModels v0.3.4 03-05-2026
+## AtmosphericModels v0.3.4 2026-05-03
 ### Added
 - add `upwind_dir` to `get_wind`
 - add helper scripts `bin/install`, `bin/setup_env`, and `bin/jetls`
@@ -175,23 +175,23 @@
 - fix installation script behavior
 - fix warning in windfield code
 
-## AtmosphericModels v0.3.3 17-03-2026
+## AtmosphericModels v0.3.3 2026-03-17
 ### Added
 - the files `.zenodo.json` and `CITATION.cff`
 ### Changed
 - support Julia 1.12
 
-## AtmosphericModels v0.3.2 26-08-2025
+## AtmosphericModels v0.3.2 2025-08-26
 ### Added
 - add KiteUtils 0.11 compat
 
-## AtmosphericModels v0.3.1 14-07-2025
+## AtmosphericModels v0.3.1 2025-07-14
 ### Fixed
 - when calculating the filename for the windfield to load, the `rel_sigma` parameter was ignored
 ### Changed
 - better error message if loading the windfield fails
 
-## AtmosphericModels v0.3.0 08-07-2025
+## AtmosphericModels v0.3.0 2025-07-08
 ### Changed
 - BREAKING: When constructing an atmospheric model, you MUST pass the parameter set::Settings. This ensures that all parts of the simulation use the same settings struct, and that you can run different simulations with different settings in parallel.
 - removed FAST_EXP, FAST_LOG and FAST_EXPLOG because they were error prone (did not deliver the correct result when changing settings.yaml)
