@@ -7,6 +7,8 @@
   `use_wind_vec` and rejecting an invalid `profile_law` as `load_settings` does.
   `AtmosphericModel` accepts an `AMSettings` as well as a `Settings`, so packages that only need
   the atmosphere no longer need a `system.yaml` and KiteUtils' project layout.
+### Changed
+- KiteUtils 0.14 is allowed alongside 0.12 and 0.13; the tracked manifests use 0.14.0.
 
 ## AtmosphericModels v0.3.12 - 2026-09-28
 ### Added
