@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Added
+
+- `plot(am::AtmosphericModel; threshold)` in a new Makie package extension, loaded with `MakieControlPlots`: see-through 3D isosurfaces of the gusts (red) and lulls (blue) of the along-wind turbulence beyond ±`threshold`, shown in the README.
+- `plot_interactive(am)`: the same plot with a slider for the threshold.
+
 ### Fixed
 
 - `bin/release` takes `--yes` and `--sha <commit>`, and with `--sha` works from a copy of the script in any clone. It registers by commenting on the commit rather than on issue #1, so it always registers that exact commit, and it exits 0 only once JuliaRegistrator has answered with a registration pull request.

@@ -14,7 +14,7 @@ export CUSTOM_LOG, CUSTOM_EXP, CUSTOM_JET
 export clear, calc_rho, calc_wind_factor, rel_turbo, custom_log, custom_exp, custom_jet
 
 export new_windfield, new_windfields, get_wind, get_wind!, calc_turbulent_wind
-export windfield_path, set_windfield_path!
+export windfield_path, set_windfield_path!, plot_interactive
 
 const ABS_ZERO = -273.15
 const SRL = StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}, Int64}
@@ -409,5 +409,13 @@ Calculates the wind factor at a given `height` using the specified wind profile 
 end
 
 include("windfield.jl")
+
+"""
+    plot_interactive(am::AtmosphericModel)
+
+`plot(am)` with a slider for the threshold [m/s] of its isosurfaces, for the live GLMakie
+window. Returns the `Figure`; needs `using MakieControlPlots`, which loads the method.
+"""
+function plot_interactive end
 
 end

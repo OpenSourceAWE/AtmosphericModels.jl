@@ -122,6 +122,15 @@ function rel_turbo(am::AtmosphericModel, v_wind = am.set.v_wind)
 end
 
 """
+    turbulence_scale(am::AtmosphericModel, wf::WindField)
+
+Factor [`get_wind`](@ref) multiplies the stored turbulence of `wf` by:
+`am.set.use_turbulence` times the `rel_turbs` entry for the speed `wf` was generated for.
+"""
+turbulence_scale(am::AtmosphericModel, wf::WindField) =
+    am.set.use_turbulence * rel_turbo(am, wf.v_wind_gnd)
+
+"""
     nextpow2(i)
 
 Find 2^n that is equal to or greater than i.
@@ -443,7 +452,7 @@ The long/short axis is detected from the actual array size at each call, since w
 is longer depends on `am.set.grid` and differs between configurations (e.g. `[4050, 100, ...]`
 vs. the `[100, 4050, ...]` default).
 
-The stored field is scaled at lookup by `am.set.use_turbulence * rel_turbo(am, wf.v_wind_gnd)`, so
+The stored field is scaled at lookup by [`turbulence_scale`](@ref), so
 one file per ground wind speed serves every turbulence intensity and changing `use_turbulence` needs
 no regeneration. The `rel_turbs` correction is taken for the speed the loaded field was generated
 for, not for `am.set.v_wind`, so a field loaded at any other speed keeps its own intensity.
@@ -480,7 +489,7 @@ Hoisted out of the lookup so that the vector method of [`get_wind`](@ref) pays f
 instead of once per position — `rel_turbo` in particular allocates.
 """
 @inline function wind_context(am::AtmosphericModel, wf::WindField, upwind_dir)
-    rel_turb = am.set.use_turbulence * rel_turbo(am, wf.v_wind_gnd)
+    rel_turb = turbulence_scale(am, wf)
     # wind_dir: direction the wind is blowing TO, measured from +x (East) axis, CCW.
     wind_dir = -upwind_dir - pi/2
     return (cos(wind_dir), sin(wind_dir), rel_turb, Int64(am.set.profile_law), am.set.v_wind,
@@ -716,7 +725,7 @@ end
 Create a new wind field file using the given, scalar ground wind velocity `v_wind_gnd`.
 
 The field is stored at the reference intensity (`sigma1 = calc_sigma1(am, v_wind_gnd)`);
-`am.set.use_turbulence` and `rel_turbo(am)` are applied when it is read by [`get_wind`](@ref).
+[`turbulence_scale`](@ref) is applied when it is read by [`get_wind`](@ref).
 
 # Parameters
 - `am::AtmosphericModel`: The atmospheric model for which the wind field is created.

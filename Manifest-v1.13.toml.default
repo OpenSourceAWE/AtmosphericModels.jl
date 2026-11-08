@@ -2,7 +2,7 @@
 
 julia_version = "1.13.1"
 manifest_format = "2.1"
-project_hash = "2b29defbfffbc4f5ce4a0f68e959aa687dfa9a8d"
+project_hash = "15daa3ea224a5f6597a38664a69ad98736b0dc48"
 
 [[deps.ANSIColoredPrinters]]
 git-tree-sha1 = "574baf8110975760d391c710b6341da1afa48d8c"
@@ -152,6 +152,10 @@ deps = ["FFTW", "HypergeometricFunctions", "KiteUtils", "LinearAlgebra", "MeshGr
 path = "."
 uuid = "c59cac55-771d-4f45-b14d-1c681463a295"
 version = "0.3.12"
+weakdeps = ["MakieControlPlots"]
+
+    [deps.AtmosphericModels.extensions]
+    AtmosphericModelsMakieExt = "MakieControlPlots"
 
 [[deps.Automa]]
 deps = ["PrecompileTools", "TranscodingStreams"]

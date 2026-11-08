@@ -30,7 +30,7 @@ axes; the `.npz` stores only `u`, `v`, `w` and `param`, so the axes are rebuilt,
 
 ## Architecture
 
-### Single small module, two files
+### Single small module, two source files and a plot extension
 
 `src/AtmosphericModels.jl` defines the module, the `AtmosphericModel`/`WindField` structs, the
 `ProfileLaw` enum (`CONSTANT=0`/`EXP=1`/`LOG=2`/`EXPLOG=3`/`CUSTOM_LOG=4`/`CUSTOM_EXP=5`/
@@ -42,6 +42,11 @@ There is no submodule split — both files contribute to the same `AtmosphericMo
 `calc_turbulent_wind(am, pos, t; upwind_dir)` — which returns the wind vector at the kite plus the
 one at half its height for the tether — moved here from `KiteModels.jl` in Feb 2026; `KiteModels`'
 `set_v_wind_ground!` is its only caller in the family.
+
+`ext/AtmosphericModelsMakieExt.jl` is a package extension, loaded with `MakieControlPlots` as in
+`SymbolicAWEModels`: it adds the method `MakieControlPlots.plot(am; threshold)`, a 3D plot of the wind field
+(the README figure `docs/src/windfield_3d.png`), scaled by the same `turbulence_scale` as `get_wind`,
+and the method of `plot_interactive(am)`, whose stub lives in `src/AtmosphericModels.jl`.
 
 - `AtmosphericModel(set::Settings; nowindfield=false)` — the constructor. If
   `set.use_turbulence > 0` and `nowindfield=false`, it eagerly loads (or generates, if missing) a

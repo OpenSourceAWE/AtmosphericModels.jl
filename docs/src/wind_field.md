@@ -94,8 +94,8 @@ with the height.
 The turbulence is modelled in three dimensions, using the Mann model as described
 by **Mann (1994)** and **Mann (1998)**. The resulting homogeneous velocity field is obtained
 by a 3D FFT (Fast Fourier Transformation) of the spectral tensor. Randomization is done by a white noise vector to give the wave numbers a random phase and amplitude.
-A wind field of 4050 x 100 x 500 points with 2 m resolution is pre-calculated. To obtain the 3D wind speed vector at any given position a 3rd order spline interpolation is
-used. To take the time dependency of the wind into account, the product of the simulation time and the average wind speed at the height of the kite is added to the x-coordinate before the wind vector lookup. The turbulent component of the wind field is periodic in all directions, because it is generated using reverse FFT. The size of the wind field is chosen such that the wind speed sequence repeats every 13.5 minutes at a wind speed of 10 m/s.
+A wind field of 4050 x 100 x 500 points with 2 m resolution is pre-calculated. To obtain the 3D wind speed vector at any given position the turbulence is read at the nearest
+grid point, or interpolated trilinearly with `get_wind(...; interpolate=true)`. To take the time dependency of the wind into account, the product of the simulation time and the average wind speed at the height of the kite is added to the x-coordinate before the wind vector lookup. The turbulent component of the wind field is periodic in all directions, because it is generated using reverse FFT. The size of the wind field is chosen such that the wind speed sequence repeats every 13.5 minutes at a wind speed of 10 m/s.
 
 To use this atmospheric model, execute:
 ```julia
@@ -105,7 +105,7 @@ am::AtmosphericModel = AtmosphericModel(set)
 ```
 If the file `windfield_4050_100_500_70_<digest>_5.3.npz`, which contains the required wind field does not exist it will be created automatically. This might take 30s, but is required only once. The name is the grid, then a digest of every other setting the field depends on (`grid_step`, `height_step`, `i_ref`, `alpha`, `avg_height`, `h_ref`), then the ground wind speed.
 
-These files are ~1.2 GB each and live in a `Scratch.jl` scratchspace, shared by every package that
+These files are ~620 MB each and live in a `Scratch.jl` scratchspace, shared by every package that
 uses `AtmosphericModels` and removed when the package is; `windfield_path()` returns the directory,
 `set_windfield_path!(path)` moves it, e.g. onto a disk with more room. Files written by versions
 before v0.3.8, which kept them in `get_data_path()`, are still found there and can be moved into
@@ -119,6 +119,20 @@ Changing any of those parameters therefore names a different file, which is gene
 run instead of the wrong one being loaded silently. Files written before the digest existed keep
 their old name and are still used, but cannot be checked against the current settings — delete them
 to have a checked one generated.
+
+To plot the field, load `MakieControlPlots`, which activates the package extension, and call
+`plot(am)`. It draws see-through isosurfaces of the along-wind turbulence, scaled as `get_wind`
+applies it: red around the gusts above the threshold, blue around the lulls below minus the
+threshold, so they show inside the grid. The threshold is 2 standard deviations unless
+`threshold` [m/s] is given. The long horizontal axis is cut to the height of the grid.
+[`plot_interactive`](@ref) is the same plot with a slider for the threshold, for the GLMakie
+window. Both return the `Figure`:
+```julia
+using MakieControlPlots
+plot(am; threshold=1.0)
+plot_interactive(am)
+```
+<center><img src="https://raw.githubusercontent.com/OpenSourceAWE/AtmosphericModels.jl/refs/heads/main/docs/src/windfield_3d.png" width="600"/></center>
 
 ## References
 
