@@ -2,51 +2,76 @@
 # SPDX-FileCopyrightText: 2026 Uwe Fechner
 # SPDX-License-Identifier: MIT
 
-# Create a new release by posting to JuliaRegistrator via issue #1
+# Register a commit with JuliaRegistrator, by commenting on that commit. Exits 0 once
+# JuliaRegistrator has answered that comment with a registration pull request.
 #
-# Usage:  bin/release
+# Usage:  bin/release [--yes] [--sha <commit>]
 #
-# This script extracts the latest release notes from CHANGELOG.md
-# and posts them as a comment to GitHub issue #1 using the GitHub CLI.
+#   --sha <commit>  register that commit, from anywhere inside a clone of this repository
+#   --yes           do not ask for confirmation
+#
+# Without --sha it registers HEAD of a clean main checkout whose manifest matches the tracked
+# default. The release notes are the top release section of the commit's CHANGELOG.md.
 
 set -euo pipefail
 
-cd "$(dirname "$0")/.."
+POLL_INTERVAL=5  # [s] between looks for JuliaRegistrator's reply
+MAX_POLLS=48     # looks before giving up, to stay within the 300 s the box allows
 
-CHANGELOG="CHANGELOG.md"
+sha=""
+assume_yes=false
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --yes) assume_yes=true; shift ;;
+        --sha) sha="${2:?--sha needs a commit}"; shift 2 ;;
+        *) echo "Usage: bin/release [--yes] [--sha <commit>]" >&2; exit 1 ;;
+    esac
+done
 
-if [ ! -f "$CHANGELOG" ]; then
-    echo "Error: $CHANGELOG not found" >&2
-    exit 1
+# Exit unless the current checkout is one a release can be cut from.
+check_checkout() {
+    local branch julia_version MANIFEST MANIFEST_DEFAULT
+    branch=$(git rev-parse --abbrev-ref HEAD)
+    if [ "$branch" != "main" ]; then
+        echo "Error: Must be on the 'main' branch (currently on '$branch')" >&2
+        exit 1
+    fi
+
+    if [ -n "$(git status --porcelain)" ]; then
+        echo "Error: There are uncommitted or untracked changes. Please commit or stash them first." >&2
+        exit 1
+    fi
+
+    # A fresh install copies the .default over, so it must be what was tested.
+    julia_version=$(julia --version | awk '{print $3}')
+    MANIFEST="Manifest-v${julia_version%.*}.toml"
+    MANIFEST_DEFAULT="${MANIFEST}.default"
+    if [ ! -f "$MANIFEST" ] || [ ! -f "$MANIFEST_DEFAULT" ]; then
+        echo "Error: $MANIFEST and/or $MANIFEST_DEFAULT not found." >&2
+        exit 1
+    fi
+    if ! diff -q "$MANIFEST_DEFAULT" "$MANIFEST" > /dev/null; then
+        echo "Error: $MANIFEST_DEFAULT does not match $MANIFEST." >&2
+        echo "       Run 'cp $MANIFEST $MANIFEST_DEFAULT' and commit it, or reinstall to sync." >&2
+        exit 1
+    fi
+}
+
+# Print JuliaRegistrator's first reply after comment $1 on the commit, if it has replied.
+registrator_reply() {
+    gh api "repos/{owner}/{repo}/commits/$sha/comments?per_page=100" --jq \
+        "[.[] | select(.user.login == \"JuliaRegistrator\" and .id > $1)][0].body // empty"
+}
+
+if [ -z "$sha" ]; then
+    cd "$(dirname "$0")/.."
+    check_checkout
+    sha=$(git rev-parse HEAD)
 fi
 
-# Check that we are on the main branch
-branch=$(git rev-parse --abbrev-ref HEAD)
-if [ "$branch" != "main" ]; then
-    echo "Error: Must be on the 'main' branch (currently on '$branch')" >&2
-    exit 1
-fi
-
-# Check that the working tree is clean (no staged, unstaged, or untracked changes)
-if [ -n "$(git status --porcelain)" ]; then
-    echo "Error: There are uncommitted or untracked changes. Please commit or stash them first." >&2
-    exit 1
-fi
-
-# Check that the checked-in default manifest matches the active one, so a fresh
-# install (which copies the .default over) resolves to exactly what was tested
-julia_version=$(julia --version | awk '{print $3}')
-MANIFEST="Manifest-v${julia_version%.*}.toml"
-MANIFEST_DEFAULT="${MANIFEST}.default"
-if [ ! -f "$MANIFEST" ] || [ ! -f "$MANIFEST_DEFAULT" ]; then
-    echo "Error: $MANIFEST and/or $MANIFEST_DEFAULT not found." >&2
-    exit 1
-fi
-if ! diff -q "$MANIFEST_DEFAULT" "$MANIFEST" > /dev/null; then
-    echo "Error: $MANIFEST_DEFAULT does not match $MANIFEST." >&2
-    echo "       Run 'cp $MANIFEST $MANIFEST_DEFAULT' and commit it, or reinstall to sync." >&2
-    exit 1
-fi
+git cat-file -e "$sha^{commit}" 2> /dev/null || git fetch --quiet origin "$sha"
+changelog=$(git show "$sha:CHANGELOG.md")
+project=$(git show "$sha:Project.toml")
 
 # Extract the first release section: from "## AtmosphericModels v..." up to
 # (but not including) the next "## AtmosphericModels" or end of file.
@@ -59,45 +84,55 @@ release_notes=$(awk '
         exit
     }
     version != "" { print }
-' "$CHANGELOG")
+' <<< "$changelog")
 
 if [ -z "$release_notes" ]; then
-    echo "Error: Could not find release notes in $CHANGELOG" >&2
+    echo "Error: Could not find release notes in CHANGELOG.md of $sha" >&2
     exit 1
 fi
 
 # Get version string (e.g. "v0.3.6")
-version=$(awk '/^## AtmosphericModels v/ {print $3; exit}' "$CHANGELOG")
+version=$(awk '/^## AtmosphericModels v/ {print $3; exit}' <<< "$changelog")
 
 # Check that the version in Project.toml matches the version in CHANGELOG.md
-project_version=$(awk -F'"' '/^version = / {print $2; exit}' Project.toml)
+project_version=$(awk -F'"' '/^version = / {print $2; exit}' <<< "$project")
 changelog_version="${version#v}"
 if [ "$project_version" != "$changelog_version" ]; then
     echo "Error: Version mismatch: Project.toml has '$project_version', CHANGELOG.md has '$changelog_version'" >&2
     exit 1
 fi
 
-echo "About to trigger registration for: AtmosphericModels $version"
+echo "About to trigger registration for: AtmosphericModels $version at $sha"
 echo ""
 echo "Release notes:"
 echo "$release_notes"
 echo ""
-read -r -p "Continue? [y/N] " response
-if [ "$response" != "y" ] && [ "$response" != "Y" ]; then
-    echo "Aborted."
-    exit 0
+if [ "$assume_yes" != true ]; then
+    read -r -p "Continue? [y/N] " response
+    if [ "$response" != "y" ] && [ "$response" != "Y" ]; then
+        echo "Aborted."
+        exit 0
+    fi
 fi
 
-# Build the comment body and pipe it to gh
-{
-    echo '@JuliaRegistrator register'
-    echo ""
-    echo "Release notes:"
-    echo ""
-    echo "$release_notes"
-} | gh issue comment 1 \
-    --repo "OpenSourceAWE/AtmosphericModels.jl" \
-    --body-file -
+body=$(printf '@JuliaRegistrator register\n\nRelease notes:\n\n%s\n' "$release_notes")
+# A comment on an issue would register the default branch's tip rather than this commit.
+read -r comment_id url < <(gh api "repos/{owner}/{repo}/commits/$sha/comments" -f body="$body" \
+    --jq '"\(.id) \(.html_url)"')
 
 echo ""
-echo "Done! Registration comment posted to https://github.com/OpenSourceAWE/AtmosphericModels.jl/issues/1"
+echo "Posted: $url"
+
+reply=""
+for _ in $(seq "$MAX_POLLS"); do
+    sleep "$POLL_INTERVAL"
+    reply=$(registrator_reply "$comment_id") || true
+    [ -z "$reply" ] || break
+done
+
+if [[ "$reply" != *"Registration pull request"* ]]; then
+    waited=$((MAX_POLLS * POLL_INTERVAL))
+    echo "Error: JuliaRegistrator did not register $sha: ${reply:-no reply in $waited s}" >&2
+    exit 1
+fi
+echo "$reply"

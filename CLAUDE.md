@@ -124,9 +124,7 @@ Workspace-based like the sibling packages: `Project.toml` declares
 - **License linting**: every file must carry an SPDX header (see `REUSE.toml` for path-based
   annotation defaults); run via `bin/reuse_lint`, which tries `pipx run reuse lint` and falls back to
   a plain `reuse`/`python3 -m reuse` if pipx is missing or broken.
-- **Cut a release**: `./bin/release` — takes no arguments, must be run on `main`, extracts the top
-  section of `CHANGELOG.md` as release notes and posts them to GitHub issue #1 (the JuliaRegistrator
-  trigger issue) via `gh`.
+- **Cut a release**: `./bin/release` — takes the top section of the commit's `CHANGELOG.md` as release notes, posts them as a `@JuliaRegistrator` comment on that commit, and exits 0 once JuliaRegistrator has answered with a registration pull request. Without arguments it registers `HEAD` of a clean `main` checkout; `--sha <commit>` registers that commit from any clone and skips those checkout checks; `--yes` skips the confirmation.
 
 ## Coding style
 
