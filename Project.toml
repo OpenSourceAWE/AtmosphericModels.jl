@@ -26,7 +26,7 @@ AtmosphericModelsMakieExt = "MakieControlPlots"
 [compat]
 FFTW = "1.9.0"
 HypergeometricFunctions = "0.3"
-KiteUtils = "0.12, 0.13"
+KiteUtils = "0.12, 0.13, 0.14"
 LinearAlgebra = "1.12, 1.13"
 MakieControlPlots = "0.1"
 MeshGrid = "1.0.3"

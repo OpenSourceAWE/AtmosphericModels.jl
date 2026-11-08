@@ -2,7 +2,7 @@
 
 julia_version = "1.12.7"
 manifest_format = "2.0"
-project_hash = "85972b17737f8a6f6948d61ec4f4c116e7687fe6"
+project_hash = "724e03ea8d379a2be520b67df7689648da4119c9"
 
 [[deps.ANSIColoredPrinters]]
 git-tree-sha1 = "574baf8110975760d391c710b6341da1afa48d8c"
@@ -956,9 +956,9 @@ version = "0.6.12"
 
 [[deps.KiteUtils]]
 deps = ["Arrow", "CSV", "DocStringExtensions", "LinearAlgebra", "OrderedCollections", "Parameters", "Parsers", "Pkg", "PrecompileTools", "RecursiveArrayTools", "ReferenceFrameRotations", "Rotations", "StaticArrays", "StructArrays", "StructTypes", "YAML"]
-git-tree-sha1 = "c9b724b8281baf82e21610843aea75aac62a7565"
+git-tree-sha1 = "df41c5cf55009887666b447d66ee7857eaf00af6"
 uuid = "90980105-b163-44e5-ba9f-8b1c83bb0533"
-version = "0.13.0"
+version = "0.14.0"
 
 [[deps.LAME_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
