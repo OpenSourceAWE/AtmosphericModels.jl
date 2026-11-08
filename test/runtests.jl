@@ -10,7 +10,7 @@ am = AtmosphericModel(set)
 include("test_windfield.jl")
 include("test_custom_profiles.jl")
 include("test_am_settings.jl")
-include("test_release.jl")
+Sys.iswindows() || include("test_release.jl")  # bin/release is a bash script
 
 @testset "calc_wind_factor" begin
     @test calc_wind_factor(am, 6.0, Int(CONSTANT)) == 1.0

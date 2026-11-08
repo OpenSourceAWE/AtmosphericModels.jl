@@ -2,7 +2,8 @@
 # SPDX-FileCopyrightText: 2026 Uwe Fechner
 # SPDX-License-Identifier: MIT
 
-# Register a commit with JuliaRegistrator, by commenting on that commit.
+# Register a commit with JuliaRegistrator, by commenting on that commit. Exits 0 once
+# JuliaRegistrator has answered that comment with a registration pull request.
 #
 # Usage:  bin/release [--yes] [--sha <commit>]
 #
@@ -13,6 +14,9 @@
 # default. The release notes are the top release section of the commit's CHANGELOG.md.
 
 set -euo pipefail
+
+POLL_INTERVAL=5  # [s] between looks for JuliaRegistrator's reply
+MAX_POLLS=48     # looks before giving up, to stay within the 300 s the box allows
 
 sha=""
 assume_yes=false
@@ -51,6 +55,12 @@ check_checkout() {
         echo "       Run 'cp $MANIFEST $MANIFEST_DEFAULT' and commit it, or reinstall to sync." >&2
         exit 1
     fi
+}
+
+# Print JuliaRegistrator's first reply after comment $1 on the commit, if it has replied.
+registrator_reply() {
+    gh api "repos/{owner}/{repo}/commits/$sha/comments?per_page=100" --jq \
+        "[.[] | select(.user.login == \"JuliaRegistrator\" and .id > $1)][0].body // empty"
 }
 
 if [ -z "$sha" ]; then
@@ -107,7 +117,22 @@ fi
 
 body=$(printf '@JuliaRegistrator register\n\nRelease notes:\n\n%s\n' "$release_notes")
 # A comment on an issue would register the default branch's tip rather than this commit.
-url=$(gh api "repos/{owner}/{repo}/commits/$sha/comments" -f body="$body" --jq .html_url)
+read -r comment_id url < <(gh api "repos/{owner}/{repo}/commits/$sha/comments" -f body="$body" \
+    --jq '"\(.id) \(.html_url)"')
 
 echo ""
 echo "Posted: $url"
+
+reply=""
+for _ in $(seq "$MAX_POLLS"); do
+    sleep "$POLL_INTERVAL"
+    reply=$(registrator_reply "$comment_id") || true
+    [ -z "$reply" ] || break
+done
+
+if [[ "$reply" != *"Registration pull request"* ]]; then
+    waited=$((MAX_POLLS * POLL_INTERVAL))
+    echo "Error: JuliaRegistrator did not register $sha: ${reply:-no reply in $waited s}" >&2
+    exit 1
+fi
+echo "$reply"

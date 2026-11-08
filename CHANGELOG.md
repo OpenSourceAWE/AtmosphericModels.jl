@@ -4,7 +4,7 @@
 
 ### Fixed
 
-- `bin/release` takes `--yes` and `--sha <commit>`, and with `--sha` works from a copy of the script in any clone. It registers by commenting on the commit rather than on issue #1, so it always registers that exact commit.
+- `bin/release` takes `--yes` and `--sha <commit>`, and with `--sha` works from a copy of the script in any clone. It registers by commenting on the commit rather than on issue #1, so it always registers that exact commit, and it exits 0 only once JuliaRegistrator has answered with a registration pull request.
 
 ## AtmosphericModels v0.3.13 2026-11-08
 
