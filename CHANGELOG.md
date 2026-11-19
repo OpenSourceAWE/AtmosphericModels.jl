@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## AtmosphericModels v0.3.14 2026-11-19
 
 ### Fixed
 
