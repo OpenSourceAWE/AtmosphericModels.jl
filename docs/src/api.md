@@ -11,7 +11,7 @@ set_data_path("data")
 set = load_settings("system.yaml"; relax=true)
 am::AtmosphericModel = AtmosphericModel(set)
 ```
-This requires that the files `system.yaml` and `settings.yaml` exist in the folder `data`. See also [Settings](@ref). The parameter `relax=true` allows loading a yaml file that does not contain all sections needed to run a kite power system simulation. This is useful if you want to use this package for
+This requires that the files `system.yaml` and `settings.yaml` exist in the folder `data`. See also [Settings](@ref). Without KiteUtils' project files, `AtmosphericModel(AMSettings("settings.yaml"))` reads just the `environment` section. The parameter `relax=true` allows loading a yaml file that does not contain all sections needed to run a kite power system simulation. This is useful if you want to use this package for
 other purposes than simulating kite power systems.
 
 ## Types
@@ -19,8 +19,10 @@ other purposes than simulating kite power systems.
 ### Exported types
 ```@docs
 ProfileLaw
+AMSettings
+AMSettings(file::AbstractString)
 AtmosphericModel
-AtmosphericModel(set::Settings; nowindfield::Bool=false)
+AtmosphericModel(set::Union{Settings, AMSettings}; nowindfield::Bool=false)
 ```
 ### Private types
 ```@docs

@@ -2,17 +2,33 @@
 
 ## Unreleased
 ### Added
-- `calc_turbulent_wind!(res, am, positions, t; upwind_dir, upwind_elevation, interpolate)`: the wind
-  at each of a vector of positions in the ENU frame, turbulent or, with `use_turbulence == 0`, the
-  mean profile. `upwind_elevation` tilts the along-wind axis so the mean wind points along
-  `wind_vec_from_angles(1, upwind_dir, upwind_elevation)`.
 
-## AtmosphericModels v0.3.12 - 2026-09-28
+- `calc_turbulent_wind!(res, am, positions, t; upwind_dir, upwind_elevation, interpolate)`: the wind at each of a vector of positions in the ENU frame, turbulent or, with `use_turbulence == 0`, the mean profile. `upwind_elevation` tilts the along-wind axis so the mean wind points along `wind_vec_from_angles(1, upwind_dir, upwind_elevation)`.
+
+### Fixed
+
+- `bin/release` takes `--yes` and `--sha <commit>`, and with `--sha` works from a copy of the script in any clone. It registers by commenting on the commit rather than on issue #1, so it always registers that exact commit, and it exits 0 only once JuliaRegistrator has answered with a registration pull request.
+
+## AtmosphericModels v0.3.13 2026-11-08
+
+### Added
+
+- `AMSettings`, the `environment:` fields of `KiteUtils.Settings` on their own, and
+  `AMSettings(file)` to read them from the `environment:` section of any yaml file, applying
+  `use_wind_vec` and rejecting an invalid `profile_law` as `load_settings` does.
+  `AtmosphericModel` accepts an `AMSettings` as well as a `Settings`, so packages that only need
+  the atmosphere no longer need a `system.yaml` and KiteUtils' project layout.
+
+### Changed
+
+- KiteUtils 0.14 is allowed alongside 0.12 and 0.13; the tracked manifests use 0.14.0.
+
+## AtmosphericModels v0.3.12 2026-09-28
 ### Added
 - An Acknowledgements section in the README, crediting the MERIDIONAL project (EU Horizon Europe
   grant agreement no. 101084216).
 
-## AtmosphericModels v0.3.11 - 2026-09-24
+## AtmosphericModels v0.3.11 2026-09-24
 ### Changed
 - Dropped support for Julia 1.11. CI tests 1.12 and 1.13, `Manifest-v1.11.toml.default` is no
   longer tracked, `bin/install` offers 1.12 and 1.13, and the README and docs ask for Julia 1.12 or
@@ -22,7 +38,7 @@
   the tracked `.default` alone) and `-h`. It installs the tracked manifest rather than re-resolving
   it, and no longer changes the juliaup default or appends a `jl` alias to the shell profile.
 
-## AtmosphericModels v0.3.10 - 2026-09-11
+## AtmosphericModels v0.3.10 2026-09-11
 ### Added
 - Support Julia 1.13: `bin/install` offers it as a version choice and accepts it as the detected
   version, `Manifest-v1.13.toml.default` is the tracked default manifest for it, and
@@ -41,11 +57,11 @@
 - fix `docs/Project.toml`: add a `[sources]` entry pointing `AtmosphericModels` at `..`, so the docs
   environment resolves the in-repo package instead of a registered release.
 
-## AtmosphericModels v0.3.9 - 2026-08-12
+## AtmosphericModels v0.3.9 2026-08-12
 ### Changed
 - Bump `KiteUtils` to 0.12.
 
-## AtmosphericModels v0.3.8 - 2026-08-09
+## AtmosphericModels v0.3.8 2026-08-09
 ### Added
 - The `interpolate` keyword of `get_wind` is implemented. It used to be a documented keyword that
   returned `nothing` (a `TODO` left over from the Python original, which used
